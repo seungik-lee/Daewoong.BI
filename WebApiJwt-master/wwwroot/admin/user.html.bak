@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!--<link href="../app/css/core.css" rel="stylesheet" />-->
+    <link href="../app/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../app/script/jquery.js"></script>
+    <script src="../app/script/bootstrap.min.js"></script>
+    <script src="../app/script/dataService.js"></script>
+    <script src="../app/script/user.js"></script>
+    <link href="../app/css/button.css" rel="stylesheet" />
+    <link href="../app/css/core.css" rel="stylesheet" />
+    <link href="../app/css/text.css" rel="stylesheet" />
+    <link href="../app/css/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="../app/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg2">
+    <div class="nav" style="background:#f77822;padding:5px;">
+    </div>
+
+    <!--한줄-->
+    <div class="container-fluid" style="padding:0;">
+        <div class="menu-bar">
+            <div style="font-weight:600;font-size:16px;">사용자등록관리</div>
+            <div id="companies"></div>
+            <div style="float:right">
+                <button type="button" class="btn btn-info" style="width:200px;margin-right:10px;position:relative;top:-8px;" data-toggle="modal" data-target="#exampleModal" id="newButton">
+                    사용자 등록
+                </button>
+            </div>
+        </div>
+        <div id="kpiContainer" class="container-flex item-container">
+        </div>
+
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="ModalLabel" style="position:relative;top:10px;">사용자등록</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position:relative;top:-15px;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <form data-toggle="validator" id="myForm" role="form">
+                        <div class="form-group">
+                            <label>관리자여부</label>
+                            <input type="checkbox" style="width:20px;" id="isManager"  />
+
+                        </div>
+                        <div class="form-group">
+                            <label>사용자이름</label>
+                            <input type="text" class="form-control w200" style="" maxlength="10" id="name" placeholder="사용자이름을 입력하세요."
+                                   autocomplete="off" required />
+
+                        </div>
+                        <div class="form-group">
+                            <label>ID(Email)</label>
+                            <input type="email" class="form-control w200" style="" id="userID" placeholder="email id를 입력하세요."
+                                   autocomplete="off" data-error="이메일형식이 바르지 않습니다." required />
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control w200" data-minlength="6" style="" id="pwd" placeholder="패스워드를 입력하세요."
+                                   autocomplete="off" data-error="패스워드는 6자 이상입니다." required />
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                        <div class="form-group">
+                            <label>소속회사</label>
+                            <button class="btn btn-dropdown dropdown-toggle form-control w200" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
+                                <span class="text-bold" id="selectedCompany">회사 선택</span>
+                                <span class="text-accent-color">
+                                    <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
+                                </span>
+
+                            </button>
+                            <!-- <div id="category"></div> -->
+
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" id="category"></ul>
+                            <div class="valid">회사선택은 필수입니다.</div>
+                        </div>
+                        <div class="modal-footer form-group">
+                            <button type="button" class="btn btn-secondary btn-danger delete-button" style="float:left;">삭제</button>
+                            <button type="button" class="btn btn-secondary cancel-button">취소</button>
+                            <button type="submit" class="btn btn-primary save-button" id="saveButton" style="width:150px;">저장</button>
+                        </div>
+                    </form>
+                </div>
+               
+            </div>
+        </div>
+
+    </div>
+    <!--한줄-->
+</body>
+</html>

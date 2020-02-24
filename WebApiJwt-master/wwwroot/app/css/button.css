@@ -1,0 +1,312 @@
+.btn:active,
+.btn:focus,
+input {
+    outline: none !important;
+}
+
+.uib-datepicker-popup .btn-default {
+        border-width: 0px;
+    }
+
+.input-normal {
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid #e2e4e9;
+    box-shadow:none;
+    -webkit-box-shadow:none;
+}
+.input-normal.ip {
+    width: 150px;
+}
+
+.input-normal.port {
+    width: 100px;
+}
+
+.input-calendar {
+    width: 100%;
+    border: 2px solid #e2e4e9;
+    margin: 5px 0;
+    padding: 5px 30px;
+    background-color: #fff;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.input-mdc-range {
+    width: 100%;
+    border: 2px solid #e2e4e9;
+    margin: 5px 0;
+    padding: 5px 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.btn-link.rounded {
+    background-color: #262d3a;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:active {
+    color: inherit;
+}
+
+.btn-default {
+    border:1px solid #ccc;
+}
+
+.btn-dropdown {
+    width: 100%;
+    border: 1px solid #ccc;
+    /*margin: 5px 0;*/
+    background-color: #fff;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.btn-dropdown.square {
+    width: 100%;
+    border: none;
+    /*margin: 5px 0;*/
+    background-color: #fff;
+    border-radius: 0px;
+}
+
+.btn-dropdown-strip {
+    width: 100%;
+    height:50px;
+    border-right: 1px solid #ccc;
+    /*margin: 5px 0;*/
+    background-color: #fff;
+    text-align: left;
+}
+
+
+.dropdown-admin {
+    color: #fff;
+    font-weight: 400;
+    border: none;
+    font-size: 17px;
+    padding: 11px 15px;
+    min-width: 100%;
+    text-align: left;
+    line-height: 20px;
+    padding-top: 10px !important;
+}
+
+.dropdown-admin:hover {
+    color: #4680ff;
+    background-color: #262d3a;
+}
+
+.btn-group {
+    margin: 5px 0;
+}
+
+@media(max-width: 480px) {
+    .btn-group {
+        width: 100%;
+    }
+}
+
+.btn-tab {
+    min-width: 80px;
+    color: #848484;
+    background-color: #fff;
+    border: 2px solid #e2e4e9;
+    font-weight: 500;
+    border-radius: 5px;
+    outline: none !important;
+}
+
+.btn-tab.active,
+.btn-tab:active,
+.open>.dropdown-toggle.btn-tab {
+    color: #fff;
+    background-color: #4680ff;
+    border-color: #4680ff;
+    box-shadow: none;
+}
+
+.btn-main {
+    font-size: 15px;
+    /*font-weight:500;*/
+    /*padding: 10px 15px;*/
+    /*margin: 5px 0;*/
+    line-height: 18px;
+    border: 2px solid #4680ff;
+    background-color: #4680ff;
+    color: #fff;
+}
+
+.btn-main:hover,
+.btn-main:focus,
+.btn-main:active {
+    background-color: #1e54cb;
+    border-color: #1e54cb;
+    color: #fff;
+}
+
+.btn-main-inverse {
+    font-size: 15px;
+    /*font-weight:500;*/
+    /*padding: 10px 15px;*/
+    /*margin: 5px 0;*/
+    line-height: 18px;
+    border: 2px solid #4680ff;
+    background-color: #fff;
+    color: #4680ff;
+}
+
+.btn-main-inverse:hover,
+.btn-main-inverse:focus,
+.btn-main-inverse:active {
+    background-color: #4680ff;
+    border-color: #4680ff;
+    color: #fff;
+}
+
+.btn-delete {
+    color: #ef4d4a;
+    background-color: #fff;
+    border-color: #ef4d4a;
+}
+
+.btn-delete:hover,
+.btn-delete:focus,
+.btn-delete:active {
+    background-color: #ef4d4a!important;
+    border-color: #ef4d4a!important
+}
+
+.btn-detail {
+    background:transparent;
+}
+
+.btn-back {
+    background: transparent;
+    margin: 10px !important;
+}
+
+.btn-sidebar {
+    padding: 5px;
+    margin-top: 10px;
+    border: none;
+    font-size: 12px;
+}
+
+.btn-favorite {
+    width: 50px;
+    height: 50px;
+    padding: 15px;
+    line-height: 18px;
+    border: 2px solid #4680ff;
+    border-radius: 50%;
+    background-color: #4680ff;
+    color: #fff;
+}
+
+.btn-favorite:hover,
+.btn-favorite:focus,
+.btn-favorite:active {
+    background-color: #1e54cb;
+    border-color: #1e54cb;
+    color: #fff;
+}
+
+.btn-device-list {
+    width: 220px;
+    padding: 0px 0px 10px 0;
+    min-height: 60px;
+    border-radius: 5px;
+    border-color: #787e89;
+    margin-bottom: 10px;
+    background-color: #787e89;
+}
+
+.btn-device-list:hover,
+.btn-device-list:focus,
+.btn-device-list.active,
+.btn-device-list:active {
+    background-color: #2b3546;
+    border-color: #4680ff;
+    transition: 0.2s ease;
+    -webkit-transition: 0.2s ease;
+    -moz-transition: 0.2s ease;
+    -o-transition: 0.2s ease;
+}
+
+.btn-facility {
+    width: 220px;
+    color:#fff !important;
+    font-size: 14px;
+    padding: 10px;
+    min-height: 50px;
+    border-radius: 5px;
+    border-color: #787e89;
+    margin-bottom: 10px;
+    background-color: #787e89;
+}
+
+.btn-facility:hover,
+.btn-facility:focus,
+.btn-facility.active,
+.btn-facility:active {
+    color: inherit!important;
+    background-color: #2b3546;
+    border-color: #4680ff;
+    transition: 0.2s ease;
+    -webkit-transition: 0.2s ease;
+    -moz-transition: 0.2s ease;
+    -o-transition: 0.2s ease;
+}
+
+.fa-calendar {
+    position: absolute;
+    bottom: 16px;
+    left: 24px;
+    top: auto;
+    cursor: pointer;
+}
+
+.btn-setting {
+    background-color: rgba(0,0,0,.2);
+    padding: 0 10px;
+    margin-right: 10px;
+    color: #fff
+}
+.btn-setting:hover,
+.btn-setting:focus,
+.btn-setting:active {
+    color:#4680ff !important;
+}
+
+.item-button {
+    height:50px;
+    background:#ccc;
+    color:white;
+    text-align:center;font-size:14px;
+    padding:14px 20px;
+    cursor:pointer;
+}
+
+    .item-button.active {
+        background: #4680ff;
+    }
+
+    .item-button:hover {
+        background: #8bafff;
+    }
+
+
+.form-control.clean {
+    border:none;
+    border-radius:0;
+    box-shadow:none;
+}

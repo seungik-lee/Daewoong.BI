@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="app/css/core.css" rel="stylesheet" />
+    <link href="app/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="app/script/jquery.js"></script>
+    <script src="app/script/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+
+    <script src="app/script/bootstrap.min.js"></script>
+    <script src="app/script/dataService.js"></script>
+    <script src="app/script/setting.js"></script>
+    <style>
+        .kpi-bank-container {
+            position:fixed;
+            bottom:-130px;
+            height:100px;
+            border-top:1px solid #efefef;
+            z-index:10;
+            left:0px;right:0;
+            background:#fff;
+        }
+        .droppable-above {
+            border: 1px solid black;
+        }
+
+        .layout-button {
+            width:100px;
+        }
+
+        .btn-category {
+            padding:10px 20px;
+        }
+
+        .btn-group {
+             box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+        }
+
+        .delete-button {
+            display:none;
+        }
+
+        .command-group {
+            display:none;
+        }
+    </style>
+</head>
+<body class="bg2">
+    <div class="nav" style="background:#f77822;padding:5px;">
+        <ul class="nav navbar-nav top-nav menu" style="margin-right:30px;width:100%">
+            <li style="float:left"><img style="width:160px;margin-top:10px;margin-left:5px;" src="../images/logo.png" /></li>
+            <li style="width:100px;">&nbsp;</li>
+            <li><a><span><img src="../images/0.png"></span>EWS</a></li>
+            <li><a><span><img src="../images/1.png"></span>경영관리</a></li>
+            <li><a><span><img src="../images/2.png"></span>영업관리</a></li>
+            <li><a><span><img src="../images/3.png"></span>생산관리</a></li>
+            <li style="float:right;width:200px;">
+                <!-- a 태그 dropdown-admin 클래스 삭제-->
+                <a class="dropdown-toggle " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding:16px 20px 15px 20px;">
+                    <img src="../images/ico-user.png" height="28" />
+                    <span style="font-size: 16px;letter-spacing:-0.3px;">홍길동</span> <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li role="menuitem"><a href="../setting.html"><i class="fa fa-user"></i> 지표관리 </a></li>
+                    <li role="menuitem"><a href="" ng-click="signOutClicked()"><i class="fa fa-power-off"></i> 로그아웃</a></li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+
+    <!--한줄-->
+    <div class="container-fluid" style="margin-top:10px;">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="command-section">
+                    <div><button class="btn btn-danger new-page" style="width:100%;">페이지 등록</button></div>
+                    <div id="pageContainer" style="overflow-y:auto;"></div>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="command-section">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="pageName"><label>Page Name</label></div>
+                            <div>
+                                <input type="text" id="title" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="pageName"><label>Page Layout</label></div>
+                            <div>
+                                <button class="btn btn-default layout-button" data-layout="3,3">3 X 3</button>
+                                <button class="btn btn-default layout-button" data-layout="3,2">3 X 2</button>
+                                <button class="btn btn-default layout-button" data-layout="2,3">2 X 3</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-right command-group">
+                            <button class="btn btn-default  page-delete-button" style="width:200px;height:60px;">삭제하기</button>
+                            <button class="btn btn-info save-button" style="width:200px;height:60px;">저장하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pageDetail" style="margin-top:10px;"></div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="kpi-bank-container">
+        <div class="btn-group" style="position:relative;top:-20px;left:20px;">
+            <button type="button" class="btn btn-primary btn-category active">전체</button>
+        </div>
+        <div class="kpi-bank container-flex" style="position:relative;padding:10px;"></div>
+        
+    </div>
+</body>
+</html>

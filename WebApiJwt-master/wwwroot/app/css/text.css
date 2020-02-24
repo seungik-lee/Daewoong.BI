@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700');
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+/*@import url(https://cdn.rawgit.com/openhiun/hangul/14c0f6faa2941116bb53001d6a7dcd5e82300c3f/nanumbarungothic.css);*/
+@font-face {
+    font-family: 'NanumSquare';
+    src: url('../fonts/NanumSquareR.eot');
+    src: url('../fonts/NanumSquareR.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/NanumSquareR.woff') format('woff'),
+    url('../fonts/NanumSquareR.ttf') format('truetype');
+}
+
+html,
+body {
+    font-family: 'NanumSquare','Nanum Barun Gothic','Noto Sans KR', sans-serif;
+    font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.placeholder {
+    color: #999;
+}
+
+h4 {
+    font-weight: 500;
+}
+
+.text-size-12 {
+    font-size: 12px !important;
+}
+.text-size-14 {
+    font-size: 14px !important;
+}
+
+.text-size-16 {
+    font-size: 16px !important;
+}
+
+.text-size-17 {
+    font-size: 17px !important;
+}
+
+.text-size-18 {
+    font-size: 18px !important;
+}
+
+.text-size-24 {
+    font-size: 24px !important;
+}
+
+.text-size-26 {
+    font-size: 26px !important;
+}
+
+.text-bold {
+    font-weight: 500;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.text-light-gray {
+    color: #e2e4e9;
+}
+
+.text-middle-gray {
+    color: #787e89;
+}
+
+.text-accent-color {
+    color: #4680ff
+}
+.text-alarm-device,
+.text-alarm-channel {
+    font-size: 15px;
+    color: #fff;
+}
+
+.text-alarm-type {
+    font-size: 14px;
+    color: #fff;
+}
+
+.text-alarm-value {
+    font-size: 17px;
+    color: #fff;
+}
+
+.text-alarm-time {
+    font-size: 12px;
+    color: #fff;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+}
+
+.text-device-header {
+    font-size: 14px;
+    color: #fff;
+}
+
+.text-device-channel {
+    font-size: 16px;
+    color: #e2e4e9;
+    text-align: center;
+    display: block;
+}
+
+
+.text-device-channel.map {
+    font-size: 12px;
+    color: #e2e4e9;
+    text-align: left;
+    display: block;
+}
+
+.text-device-value {
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    display: block;
+    border-radius: 3px;
+}
+
+.text-device-item {
+    font-size: 14px;
+    color: #fff;
+}
+
+.text-device-unit {
+    font-size:15px; color: #fff;
+    margin-left:5px;
+}
+
+.text-device-unit.alarm {
+    color: #000;
+}
+
+.text-mute {font-size: 14px; color:gray}
+/*table {
+    font-size: 16px;
+}
+table td {
+    font-size: 14px;
+}*/
+

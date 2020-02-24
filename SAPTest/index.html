@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="jquery.js"></script>
+    <script>
+
+        String.prototype.format = function (args) {
+            var str = this;
+            return str.replace(String.prototype.format.regex, function (item) {
+                var intVal = parseInt(item.substring(1, item.length - 1));
+                var replace;
+                if (intVal >= 0) {
+                    replace = args[intVal];
+                } else if (intVal === -1) {
+                    replace = "{";
+                } else if (intVal === -2) {
+                    replace = "}";
+                } else {
+                    replace = "";
+                }
+                return replace;
+            });
+        };
+
+        var sapEP = "http://10.1.20.66:6405/biprws/logon/long";
+        var sapRequest = "<attrs xmlns='http://www.sap.com/rws/bip'>" +
+            "<attr name = 'userName' type = 'string'>administrator</attr>" +
+            "<attr name='password' type='string'>Sap12345</attr>" +
+            "<attr name='auth' type='string' possibilities='secEnterprise,secLDAP,secWinAD,secSAPR3'>secEnterprise</attr>" +
+            "</attrs>";
+        //SAP에 로그인
+        function SAPLogin(id, pw) {
+
+            $.ajax({
+                type: "POST",
+                url: sapEP,
+                contentType:"Application/xml",
+                data: sapRequest,
+                success: function (result) {
+                    console.log(result);
+                    var x = result.getElementsByTagName("attr")[0].innerHTML;
+                    x = decodeURIComponent(x);
+                    x = x.substring(1,x.length-1);
+
+                    x = encodeURIComponent(x);
+                    //location.href = "http://10.1.20.66:8080/BOE/OpenDocument/opendoc/openDocument.jsp?sIDType=CUID&iDocID=1905301244&token=" + x;
+
+                    //location.href = "http://10.1.20.66:8080/BOE/OpenDocument/opendoc/openDocument.jsp?token=" + x + "&iDocID=FmGpAV3qKwUAtlsAAABHUXkAAFBWlFBK";
+
+                    var req = new XMLHttpRequest();
+req.open('GET', 'http://10.1.20.66:8080/BOE/OpenDocument/opendoc/openDocument.jsp?token=' + x + '&iDocID=FmGpAV3qKwUAtlsAAABHUXkAAFBWlFBK', true); //true means request will be async
+
+req.setRequestHeader('X-SAP-LogonToken', x);
+req.send();
+
+
+                }, fail: function (m) {
+                    alert(m);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+    
+        function fineReportLogin(url) {
+            var form = document.createElement("form");
+            var parm = new Array();
+            var input = new Array();
+
+            form.action = "http://10.1.20.119:8080/webroot/scripts/SSO_10.0_2.jsp";
+            form.method = "post";
+                
+
+            parm.push(['id', 'WwVjsFp1m8CnDZlt3TWkaA==']);
+            parm.push(['link', url]);
+
+
+            for (var i = 0; i < parm.length; i++) {
+                input[i] = document.createElement("input");
+                input[i].setAttribute("type", "hidden");
+                input[i].setAttribute('name', parm[i][0]);
+                input[i].setAttribute("value", parm[i][1]);
+                form.appendChild(input[i]);
+            }
+            document.body.appendChild(form);
+            form.submit();
+            }
+
+
+       //SAPLogin();
+
+            fineReportLogin("/webroot/decision/v10/entry/access/61b3ac41-1534-4c9c-af25-dfa37a9df07a?dashboardType=5&width=1226&height=683");
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

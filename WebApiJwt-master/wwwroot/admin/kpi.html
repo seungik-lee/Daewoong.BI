@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!--<link href="../app/css/core.css" rel="stylesheet" />-->
+    <link href="../app/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../app/script/jquery.js"></script>
+    <script src="../app/script/bootstrap.min.js"></script>
+    <script src="../app/script/dataService.js"></script>
+    <script src="../app/script/kpibank.js"></script>
+    <link href="../app/css/button.css" rel="stylesheet" />
+    <link href="../app/css/core.css" rel="stylesheet" />
+    <link href="../app/css/text.css" rel="stylesheet" />
+    <link href="../app/css/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="../app/css/main.css" rel="stylesheet" />
+    <style>
+        .root-company {
+            float: left;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg2">
+    <div class="nav" style="background:#f77822;padding:5px;">
+
+    </div>
+
+    <!--한줄-->
+    <div class="container-fluid" style="padding:0;">
+        <div class="menu-bar">
+            <div style="font-weight:600;font-size:16px;">지표등록관리</div>
+            <div style="font-weight:600;font-size:16px;">
+                <span><label>마감완료</label><input type="checkbox" id="close" /></span>
+            </div>
+            <div id="companies"></div>
+            <div style="float:right">
+                <button type="button" class="btn btn-info" style="width:200px;margin-right:10px;position:relative;top:-8px;" data-toggle="modal" data-target="#exampleModal" id="newButton">
+                    지표 등록
+                </button>
+            </div>
+        </div>
+        <div id="kpiContainer" class="container-flex item-container">
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="ModalLabel" style="position:relative;top:10px;">지표등록</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position:relative;top:-15px;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form data-toggle="validator" id="myForm" role="form">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" class="form-control w200" style="" id="title" placeholder="타이틀을 입력하세요."
+                                   autocomplete="off" required />
+                        </div>
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="url" class="form-control w200" style="" id="url" placeholder="URL을 입력하세요."
+                                   autocomplete="off" data-error="URL형식이 바르지 않습니다." required />
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                        <div>
+                            <label>상세 URL</label>
+                            <input type="url" class="form-control w200" style="" id="detailUrl" placeholder="URL을 입력하세요."
+                                   autocomplete="off" data-error="URL형식이 바르지 않습니다." required />
+                            <div class="help-block with-errors"></div>
+
+                        </div>
+                        <div class="form-group">
+                            <label>회사선택</label>
+                            <button class="btn btn-dropdown dropdown-toggle form-control w200 btn-company" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
+                                <span class="text-bold" id="selectedCompany">해당회사 선택</span>
+                                <span class="text-accent-color">
+                                    <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
+                                </span>
+
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" id="company"></ul>
+                            <div class="valid valid-company">회사선택은 필수입니다.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>마감타입</label>
+                            <button class="btn btn-dropdown dropdown-toggle form-control w200 btn-close" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
+                                <span class="text-bold" id="selectedClose">마감 선택</span>
+                                <span class="text-accent-color">
+                                    <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" data-value="d">
+                                <li class='closeItem' data-value="d"><a>전일</a></li>
+                                <li class='closeItem' data-value="1m"><a>전월</a></li>
+                                <li class='closeItem' data-value="0m"><a>당월</a></li>
+                                <li class='closeItem' data-value="cm"><a>마감월</a></li>
+                                <li class='closeItem' data-value="q"><a>전분기</a></li>
+                            </ul>
+                            <div class="valid valid-close">마감선택은 필수입니다.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <button class="btn btn-dropdown dropdown-toggle form-control w200 btn-category" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
+                                <span class="text-bold" id="selectedCategory">카테고리 선택</span>
+                                <span class="text-accent-color">
+                                    <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
+                                </span>
+
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" id="category"></ul>
+                            <div class="valid valid-category">카테고리선택은 필수입니다.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>차트타입</label>
+                            <button class="btn btn-dropdown dropdown-toggle form-control w200 btn-category" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
+                                <span class="text-bold" id="selectedChartType">차트타입 선택</span>
+                                <span class="text-accent-color">
+                                    <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
+                                </span>
+
+                            </button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" id="chartTypes"></ul>
+                        </div>
+                    </form>
+                    <div class="modal-footer form-group">
+                        <button type="button" class="btn btn-secondary btn-danger delete-button" style="float:left;">삭제</button>
+                        <button type="button" class="btn btn-secondary cancel-button">취소</button>
+                        <button type="submit" class="btn btn-primary save-button" id="saveButton" style="width:150px;">저장</button>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    <!--한줄-->
+</body>
+</html>
