@@ -9,22 +9,14 @@
 
     
     <link href="app/css/core0220.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
-                event.preventDefault(); 
-                event.stopPropagation(); 
-                $(this).parent().siblings().removeClass('open');
-                $(this).parent().toggleClass('open');
-            });
-        });
-    </script>
-
+    
+    
+  
     <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <style>
-     
+     <style>
+           
             .orange_bar { background : #f77822; 
                 background-image:url(images/logo_1200.png); 
                 background-repeat: no-repeat;
@@ -103,11 +95,47 @@
             .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
 
 
+            /* circle button */
+            .btn-circle.btn-xl {
+                width: 70px;
+                height: 70px;
+                padding: 10px 16px;
+                border-radius: 35px !important;
+                font-size: 24px;
+                line-height: 1.33;
+            }
+            .btn-circle {
+                width: 30px;
+                height: 30px;
+                padding: 6px 0px;
+                border-radius: 15px !important;
+                text-align: center;
+                font-size: 12px;
+                line-height: 1.42857;
+            }
      </style>   
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+  <script>
+
+      $(document).ready(function(){
+          $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+              event.preventDefault(); 
+              event.stopPropagation(); 
+              $(this).parent().siblings().removeClass('open');
+              $(this).parent().toggleClass('open');
+          });
+      });
+
+  </script>
 
     </head>
     <body class="bg" >
-		<nav class="navbar navbar-default navbar-fixed-top orange_bar" role="navigation">    
+
+        
+ 
+        <nav class="navbar navbar-default navbar-fixed-top orange_bar" role="navigation">    
             <div class="container-fluid">
                 
                 <div class="navbar-header">
@@ -235,14 +263,15 @@
                         </li>
                         <li class=" dropdown" >
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                            생산관리 
-                            <span class="caret"></span></a>      
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action1</a></li>
-                                <li><a href="#">Action2</a></li>
-                                <li><a href="#">Action3</a></li>
-                            </ul>           
+                                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                                생산관리 
+                                <span class="caret"></span></a>      
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Action1</a></li>
+                                    <li><a href="#">Action2</a></li>
+                                    <li><a href="#">Action3</a></li>
+
+                                </ul>           
                         </li>
                         <li class=" dropdown" >
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -300,13 +329,76 @@
                                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>   
                             </a>
                         </li>
+
                     </ul>
+
+
                 </div>
             </div>
         </nav>        
        
+    
+
+
         <div class="container-flex">
+        
+              
+            <div class="btn-group dropup" style="position:absolute;z-index:1000;left:10px;bottom:10px;" >
+                
+                <button type="button" class="btn btn-danger btn-circle" 
+                data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
+                    style="font-size:14px"   ><i class="fa fa-file-text-o"></i>
+                </button>
+                
+                <ul class="dropdown-menu" role="menu" >
+                     <li >
+                            <div style="padding:5px;line-height:20px;padding:5px;background-color:#ffffff;width:600px;display:block;">
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                                현재 매출 추세가(직전 3개월 매출 기준) 지속될 경우 출고기한 내에 재고 소진이 안되는 품목에 대해 사전 알림을 통해 폐기 방지<br>
+                            </div>
+
+                     </li>    
+                     <li class="divider"></li>
+                     <li >
+                         <div style="padding:5px;line-height:20px;">
+                            <i class="fa fa-archive" aria-hidden="true"></i> 경영자료1.pptx, 
+                            
+                            <i class="fa fa-archive" aria-hidden="true"></i> 경영자료2.doc,
+                            <i class="fa fa-archive" aria-hidden="true"></i> 경영자료3.pdf,
+                        </div>
+                     </li>     
+                </ul>
+                 
+            </div>  
+
+            <div class="btn-group" style="position:absolute;z-index:1200;right:10px;top:100px;" >
+                
+                <button type="button " class="btn btn-success btn-circle" 
+                data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
+                    style="font-size:14px"   ><i class="fa fa-file-text-o"></i>
+                </button>
+                
+                <ul class="dropdown-menu pull-right" role="menu" >
+                     <li >
+                          <a href="#">2020년 경영자료</a>
+                     </li>    
+                     <li class="divider"></li>
+                     <li >
+                        <a href="#">2019년 후반기 경영자료</a>
+                     </li>     
+                </ul>
+                 
+            </div>  
+              
+            <!--
             <iframe scrolling="no" style="width:100%;height:100%" src="http://10.1.20.66:8080/sso/dw_sso.jsp?cuid=FkyRGV0kJgYAtlsAAADH0noAAFBWlFBK&X_COMPANY=1200&X_DATESETTING=202001&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D"></iframe>
+            -->
+
+
         </div>   
 
         <script src="dist/js/bootstrap.min.js"></script>

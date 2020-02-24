@@ -6,23 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>대웅제약 BI</title>
     <!--<link href="app/css/core.css" rel="stylesheet">-->
-
     
     <link href="app/css/core0220.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
-                event.preventDefault(); 
-                event.stopPropagation(); 
-                $(this).parent().siblings().removeClass('open');
-                $(this).parent().toggleClass('open');
-            });
-        });
-    </script>
+    <link href="dist/css/style.css?v=202002241036" rel="stylesheet">
+    <link href="dist/css/bootstrap.min.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
 
-    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
-
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="dist/js/bootstrap.min.js"></script>
+	<script src="dist/js/iCheck/icheck.min.js"></script>
     <style>
      
             .orange_bar { background : #f77822; 
@@ -103,6 +95,35 @@
             .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
 
 
+
+
+			.content {
+				margin-top: 30px;
+				margin-left: 15px;
+				margin-right: 15px;
+				margin-bottom: 30px;				
+			}
+			
+			/* 테이블 제목들 가운데 정렬 */
+			#table_list > thead > tr > th {
+				vertical-align: top;
+				text-align: center;
+			}
+			
+			/* 테이블 제목들 색상 변경 */
+			#table_list > thead > tr:nth-child(1) > th {
+				background-color: black;
+				color: white;
+			}
+			
+			#table_list > tbody > tr > td {
+				vertical-align: middle;
+				text-align: center;
+			}
+			
+			#table_list > tbody > tr > td:nth-child(3) {
+				text-align: left;
+			}
      </style>   
 
     </head>
@@ -305,10 +326,259 @@
             </div>
         </nav>        
        
+		<!--
         <div class="container-flex">
-            <iframe scrolling="no" style="width:100%;height:100%" src="http://10.1.20.66:8080/sso/dw_sso.jsp?cuid=FkyRGV0kJgYAtlsAAADH0noAAFBWlFBK&X_COMPANY=1200&X_DATESETTING=202001&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D"></iframe>
+             <iframe scrolling="no" style="width:100%;height:100%" src="http://10.1.20.66:8080/sso/dw_sso.jsp?cuid=FkyRGV0kJgYAtlsAAADH0noAAFBWlFBK&X_COMPANY=1200&X_DATESETTING=202001&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D"></iframe>
         </div>   
-
-        <script src="dist/js/bootstrap.min.js"></script>
+		-->
+		<div class="content">
+			<div class="col-lg-12">
+				<div class="ibox">
+                    <div class="ibox-content">
+						<h4>■ 원인분석 첨부</h4>
+					
+                        <div class="content">
+                            <table class="table table-bordered table-striped" id="table_list">
+                                <thead>
+									<tr>
+										<th rowspan="2">선택</th>
+										<th rowspan="2">일자</th>
+										<th rowspan="2">제목</th>
+										<th colspan="2">작성상태</th>
+										<th rowspan="2">게시일</th>
+										<th rowspan="2">업데이트</th>
+										<th rowspan="2">시나리오<br>수정</th>
+										<th rowspan="2">원인분석<br>수정</th>
+									</tr>
+									<tr>
+										<th>시나리오</th>
+										<th>원인분석</th>
+									</tr>
+								</thead>
+								<colgroup>	
+									<col width="5%" />
+									<col width="12%" />
+									<col width="18%" />
+									<col width="10%" />
+									<col width="10%" />
+									<col width="12%" />
+									<col width="17%" />
+									<col width="8%" />
+									<col width="8%" />
+								</colgroup>
+                                <tbody>
+									<tr>
+										<td>
+											<div class="i-checks">
+												<div class="icheckbox_square-green" style="position: relative;">
+													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
+													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+												</div>
+											</div>
+										</td>
+										<td>2020-01-29</td>
+										<td>2020 사업계획</td>
+										<td>X</td>
+										<td>X</td>
+										<td>-</td>
+										<td>2019-01-25 12:39</td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+									</tr>
+									<tr>
+										<td>
+											<div class="i-checks">
+												<div class="icheckbox_square-green" style="position: relative;">
+													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
+													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+												</div>
+											</div>
+										</td>
+										<td>2020-01-20</td>
+										<td>2020 사업계획 초안</td>
+										<td>O</td>
+										<td>X</td>
+										<td>-</td>
+										<td>2019-01-19 13:09</td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+									</tr>
+									<tr>
+										<td>
+											<div class="i-checks">
+												<div class="icheckbox_square-green" style="position: relative;">
+													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
+													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+												</div>
+											</div>
+										</td>
+										<td>2020-01-19</td>
+										<td>2020 사업안</td>
+										<td>O</td>
+										<td>O</td>
+										<td>-</td>
+										<td>2019-01-18 12:39</td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+									</tr>
+									<tr>
+										<td>
+											<div class="i-checks">
+												<div class="icheckbox_square-green" style="position: relative;">
+													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
+													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+												</div>
+											</div>
+										</td>
+										<td>2019-12-10</td>
+										<td>[게시]2019 경영자료</td>
+										<td>O</td>
+										<td>O</td>
+										<td>2020-02-17</td>
+										<td>2019-12-29 20:00</td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
+									</tr>
+                                </tbody>
+                            </table>
+							
+							<div class="row" style="display:flex; margin-top:40px">
+								<div class="col-lg-2">
+									<button type="button" class="btn btn-w-m btn-default">게시하기</button>
+									<button type="button" class="btn btn-w-m btn-default">게시해제</button>
+								</div>
+								
+								<div class="col-lg-2">
+									<button type="button" class="btn btn-w-m btn-default" id="story_check">시나리오 완료</button>
+									<button type="button" class="btn btn-w-m btn-default" id="story_uncheck">시나리오 해제</button>
+								</div>
+								
+								<div class="col-lg-2">
+									<button type="button" class="btn btn-w-m btn-default" id="cause_check">원인분석 완료</button>
+									<button type="button" class="btn btn-w-m btn-default" id="cause_uncheck">원인분석 해제</button>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+		
+		<script>
+		$(document).ready(function(){
+			editVisible();
+		
+			$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+				event.preventDefault(); 
+				event.stopPropagation(); 
+				$(this).parent().siblings().removeClass('open');
+				$(this).parent().toggleClass('open');
+			});
+				
+				
+			$(".i-checks").click(function() {
+				if($(this).children().attr("class").indexOf("checked") == -1) {
+					$(this).children().addClass("checked");
+				} else {
+					$(this).children().removeClass("checked");
+				}
+			});
+			
+			/* 시나리오 체크 */
+			$("#story_check").click(function() {
+				var flag = false;
+			
+				for(var i = 0; i < $(".i-checks").length; i++) {
+					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(3).html("O");
+						flag = true;
+					}
+				}
+				
+				if(flag) {
+					editVisible();
+				}
+			});
+			
+			/* 시나리오 체크해제 */
+			$("#story_uncheck").click(function() {
+				var flag = false;
+				
+				for(var i = 0; i < $(".i-checks").length; i++) {
+					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(3).html("X");
+						flag = true;
+					}
+				}
+				
+				if(flag) {
+					editVisible();
+				}
+			});
+			
+			/* 원인분석 체크 */
+			$("#cause_check").click(function() {
+				var flag = false;
+				
+				for(var i = 0; i < $(".i-checks").length; i++) {
+					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
+						// 시나리오가 X일 경우
+						if($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html() == "X") {
+							alert("시나리오를 먼저 완료해 주세요.");
+							break;
+						}
+					
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(4).html("O");
+						flag = true;
+					}
+				}
+				
+				if(flag) {
+					editVisible();
+				}
+			});
+			
+			/* 원인분석 체크해제 */
+			$("#cause_uncheck").click(function() {
+				var flag = false;
+				
+				for(var i = 0; i < $(".i-checks").length; i++) {
+					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(4).html("X");
+						flag = true;
+					}
+				}
+				
+				if(flag) {
+					editVisible();
+				}
+			});
+			
+			
+		});
+		
+		// 시나리오 수정, 원인분석 수정의 수정 button
+		function editVisible() {
+			for(var i = 0; i < $("#table_list").find("tbody").children().length; i++) {
+				
+				// 시나리오 X
+				if($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html() == "X") {
+					$("#table_list").find("tbody").children().eq(i).find("td").eq(7).find("button").show();
+					$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").hide();
+				} 
+				// 시나리오 O
+				else {
+					$("#table_list").find("tbody").children().eq(i).find("td").eq(7).find("button").hide();
+				
+					// 원인분석 X
+					if($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html() == "X") {
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").show();
+					} else {
+						$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").hide();
+					}
+				}
+			}
+		}
+		</script>
     </body>
 </html>
