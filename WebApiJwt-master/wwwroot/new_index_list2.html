@@ -11,10 +11,12 @@
     <link href="dist/css/style.css?v=202002241036" rel="stylesheet">
     <link href="dist/css/bootstrap.min.css?v=202002241036" rel="stylesheet">
 	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/font-awesome/css/font-awesome.css?v=202002241036" rel="stylesheet">
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="dist/js/bootstrap.min.js"></script>
 	<script src="dist/js/iCheck/icheck.min.js"></script>
+	<script src="dist/js/jquery-ui/jquery-ui.min.js"></script>
     <style>
 		    .orange_bar { background : #f77822; 
                 background-image:url(images/logo_1200.png); 
@@ -103,37 +105,73 @@
 				margin-bottom: 30px;
 			}
 			
-			#table_list {
-				font-size: 14px;
+			.agile-list {
+				padding-top: 0px;
 			}
 			
-			/* 테이블 제목들 가운데 정렬 */
-			#table_list > thead > tr > th {
-				vertical-align: top;
+			.agile-list > li {
+				border: 0px;
+				padding: 0px;
+			}
+			
+			.list-dash li, .list-bullet li {
+				position: relative;
+				list-style-type: none; /* disc circle(hollow) square none */
+				text-indent: -2em;
+				margin-bottom: 6px;
+			}
+			
+			.list-dash li:before {
+				content: '└  '; 
+			}
+			
+			#list > ul > li {
+				cursor: pointer;
+			}
+			
+			textarea {
+				width: 100%;
+				min-height: 120px;
+				padding: 5px;
+				margin-top: 10px;
+			}
+			
+			.btn {
+				min-height: 40px;
+				min-width: 40px;
+			}
+			
+			.filelabel {
+				width: auto;
+				padding: 10px 12px;
+				border: 0px;
+				z-index: 1;
+			}
+			
+			.file_form {
+				margin-top: 15px;
+			}
+			
+			.buttonDiv {
+				margin-top: 15px;
 				text-align: center;
 			}
 			
-			/* 테이블 제목들 색상 변경 */
-			#table_list > thead > tr:nth-child(1) > th {
-				background-color: black;
-				color: white;
+			.buttonDiv > button {
+				min-width: 85px;
 			}
 			
-			#table_list > tbody > tr > td {
-				vertical-align: middle;
+			img {
+				width: 100%;
+			}
+			
+			#item2 {
+				width: 100%;
+				height: 200px;
+				line-height: 200px;
 				text-align: center;
-				height: 51px;
 			}
-			
-			#table_list > tbody > tr > td:nth-child(3) {
-				text-align: left;
-			}
-			
-			.row_button > div > button {
-				margin-bottom: 5px;
-				font-size: 14px;
-			}
-     </style>   
+    </style>   
 
     </head>
     <body class="bg" >
@@ -283,7 +321,6 @@
                                     <li><a href="#">시나리오 설정</a></li>
                                     <li><a href="#">원인분석 첨부</a></li>
                                     <li><a href="#">경영회의 진행</a></li>
-
                                 </ul>           
                         </li>
                     </ul>
@@ -341,287 +378,134 @@
         </div>   
 		-->
 		<div class="content">
-			<div class="col-lg-12">
+			<ul class="sortable-list connectList agile-list ui-sortable col-lg-8" id="inprogress" style="z-index: 0;">
+				<li class="ui-sortable-handle" id="item1">
+					<div class="ibox">
+						<div class="ibox-content">
+							<form class="form-horizontal" id="form" enctype="">
+								<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
+								
+								<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>
+								
+								<div class="file_form">
+									<button type="button" class="btn btn-w-m btn-default" id="file_plus"><i class="fa fa-plus"></i></button>
+								
+									<label id="label" class="btn filelabel">
+										첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>
+									</label>
+								</div>
+								
+								<div class="buttonDiv">
+									<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>
+									<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</li>
+				
+				<li class="ui-sortable-handle" id="item2">
+					<!--<img src="" alt=""></img>-->
+					<!--<iframe src=""></iframe>-->
+					이미지 또는 링크 삽입
+				</li>
+			</ul>
+			<div class="col-lg-4">
 				<div class="ibox">
-                    <div class="ibox-content">
-						<h5><b>■ 원인분석 첨부</b></h5>
+					<div class="ibox-content">
+						<h5><b>2020.01.29 : 2020년 사업계획 및 방안</b></h5>
 					
-                        <div class="content">
-                            <table class="table table-bordered table-striped" id="table_list">
-                                <thead>
-									<tr>
-										<th rowspan="2">선택</th>
-										<th rowspan="2">일자</th>
-										<th rowspan="2">제목</th>
-										<th colspan="2">작성상태</th>
-										<th rowspan="2">게시일</th>
-										<th rowspan="2">업데이트</th>
-										<th rowspan="2">시나리오<br>수정</th>
-										<th rowspan="2">원인분석<br>수정</th>
-									</tr>
-									<tr>
-										<th>시나리오</th>
-										<th>원인분석</th>
-									</tr>
-								</thead>
-								<colgroup>	
-									<col width="5%" />
-									<col width="12%" />
-									<col width="18%" />
-									<col width="10%" />
-									<col width="10%" />
-									<col width="12%" />
-									<col width="17%" />
-									<col width="8%" />
-									<col width="8%" />
-								</colgroup>
-                                <tbody>
-									<tr>
-										<td>
-											<div class="i-checks">
-												<div class="icheckbox_square-green" style="position: relative;">
-													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
-													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
-												</div>
-											</div>
-										</td>
-										<td>2020-01-29</td>
-										<td>2020 사업계획</td>
-										<td>X</td>
-										<td>X</td>
-										<td>-</td>
-										<td>2019-01-25 12:39</td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-									</tr>
-									<tr>
-										<td>
-											<div class="i-checks">
-												<div class="icheckbox_square-green" style="position: relative;">
-													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
-													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
-												</div>
-											</div>
-										</td>
-										<td>2020-01-20</td>
-										<td>2020 사업계획 초안</td>
-										<td>O</td>
-										<td>X</td>
-										<td>-</td>
-										<td>2019-01-19 13:09</td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-									</tr>
-									<tr>
-										<td>
-											<div class="i-checks">
-												<div class="icheckbox_square-green" style="position: relative;">
-													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
-													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
-												</div>
-											</div>
-										</td>
-										<td>2020-01-19</td>
-										<td>2020 사업안</td>
-										<td>O</td>
-										<td>O</td>
-										<td>-</td>
-										<td>2019-01-18 12:39</td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-									</tr>
-									<tr>
-										<td>
-											<div class="i-checks">
-												<div class="icheckbox_square-green" style="position: relative;">
-													<input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;">
-													<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
-												</div>
-											</div>
-										</td>
-										<td>2019-12-10</td>
-										<td>[게시]2019 경영자료</td>
-										<td>O</td>
-										<td>O</td>
-										<td>2020-02-17</td>
-										<td>2019-12-29 20:00</td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-										<td><button type="button" class="btn btn-w-m btn-default" style="display:none">수정</button></td>
-									</tr>
-                                </tbody>
-                            </table>
-							
-							<div class="row row_button" style="display:flex; margin-top:40px">
-								<div class="col-lg-3">
-									<button type="button" class="btn btn-w-m btn-default">게시하기</button>
-									<button type="button" class="btn btn-w-m btn-default">게시해제</button>
-								</div>
-								
-								<div class="col-lg-3">
-									<button type="button" class="btn btn-w-m btn-default" id="story_check">시나리오 완료</button>
-									<button type="button" class="btn btn-w-m btn-default" id="story_uncheck">시나리오 해제</button>
-								</div>
-								
-								<div class="col-lg-3">
-									<button type="button" class="btn btn-w-m btn-default" id="cause_check">원인분석 완료</button>
-									<button type="button" class="btn btn-w-m btn-default" id="cause_uncheck">원인분석 해제</button>
-								</div>
-							</div>
-							
-							<div class="row">
-								<div class="col-lg-12" style="text-align:center">
-									<ul class="pagination float-right">
-										<li class="footable-page-arrow">
-											<a data-page="first" href="#first">«</a>
-										</li>
-										<li class="footable-page-arrow">
-											<a data-page="prev" href="#prev">‹</a>
-										</li>
-										<li class="footable-page active">
-											<a data-page="0" href="#">1</a>
-										</li>
-										<li class="footable-page">
-											<a data-page="1" href="#">2</a>
-										</li>
-										<li class="footable-page">
-											<a data-page="2" href="#">3</a>
-										</li>
-										<li class="footable-page">
-											<a data-page="3" href="#">4</a>
-										</li>
-										<li class="footable-page">
-											<a data-page="4" href="#">5</a>
-										</li>
-										<li class="footable-page-arrow disabled">
-											<a data-page="next" href="#next">›</a>
-										</li>
-										<li class="footable-page-arrow disabled">
-											<a data-page="last" href="#last">»</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+						<ul class="list-dash" id="list">
+							<li>매출현황</li>
+							<ul class="list-dash">
+								<li onclick="setData(this)">1. A 리포트</li>
+								<li onclick="setData(this)">2. Excel 문서</li>
+								<li onclick="setData(this)">3. PPT 문서</li>
+								<li onclick="setData(this)">4. B 리포트</li>
+							</ul>
+							<li>손익현황</li>
+							<ul class="list-dash">
+								<li onclick="setData(this)">1. C 리포트</li>
+								<li onclick="setData(this)">2. Excel 문서</li>
+							</ul>
+						</ul>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		<script>
 		$(document).ready(function(){
-			editVisible();
-		
 			$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
 				event.preventDefault(); 
 				event.stopPropagation(); 
 				$(this).parent().siblings().removeClass('open');
 				$(this).parent().toggleClass('open');
 			});
-				
-				
-			$(".i-checks").click(function() {
-				if($(this).children().attr("class").indexOf("checked") == -1) {
-					$(this).children().addClass("checked");
-				} else {
-					$(this).children().removeClass("checked");
-				}
-			});
 			
-			/* 시나리오 체크 */
-			$("#story_check").click(function() {
-				var flag = false;
-			
-				for(var i = 0; i < $(".i-checks").length; i++) {
-					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(3).html("O");
-						flag = true;
-					}
-				}
-				
-				if(flag) {
-					editVisible();
-				}
-			});
-			
-			/* 시나리오 체크해제 */
-			$("#story_uncheck").click(function() {
-				var flag = false;
-				
-				for(var i = 0; i < $(".i-checks").length; i++) {
-					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(3).html("X");
-						flag = true;
-					}
-				}
-				
-				if(flag) {
-					editVisible();
-				}
-			});
-			
-			/* 원인분석 체크 */
-			$("#cause_check").click(function() {
-				var flag = false;
-				
-				for(var i = 0; i < $(".i-checks").length; i++) {
-					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
-						// 시나리오가 X일 경우
-						if($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html() == "X") {
-							alert("시나리오를 먼저 완료해 주세요.");
-							break;
-						}
+			// 마우스 드래그 시
+			$("#inprogress").sortable({
+				connectWith: ".connectList",
+				update: function( event, ui ) {
 					
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(4).html("O");
-						flag = true;
-					}
+					var inprogress = $(this).sortable( "toArray" );
 				}
-				
-				if(flag) {
-					editVisible();
-				}
-			});
-			
-			/* 원인분석 체크해제 */
-			$("#cause_uncheck").click(function() {
-				var flag = false;
-				
-				for(var i = 0; i < $(".i-checks").length; i++) {
-					if($(".i-checks").eq(i).children().attr("class").indexOf("checked") != -1) {
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(4).html("X");
-						flag = true;
-					}
-				}
-				
-				if(flag) {
-					editVisible();
-				}
-			});
+			}).disableSelection();
 			
 			
 		});
 		
-		// 시나리오 수정, 원인분석 수정의 수정 button
-		function editVisible() {
-			for(var i = 0; i < $("#table_list").find("tbody").children().length; i++) {
-				
-				// 시나리오 X
-				if($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html() == "X") {
-					$("#table_list").find("tbody").children().eq(i).find("td").eq(7).find("button").show();
-					$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").hide();
-				} 
-				// 시나리오 O
-				else {
-					$("#table_list").find("tbody").children().eq(i).find("td").eq(7).find("button").hide();
-				
-					// 원인분석 X
-					if($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html() == "X") {
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").show();
-					} else {
-						$("#table_list").find("tbody").children().eq(i).find("td").eq(8).find("button").hide();
-					}
-				}
-			}
+		function setData(obj) {
+			$("#form").children().remove();
+			var html = "";
+				html += '<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : 2020-02-10 13:09</b></h5>';
+				html += '<textarea placeholder="Comments를 입력하세요." id="comments">' + $(obj).html() + 'Comments 내용</textarea>';
+				html += '<div class="file_form">';
+				html += '	<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>';
+				html += '	<label id="label" class="btn filelabel">';
+				html += '		첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+				html += '	</label>';
+				html += '</div>';
+				html += '<div class="buttonDiv">';
+				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>';
+				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>';
+				html += '</div>';
+								
+			$("#form").append(html);			
+								
+			$("#comments").html();
 		}
+		
+		// 파일 선택시 이름 셋팅
+		function fileSetting(file) {
+			// 파일 이름 셋팅
+			var html = "";
+				html +='<div class="file_form">';
+				html +='	<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html +='	<label class="btn filelabel" style="cursor:text">';
+				html +=$(file)[0].files[0].name;		
+				html +='	</label>';
+				html +='</div>';
+			$(".buttonDiv").before(html);
+			
+			// 파일 추가
+			var filehtml = "";
+				filehtml +='<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+			$("#label").prepend(filehtml);
+		}
+		
+		// 파일 삭제
+		function fileDelete(obj) {
+			$(obj).parent().remove();
+			
+			// 삭제한 파일 이름 저장 후 DB저장시 처리하시기 바랍니다.
+		}
+		
+		// 파일 + 선택시
+		function filePlus() {
+			$("#label").click();
+		}
+		
 		</script>
     </body>
 </html>
