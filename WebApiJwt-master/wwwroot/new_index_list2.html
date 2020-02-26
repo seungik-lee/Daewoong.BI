@@ -1,0 +1,511 @@
+<html>
+    <head>
+    <meta charset="utf-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>대웅제약 BI</title>
+    <!--<link href="app/css/core.css" rel="stylesheet">-->
+    
+    <link href="app/css/core0220.css" rel="stylesheet">
+    <link href="dist/css/style.css?v=202002241036" rel="stylesheet">
+    <link href="dist/css/bootstrap.min.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/font-awesome/css/font-awesome.css?v=202002241036" rel="stylesheet">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="dist/js/bootstrap.min.js"></script>
+	<script src="dist/js/iCheck/icheck.min.js"></script>
+	<script src="dist/js/jquery-ui/jquery-ui.min.js"></script>
+    <style>
+		    .orange_bar { background : #f77822; 
+                background-image:url(images/logo_1200.png); 
+                background-repeat: no-repeat;
+                background-size: 155px 32px; 
+                background-position: 0px 7px; 
+            }
+
+            .blank_logo { width:158px;height:50px;
+                margin-right:0px;
+                display: block;  
+            }
+
+            
+            .navbar {background-color: #f77822;}
+            .navbar-default .navbar-nav > li > a, .navbar-default .navbar-brand {color:#ffffff;}    
+            .navbar-default .navbar-nav > li > a:hover, 
+            .navbar-default .navbar-nav > li > a:focus {
+                color: #fcd6bc; 
+                background-color: #db5c09;}
+
+            /* dropdown 메뉴간격 */    
+            .navbar-nav > li >.dropdown-menu {    
+                margin-top:5px;
+            }
+            .dropdown-menu > li > a {        
+               line-height:20px;
+            }
+
+
+            .navbar-default .navbar-nav > li.open > a {
+                color: #dbdbdb !important;
+                background-color: #b54d06 !important;
+            }
+
+            /* 단축메뉴 */    
+            @media (max-width: 767px) {
+
+                .navbar {background-color: #f77822;}    
+
+                .navbar-default .navbar-nav .open .dropdown-menu > li {
+                    margin-left:5px;
+                }
+                .navbar-default .navbar-nav .open .dropdown-menu > li  {
+                    background-color:#e3e3e3; 
+                }         
+                .navbar-default .navbar-nav .open .dropdown-menu > li >a {
+                     color: #333333; 
+                } 
+                .navbar-default .navbar-nav .open .dropdown-menu> li >a:hover, 
+                .navbar-default .navbar-nav .open .dropdown-menu> li >a:focus {
+                    background-color:#ffffff; 
+                    color:#333333;
+                }   
+                    
+                    
+            }
+            .navbar-default .navbar-toggle {
+                border-color:#f77822;
+            }
+            .navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+                    background-color: #db5c09;
+            }
+           
+            
+            
+            .navbar-default .navbar-toggle .icon-bar {
+                background-color: #ffffff;
+            } 
+
+
+            /* submenu */    
+            .dropdown-submenu{position:relative;}
+            .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+            .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#c0c0c0;margin-top:5px;margin-right:-10px;}
+            .dropdown-submenu:hover>a:after{border-left-color:#404040;}
+            .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+
+
+
+
+			.content {
+				margin-top: 30px;
+				margin-left: 15px;
+				margin-right: 15px;
+				margin-bottom: 30px;
+			}
+			
+			.agile-list {
+				padding-top: 0px;
+			}
+			
+			.agile-list > li {
+				border: 0px;
+				padding: 0px;
+			}
+			
+			.list-dash li, .list-bullet li {
+				position: relative;
+				list-style-type: none; /* disc circle(hollow) square none */
+				text-indent: -2em;
+				margin-bottom: 6px;
+			}
+			
+			.list-dash li:before {
+				content: '└  '; 
+			}
+			
+			#list > ul > li {
+				cursor: pointer;
+			}
+			
+			textarea {
+				width: 100%;
+				min-height: 120px;
+				padding: 5px;
+				margin-top: 10px;
+			}
+			
+			.btn {
+				min-height: 40px;
+				min-width: 40px;
+			}
+			
+			.filelabel {
+				width: auto;
+				padding: 10px 12px;
+				border: 0px;
+				z-index: 1;
+			}
+			
+			.file_form {
+				margin-top: 15px;
+			}
+			
+			.buttonDiv {
+				margin-top: 15px;
+				text-align: center;
+			}
+			
+			.buttonDiv > button {
+				min-width: 85px;
+			}
+			
+			img {
+				width: 100%;
+			}
+			
+			#item2 {
+				width: 100%;
+				height: 200px;
+				line-height: 200px;
+				text-align: center;
+			}
+    </style>   
+
+    </head>
+    <body class="bg" >
+		<nav class="navbar navbar-default navbar-fixed-top orange_bar" role="navigation">    
+            <div class="container-fluid">
+                
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">메뉴</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                      </button>
+                    <a href="/" class="navbar-brand blank_logo">  </a>  
+                </div>
+                
+                <div class="navbar-collapse collapse " id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li class=" dropdown" >
+                            <a href="#" class=" dropdown-toggle" data-toggle="dropdown"  role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+                                FineReport 
+                                <span class="caret"></span></a>      
+                                
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">MR별 손익</a>
+                                        
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">비용취합양식 업로드</a></li> 
+                                                    <li><a href="#">비용취합양식 다운로드</a></li> 
+                                                    <li><a href="#">기준정보 다운로드</a></li> 
+                                                    <li><a href="#">최종파일 업로드</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_일비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_스타시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_판촉비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_인건비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_경진대회</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_디테일</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_풀동도</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_사무소운영비</a></li> 
+                                                    <li><a href="#">수익군 업로드</a></li> 
+
+                                                </ul>
+                                            </li>  
+                                            <li><a href="#">Home</a></li> 
+                                            <li><a href="#">매출액</a></li> 
+                                            <li><a href="#">매출총이익(%)</a></li> 
+                                            <li><a href="#">수익군별 매출</a></li> 
+                                            <li><a href="#">영업판관비</a></li> 
+                                            <li><a href="#">공통비차감전이익</a></li> 
+                                            <li><a href="#">손익 요약 </a></li>      
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">생산</a>
+
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">비용취합양식 업로드</a></li> 
+                                                    <li><a href="#">비용취합양식 다운로드</a></li> 
+                                                    <li><a href="#">기준정보 다운로드</a></li> 
+                                                    <li><a href="#">최종파일 업로드</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_일비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_스타시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_판촉비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_인건비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_경진대회</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_디테일</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_풀동도</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_사무소운영비</a></li> 
+                                                    <li><a href="#">수익군 업로드</a></li> 
+
+                                                </ul>
+                                            </li>  
+                                            <li><a href="#">생산지표</a></li> 
+                                            <li><a href="#">생산지표 현황</a></li> 
+                                            <li><a href="#">수익성 분석 그래프</a></li> 
+                                            <li><a href="#">품목별 ROI 지표</a></li> 
+                                            <li><a href="#">R&D비용 수익 분석</a></li> 
+                                        </ul>    
+                                    </li>
+                                    <li><a href="#">R&D</a>
+                                    
+                                    </li>
+                                    <li><a href="#">CH마케팅</a>
+                                    
+                                    </li>
+
+                                </ul>    
+                                
+
+
+                        </li>
+                        <li class="dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                                경영관리 
+                                <span class="caret"></span></a>
+                           
+                            <ul class="dropdown-menu">
+                                <li><a href="#">손익계산서</a></li>
+                                <li><a href="#">플랜트별손익</a></li>
+                                <li><a href="#">손익예측</a></li>
+                                <li><a href="#">R&D 비용</a></li>
+                                <li><a href="#">인원 / 인건비</a></li>
+                                <li><a href="#">제품별 표준/실제원가비교</a></li>
+                            </ul>    
+                             
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                                영업관리 
+                                <span class="caret"></span></a>  
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">21</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">Action5</a></li>
+                                    <li><a href="#">Action6</a></li>
+                                </ul>        
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                            생산관리 
+                            <span class="caret"></span></a>      
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action1</a></li>
+                                <li><a href="#">Action2</a></li>
+                                <li><a href="#">Action3</a></li>
+                            </ul>           
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                                경영회의 
+                                <span class="caret"></span></a>      
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#">시나리오 설정</a></li>
+                                    <li><a href="#">원인분석 첨부</a></li>
+                                    <li><a href="#">경영회의 진행</a></li>
+                                </ul>           
+                        </li>
+                    </ul>
+                    
+                    
+                    
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <div class="navbar-form navbar-left" >
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    대웅제약 
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" style="margin-top:14px;" role="menu">
+                                        <li><a href="#">대웅제약</a></li>
+                                        <li><a href="#">(주)대웅제약</a></li>
+                                        <li><a href="#">대웅바이오</a></li>
+                                        <li><a href="#">한울바이오</a></li>
+                                        <li><a href="#">DNC</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                홍길동 <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>  
+                                사용자 관리</a></li>
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>    
+                                지표 관리</a></li>
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>     
+                                Dashboard 관리</a></li>
+                              <!--<li role="separator" class="divider"></li>-->
+     
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" >&nbsp;
+                                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>   
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>        
+       
+		<!--
+        <div class="container-flex">
+             <iframe scrolling="no" style="width:100%;height:100%" src="http://10.1.20.66:8080/sso/dw_sso.jsp?cuid=FkyRGV0kJgYAtlsAAADH0noAAFBWlFBK&X_COMPANY=1200&X_DATESETTING=202001&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D"></iframe>
+        </div>   
+		-->
+		<div class="content">
+			<ul class="sortable-list connectList agile-list ui-sortable col-lg-8" id="inprogress" style="z-index: 0;">
+				<li class="ui-sortable-handle" id="item1">
+					<div class="ibox">
+						<div class="ibox-content">
+							<form class="form-horizontal" id="form" enctype="">
+								<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
+								
+								<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>
+								
+								<div class="file_form">
+									<button type="button" class="btn btn-w-m btn-default" id="file_plus"><i class="fa fa-plus"></i></button>
+								
+									<label id="label" class="btn filelabel">
+										첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>
+									</label>
+								</div>
+								
+								<div class="buttonDiv">
+									<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>
+									<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</li>
+				
+				<li class="ui-sortable-handle" id="item2">
+					<!--<img src="" alt=""></img>-->
+					<!--<iframe src=""></iframe>-->
+					이미지 또는 링크 삽입
+				</li>
+			</ul>
+			<div class="col-lg-4">
+				<div class="ibox">
+					<div class="ibox-content">
+						<h5><b>2020.01.29 : 2020년 사업계획 및 방안</b></h5>
+					
+						<ul class="list-dash" id="list">
+							<li>매출현황</li>
+							<ul class="list-dash">
+								<li onclick="setData(this)">1. A 리포트</li>
+								<li onclick="setData(this)">2. Excel 문서</li>
+								<li onclick="setData(this)">3. PPT 문서</li>
+								<li onclick="setData(this)">4. B 리포트</li>
+							</ul>
+							<li>손익현황</li>
+							<ul class="list-dash">
+								<li onclick="setData(this)">1. C 리포트</li>
+								<li onclick="setData(this)">2. Excel 문서</li>
+							</ul>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+		$(document).ready(function(){
+			$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+				event.preventDefault(); 
+				event.stopPropagation(); 
+				$(this).parent().siblings().removeClass('open');
+				$(this).parent().toggleClass('open');
+			});
+			
+			// 마우스 드래그 시
+			$("#inprogress").sortable({
+				connectWith: ".connectList",
+				update: function( event, ui ) {
+					
+					var inprogress = $(this).sortable( "toArray" );
+				}
+			}).disableSelection();
+			
+			
+		});
+		
+		function setData(obj) {
+			$("#form").children().remove();
+			var html = "";
+				html += '<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : 2020-02-10 13:09</b></h5>';
+				html += '<textarea placeholder="Comments를 입력하세요." id="comments">' + $(obj).html() + 'Comments 내용</textarea>';
+				html += '<div class="file_form">';
+				html += '	<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>';
+				html += '	<label id="label" class="btn filelabel">';
+				html += '		첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+				html += '	</label>';
+				html += '</div>';
+				html += '<div class="buttonDiv">';
+				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>';
+				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>';
+				html += '</div>';
+								
+			$("#form").append(html);			
+								
+			$("#comments").html();
+		}
+		
+		// 파일 선택시 이름 셋팅
+		function fileSetting(file) {
+			// 파일 이름 셋팅
+			var html = "";
+				html +='<div class="file_form">';
+				html +='	<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html +='	<label class="btn filelabel" style="cursor:text">';
+				html +=$(file)[0].files[0].name;		
+				html +='	</label>';
+				html +='</div>';
+			$(".buttonDiv").before(html);
+			
+			// 파일 추가
+			var filehtml = "";
+				filehtml +='<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+			$("#label").prepend(filehtml);
+		}
+		
+		// 파일 삭제
+		function fileDelete(obj) {
+			$(obj).parent().remove();
+			
+			// 삭제한 파일 이름 저장 후 DB저장시 처리하시기 바랍니다.
+		}
+		
+		// 파일 + 선택시
+		function filePlus() {
+			$("#label").click();
+		}
+		
+		</script>
+    </body>
+</html>
