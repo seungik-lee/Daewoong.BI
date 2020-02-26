@@ -5448,8 +5448,8 @@ table.issue-tracker tbody tr td {
   margin: 0;
 }
 .agile-list li {
-  background: #FAFAFB;
-  border: 1px solid #e7eaec;
+  background: #ffffff;
+  border-bottom: 1px solid #e7eaec;
   margin: 0 0 10px 0;
   padding: 10px;
   border-radius: 2px;
