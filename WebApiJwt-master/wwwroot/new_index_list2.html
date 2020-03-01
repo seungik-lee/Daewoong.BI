@@ -7,8 +7,8 @@
     <title>대웅제약 BI</title>
     <!--<link href="app/css/core.css" rel="stylesheet">-->
     
-    <link href="app/css/core.css?v=202002241036" rel="stylesheet">
-    <link href="dist/css/style.css?v=202002241036" rel="stylesheet">
+    <link href="app/css/core0220.css?v=202002261036" rel="stylesheet">
+    <link href="dist/css/style.css?v=202002261036" rel="stylesheet">
     <link href="dist/css/bootstrap.min.css?v=202002241036" rel="stylesheet">
 	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
 	<link href="dist/css/font-awesome/css/font-awesome.css?v=202002241036" rel="stylesheet">
@@ -90,7 +90,7 @@
 
             /* submenu */    
             .dropdown-submenu{position:relative;}
-            .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+            .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-10px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
             .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#c0c0c0;margin-top:5px;margin-right:-10px;}
             .dropdown-submenu:hover>a:after{border-left-color:#404040;}
             .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
@@ -161,15 +161,21 @@
 				min-width: 85px;
 			}
 			
-			img {
-				width: 100%;
-			}
-			
-			#item2 {
+			#imgdiv {
 				width: 100%;
 				height: 200px;
 				line-height: 200px;
 				text-align: center;
+			}
+			
+			.file {
+				width: auto;
+				display: inline-block;
+				cursor:pointer;
+				margin-bottom: 5px;
+				margin-left: 12px;
+				margin-right: -5px;
+				height: 40px;
 			}
     </style>   
 
@@ -378,38 +384,40 @@
         </div>   
 		-->
 		<div class="content">
-			<ul class="sortable-list connectList agile-list ui-sortable col-lg-8" id="inprogress" style="z-index: 0;">
-				<li class="ui-sortable-handle" id="item1">
-					<div class="ibox">
-						<div class="ibox-content">
-							<form class="form-horizontal" id="form" enctype="">
-								<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
+			<div class="col-lg-8">
+				<div class="ibox">
+					<div class="ibox-content">
+						<form class="form-horizontal" id="form" enctype="">
+							<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
 								
-								<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>
+							<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>
 								
-								<div class="file_form">
-									<button type="button" class="btn btn-w-m btn-default" id="file_plus"><i class="fa fa-plus"></i></button>
+							<div class="file_form">
+								<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>
 								
-									<label id="label" class="btn filelabel">
-										첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>
-									</label>
-								</div>
-								
-								<div class="buttonDiv">
-									<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>
-									<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>
-								</div>
-							</form>
-						</div>
+								<label onclick="addfile()" class="btn filelabel">
+									첨부파일 추가
+								</label>
+							</div>
+							
+							
+							
+							<div class="buttonDiv">
+								<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>
+								<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>
+							</div>
+						</form>
 					</div>
-				</li>
-				
-				<li class="ui-sortable-handle" id="item2">
+				</div>
+				<div class="ibox" id="imgdiv">
+					<div class="ibox-content">
 					<!--<img src="" alt=""></img>-->
 					<!--<iframe src=""></iframe>-->
-					이미지 또는 링크 삽입
-				</li>
-			</ul>
+						이미지 또는 링크 삽입
+					</div>
+				</div>
+				
+			</div>
 			<div class="col-lg-4">
 				<div class="ibox">
 					<div class="ibox-content">
@@ -442,17 +450,6 @@
 				$(this).parent().siblings().removeClass('open');
 				$(this).parent().toggleClass('open');
 			});
-			
-			// 마우스 드래그 시
-			$("#inprogress").sortable({
-				connectWith: ".connectList",
-				update: function( event, ui ) {
-					
-					var inprogress = $(this).sortable( "toArray" );
-				}
-			}).disableSelection();
-			
-			
 		});
 		
 		function setData(obj) {
@@ -462,48 +459,58 @@
 				html += '<textarea placeholder="Comments를 입력하세요." id="comments">' + $(obj).html() + 'Comments 내용</textarea>';
 				html += '<div class="file_form">';
 				html += '	<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>';
-				html += '	<label id="label" class="btn filelabel">';
-				html += '		첨부파일 추가<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+				html += '	<label onclick="addfile()" class="btn filelabel">';
+				html += '		첨부파일 추가';
 				html += '	</label>';
+				html += '</div>';
+				html += '<div class="file_form">';
+				html += '	<div>';
+				html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html += '		<label class="btn filelabel" style="cursor:text">';
+				html += '			test.txt';		// 여기에 추가된 파일 셋팅
+				html += '		</label>';
+				html += '	</div>';
 				html += '</div>';
 				html += '<div class="buttonDiv">';
 				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">저장하기</button>';
 				html += '	<button type="button" class="btn btn-w-m btn-primary" id="">목록</button>';
 				html += '</div>';
 								
-			$("#form").append(html);			
-								
+			$("#form").append(html);	
 			$("#comments").html();
 		}
 		
 		// 파일 선택시 이름 셋팅
 		function fileSetting(file) {
-			// 파일 이름 셋팅
-			var html = "";
-				html +='<div class="file_form">';
-				html +='	<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
-				html +='	<label class="btn filelabel" style="cursor:text">';
-				html +=$(file)[0].files[0].name;		
-				html +='	</label>';
-				html +='</div>';
-			$(".buttonDiv").before(html);
-			
-			// 파일 추가
-			var filehtml = "";
-				filehtml +='<input type="file" name="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
-			$("#label").prepend(filehtml);
+			$(file).parent().parent().find(".file").val($(file)[0].files[0].name + "");
 		}
 		
 		// 파일 삭제
 		function fileDelete(obj) {
-			$(obj).parent().remove();
+			$(obj).parent().parent().remove();
 			
 			// 삭제한 파일 이름 저장 후 DB저장시 처리하시기 바랍니다.
 		}
 		
+		// 첨부 파일 추가
+		function addfile() {
+			var html = "";
+				html += '<div class="file_form">';
+				html += '	<div class="form-group" style="margin-left:0px;">';
+				html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html += '		<input type="text" class="form-control file" name="file" value="" autocomplete="off" readonly>';
+				html += '		<label class="btn btn-w-m btn-default" style="line-height: 30px; height: 40px;">';
+				html += '			파일추가 <input type="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+				html += '		</label>';
+				html += '	</div>';
+				html += '</div>';
+					
+			$(".buttonDiv").before(html);
+		}
+		
 		// 파일 + 선택시
 		function filePlus() {
-			$("#label").click();
+			addfile();
 		}
 		
 		</script>

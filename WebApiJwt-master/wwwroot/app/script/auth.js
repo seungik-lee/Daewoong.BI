@@ -1,6 +1,6 @@
 ﻿
 function getHost() {
-    return location.protocol + "//" + location.host + "";
+    return location.protocol + "//" + location.host + "/";
 }
 var apiService = getHost();
 var settingEP = "/api/setting";
@@ -76,8 +76,6 @@ function login() {
             $("#msg").text("ID혹은 Password가 바르지 않습니다.");
         }
     });
-
-    return false;
 }
 
 //SAP에 로그인

@@ -5,16 +5,16 @@ $(document).ready(function () {
     var menuEP = "/api/menu";
     var key = getToken("roleIDKey");    
 
-    var menuTemplate = "<li>\n"
-        + "<a class=\"dropdown-toggle \" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n"
-        + "<img src=\"../images/{1}.png\">\n"
-        + "<span style=\"font-size: 16px;letter-spacing:-0.3px;\">{0}</span> \n<span class=\"caret\"></span>"
-        + "</a>\n"
-        + "<ul class=\"dropdown-menu menu2\" role = \"menu\" >\n";
-    var menuTemplateEnd = "</ul></li>\n";
-    var myMenuTemplate = "<li role=\"menuitem\" class= mymenu-item id=\"{0}\"><a href=\"#\" onClick=\"\"><i class=\"fa fa-user\"></i>{1}</a></li>\n";
+    var menuTemplate = "<li>"
+        + "<a class=\"dropdown-toggle \" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">"
+        + "<img src=\"../images/{1}.png\">"
+        + "<span style=\"font-size: 16px;letter-spacing:-0.3px;\">{0}</span> <span class=\"caret\"></span>"
+        + "</a>"
+        + "<ul class=\"dropdown-menu menu2\" role = \"menu\" >";
+    var menuTemplateEnd = "</ul></li>";
+    var myMenuTemplate = "<li role=\"menuitem\" class= mymenu-item id=\"{0}\"><a href=\"#\" onClick=\"\"><i class=\"fa fa-user\"></i>{1}</a></li>";
 
-    var subTemplate = "<li role=\"menuitem\"><a href=\"#\" data-url=\"{1}\"  style=\"padding:10px;\" class=\"sub-menuitem\" data-close=\"{2}\" >{0}</a></li>\n";
+    var subTemplate = "<li role=\"menuitem\"><a href=\"#\" data-url=\"{1}\"  style=\"padding:10px;\" class=\"sub-menuitem\" data-close=\"{2}\" >{0}</a></li>";
     //현재 Layout
 
     //카테고리 취득
@@ -31,9 +31,6 @@ $(document).ready(function () {
                 });
                 menus += menuTemplateEnd;
             });
-
-            console.log(menus);
-
             $(".menu").append(menus);
 
 
