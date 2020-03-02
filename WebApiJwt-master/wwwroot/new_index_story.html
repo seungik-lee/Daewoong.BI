@@ -1,4 +1,4 @@
-﻿<html>
+<html>
     <head>
     <meta charset="utf-8">
     
@@ -762,13 +762,13 @@
 				connectWith: ".connectList",
 				update: function( event, ui ) {
 					
-					//var inprogress = $(this).sortable( "toArray" );
+					var inprogress = $(this).sortable( "toArray" );
 					
-					//for(var i = 0; i < inprogress.length; i++) {
-					//	var id = $("#" + inprogress[i]).find("select").attr("id");
+					for(var i = 0; i < inprogress.length; i++) {
+						var id = $("#" + inprogress[i]).find("select").attr("id");
 					
-					//	$("#" +id+ " option:eq("+i+")").prop("selected", true);
-					//}
+						$("#" +id+ " option:eq("+i+")").prop("selected", true);
+					}
 				}
 			}).disableSelection();
 			
