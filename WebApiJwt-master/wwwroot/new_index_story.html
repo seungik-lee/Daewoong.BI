@@ -1,0 +1,992 @@
+﻿<html>
+    <head>
+    <meta charset="utf-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>대웅제약 BI</title>
+    <!--<link href="app/css/core.css" rel="stylesheet">-->
+    
+    <link href="app/css/core0220.css" rel="stylesheet">
+    <link href="dist/css/style.css" rel="stylesheet">
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/font-awesome/css/font-awesome.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/datepicker/datepicker3.css?v=202002241036" rel="stylesheet">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="dist/js/bootstrap.min.js"></script>
+	<script src="dist/js/iCheck/icheck.min.js"></script>
+	<script src="dist/js/jquery-ui/jquery-ui.min.js"></script>
+	<script src="dist/js/datepicker/bootstrap-datepicker.js"></script>
+	
+	
+	
+    <style>
+     
+            .orange_bar { background : #f77822; 
+                background-image:url(images/logo_1200.png); 
+                background-repeat: no-repeat;
+                background-size: 155px 32px; 
+                background-position: 0px 7px; 
+            }
+
+            .blank_logo { width:158px;height:50px;
+                margin-right:0px;
+                display: block;  
+            }
+
+            
+            .navbar {background-color: #f77822;}
+            .navbar-default .navbar-nav > li > a, .navbar-default .navbar-brand {color:#ffffff;}    
+            .navbar-default .navbar-nav > li > a:hover, 
+            .navbar-default .navbar-nav > li > a:focus {
+                color: #fcd6bc; 
+                background-color: #db5c09;}
+
+            /* dropdown 메뉴간격 */    
+            .navbar-nav > li >.dropdown-menu {    
+                margin-top:5px;
+            }
+            .dropdown-menu > li > a {        
+               line-height:20px;
+            }
+
+
+            .navbar-default .navbar-nav > li.open > a {
+                color: #dbdbdb !important;
+                background-color: #b54d06 !important;
+            }
+
+            /* 단축메뉴 */    
+            @media (max-width: 767px) {
+
+                .navbar {background-color: #f77822;}    
+
+                .navbar-default .navbar-nav .open .dropdown-menu > li {
+                    margin-left:5px;
+                }
+                .navbar-default .navbar-nav .open .dropdown-menu > li  {
+                    background-color:#e3e3e3; 
+                }         
+                .navbar-default .navbar-nav .open .dropdown-menu > li >a {
+                     color: #333333; 
+                } 
+                .navbar-default .navbar-nav .open .dropdown-menu> li >a:hover, 
+                .navbar-default .navbar-nav .open .dropdown-menu> li >a:focus {
+                    background-color:#ffffff; 
+                    color:#333333;
+                }   
+                    
+                    
+            }
+            .navbar-default .navbar-toggle {
+                border-color:#f77822;
+            }
+            .navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+                    background-color: #db5c09;
+            }
+           
+            
+            
+            .navbar-default .navbar-toggle .icon-bar {
+                background-color: #ffffff;
+            } 
+
+
+            /* submenu */    
+            .dropdown-submenu{position:relative;}
+            .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-10px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+            .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#c0c0c0;margin-top:5px;margin-right:-10px;}
+            .dropdown-submenu:hover>a:after{border-left-color:#404040;}
+            .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+
+
+
+			.btn-md {
+				height:34px;
+				width: 45px;
+			}
+
+			.content {
+				margin-top: 30px;
+				margin-left: 15px;
+				margin-right: 15px;
+				margin-bottom: 30px;				
+			}
+			
+			.seqtable {
+				width: 100%;
+			}
+			
+			.seqtable > tbody > tr > td {
+				text-align: left;
+				padding-right:5px;
+			}
+			
+			.seqtable > tbody > tr > td:nth-child(2) {
+				text-align: center;
+				
+			}
+			
+			.seqselectbox {
+				min-width: 90px;
+			}
+			
+			label {
+				display: inline-block;
+				margin-bottom: .5rem;
+			}
+			
+			.level > li {
+				padding: 3px 20px 3px 20px;
+				width: max-content;
+				cursor: pointer;
+			}
+			
+			li > a {
+				#333
+			}
+			
+			#minus {
+				
+			}
+			
+     </style>   
+
+    </head>
+    <body class="bg" >
+		<nav class="navbar navbar-default navbar-fixed-top orange_bar" role="navigation">    
+            <div class="container-fluid">
+                
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">메뉴</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                      </button>
+                    <a href="/" class="navbar-brand blank_logo">  </a>  
+                </div>
+                
+                <div class="navbar-collapse collapse " id="navbar">
+                    <ul class="nav navbar-nav">
+                        <li class=" dropdown" >
+                            <a href="#" class=" dropdown-toggle" data-toggle="dropdown"  role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+                                FineReport 
+                                <span class="caret"></span></a>      
+                                
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">MR별 손익</a>
+                                        
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">비용취합양식 업로드</a></li> 
+                                                    <li><a href="#">비용취합양식 다운로드</a></li> 
+                                                    <li><a href="#">기준정보 다운로드</a></li> 
+                                                    <li><a href="#">최종파일 업로드</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_일비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_스타시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_판촉비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_인건비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_경진대회</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_디테일</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_풀동도</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_사무소운영비</a></li> 
+                                                    <li><a href="#">수익군 업로드</a></li> 
+
+                                                </ul>
+                                            </li>  
+                                            <li><a href="#">Home</a></li> 
+                                            <li><a href="#">매출액</a></li> 
+                                            <li><a href="#">매출총이익(%)</a></li> 
+                                            <li><a href="#">수익군별 매출</a></li> 
+                                            <li><a href="#">영업판관비</a></li> 
+                                            <li><a href="#">공통비차감전이익</a></li> 
+                                            <li><a href="#">손익 요약 </a></li>      
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">생산</a>
+
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">비용취합양식 업로드</a></li> 
+                                                    <li><a href="#">비용취합양식 다운로드</a></li> 
+                                                    <li><a href="#">기준정보 다운로드</a></li> 
+                                                    <li><a href="#">최종파일 업로드</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_일비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_스타시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_판촉비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_인건비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_경진대회</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_디테일</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_풀동도</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_시상금</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li> 
+                                                    <li><a href="#">비용취합결과 업로드_사무소운영비</a></li> 
+                                                    <li><a href="#">수익군 업로드</a></li> 
+
+                                                </ul>
+                                            </li>  
+                                            <li><a href="#">생산지표</a></li> 
+                                            <li><a href="#">생산지표 현황</a></li> 
+                                            <li><a href="#">수익성 분석 그래프</a></li> 
+                                            <li><a href="#">품목별 ROI 지표</a></li> 
+                                            <li><a href="#">R&D비용 수익 분석</a></li> 
+                                        </ul>    
+                                    </li>
+                                    <li><a href="#">R&D</a>
+                                    
+                                    </li>
+                                    <li><a href="#">CH마케팅</a>
+                                    
+                                    </li>
+
+                                </ul>    
+                                
+
+
+                        </li>
+                        <li class="dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                                경영관리 
+                                <span class="caret"></span></a>
+                           
+                            <ul class="dropdown-menu">
+                                <li><a href="#">손익계산서</a></li>
+                                <li><a href="#">플랜트별손익</a></li>
+                                <li><a href="#">손익예측</a></li>
+                                <li><a href="#">R&D 비용</a></li>
+                                <li><a href="#">인원 / 인건비</a></li>
+                                <li><a href="#">제품별 표준/실제원가비교</a></li>
+                            </ul>    
+                             
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                                영업관리 
+                                <span class="caret"></span></a>  
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">21</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">Action5</a></li>
+                                    <li><a href="#">Action6</a></li>
+                                </ul>        
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                            생산관리 
+                            <span class="caret"></span></a>      
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action1</a></li>
+                                <li><a href="#">Action2</a></li>
+                                <li><a href="#">Action3</a></li>
+                            </ul>           
+                        </li>
+                        <li class=" dropdown" >
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                                경영회의 
+                                <span class="caret"></span></a>      
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#">시나리오 설정</a></li>
+                                    <li><a href="#">원인분석 첨부</a></li>
+                                    <li><a href="#">경영회의 진행</a></li>
+
+                                </ul>           
+                        </li>
+                    </ul>
+                    
+                    
+                    
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <div class="navbar-form navbar-left" >
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    대웅제약 
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" style="margin-top:14px;" role="menu">
+                                        <li><a href="#">대웅제약</a></li>
+                                        <li><a href="#">(주)대웅제약</a></li>
+                                        <li><a href="#">대웅바이오</a></li>
+                                        <li><a href="#">한울바이오</a></li>
+                                        <li><a href="#">DNC</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                홍길동 <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>  
+                                사용자 관리</a></li>
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>    
+                                지표 관리</a></li>
+                              <li><a href="#">
+                                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>     
+                                Dashboard 관리</a></li>
+                              <!--<li role="separator" class="divider"></li>-->
+     
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" >&nbsp;
+                                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>   
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>        
+       
+		<!--
+        <div class="container-flex">
+             <iframe scrolling="no" style="width:100%;height:100%" src="http://10.1.20.66:8080/sso/dw_sso.jsp?cuid=FkyRGV0kJgYAtlsAAADH0noAAFBWlFBK&X_COMPANY=1200&X_DATESETTING=202001&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D"></iframe>
+        </div>   
+		-->
+		<div class="content">
+			<div class="col-lg-12">
+				<div class="ibox">
+                    <div class="ibox-content">
+						<h5><b>■ 회의 시나리오 설정</b></h5>
+                        <div class="content">
+							<div class="row">
+								<div class="col-sm-6 b-r">
+								
+									<form class="form-horizontal" id="formBase" enctype="">
+										<div class="form-group">
+											<label class="col-sm-2 control-label">일정 :</label>
+											<div class="col-sm-10">
+												<div class="input-group">
+													<input type="text" id="date" placeholder="yyyy-mm-dd" class="form-control" data-mask="9999-99-99" autocomplete="off" maxlength="10" value="" style="cursor:pointer">
+													<span class="input-group-addon" style="background:white; cursor:pointer" id="calendar"><i class="fa fa-calendar"></i></span>
+												</div>						
+											</div>
+										</div>
+										
+										<div class="form-group">
+											<label class="col-sm-2 control-label">주제 :</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" placeholder="주제를 입력하세요." id="title" name="title" value="" autocomplete="off">
+											</div>
+										</div>
+										
+										<br>
+										<div class="form-group">
+											<label class="col-sm-2 control-label">추가 :</label>
+											<div class="col-sm-8">
+												<select class="form-control" id="story_add">
+													<option value="select1">매출현황</option>
+													<option value="select2">손익현황</option>
+													<option value="select3">재고현황</option>
+													<option value="select4">생산현황</option>
+												</select>
+											</div>
+											<div class="col-sm-2">
+												<button type="button" class="btn btn-default btn-md" id="plus"><i class="fa fa-plus"></i></button>
+											</div>
+										</div>
+										
+										<br>
+										<ul class="sortable-list connectList agile-list ui-sortable" id="inprogress">
+											<li class="ui-sortable-handle form-inline" id="story_item0">
+												<table class="seqtable">
+													<colgroup>
+														<col width="13%"/>
+														<col width="*"/>
+													</colgroup>
+													<tbody>
+														<tr>
+															<td>
+																<button type="button" class="btn btn-default btn-md minus" onclick="table_delete(this)">
+																	<i class="fa fa-minus"></i>
+																</button>
+															</td>
+															<td onclick="setDetail(this)" style="text-align: left; padding-left: 15px;">
+																<div class="story_value">손익현황</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</li>
+											<input type="hidden" id="story_date" value="2020-02-12">
+											<input type="hidden" id="story_title" value="테스트 주체 입니다.">
+										</ul>
+									</form>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<form class="form-horizontal" id="formDetail" enctype="">
+											<input type="text" class="form-control" placeholder="작성하세요." id="detail_title" name="title" value="" autocomplete="off">
+											
+											<br>
+											<div class="form-group">
+												<div class="i-checks col-sm-5">
+													<label class=""> 
+													<div class="iradio_square-green" style="position: relative;">
+														<input type="radio" value="연결리포트" name="ladio" id="link" style="position: absolute; opacity: 0;">
+													</div> 
+													<i></i> 연결리포트 
+													</label>
+												</div>
+												
+												<div class="i-checks col-sm-5">
+													<label class=""> 
+													<div class="iradio_square-green" style="position: relative;">
+														<input type="radio" value="이미지" name="ladio" id="image" style="position: absolute; opacity: 0;">
+													</div> 
+													<i></i> 이미지
+													</label>
+												</div>
+											</div>
+											<div class="form-group">
+												<div class="i-checks col-sm-12 text-center">
+													<button type="button" class="btn btn-w-m btn-primary" onclick="addDetail()">추가하기</button>
+												</div>
+											</div>
+												
+											<br>
+											<ul class="sortable-list connectList2 agile-list ui-sortable" id="inprogress2">
+											</ul>
+										</form>
+									</div>
+								</div>
+								
+								
+								<div class="col-sm-12 text-center">
+									<button type="button" class="btn btn-w-m btn-primary" onclick="">저장</button>
+									<button type="button" class="btn btn-w-m btn-default" onclick="cangoback()">취소</button>
+								</div>
+								
+								<!-- 연결리포트 모달 -->
+								<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+									<div class="modal-dialog modal-md">
+										<div class="modal-content">
+											<div class="modal-header">
+											
+												<div class="form-group">
+													<form class="form-horizontal" id="formlink" enctype="">
+													
+														<div class="form-group">
+															<div class="col-sm-6">
+																<select class="form-control" id="compony">
+																	<option value="대응제약">대응제약</option>
+																	<option value="대응바이오">대응바이오</option>
+																	<option value="한을바이오">한을바이오</option>
+																	<option value="DNC">DNC</option>
+																</select>
+															</div>
+														</div>
+														
+														<div class="form-group">
+															<div class="col-sm-4 text-left">
+																<div class="dropdown">
+																	<button class="btn btn-default dropdown-toggle" id="menu_list" type="button" data-toggle="dropdown">
+																		목록 <span class="caret"></span>
+																	</button>
+																	
+																	<ul class="dropdown-menu">
+																		<li class="dropdown dropdown-submenu">
+																			<a href="#" class="dropdown-toggle operation" data-toggle="dropdown">경영관리</a>
+																			<ul class="dropdown-menu">
+																				<li onclick='select_menu(this)'><a>손익계산서 [M]</a></li>
+																				<li onclick='select_menu(this)'><a>플랜트별손익 [M]</a></li>
+																				<li onclick='select_menu(this)'><a>매출액예측 [M]</a></li>
+																				<li onclick='select_menu(this)'><a>현금흐름표</a></li>
+																				<li onclick='select_menu(this)'><a>수익성 [Q]</a></li>
+																				<li onclick='select_menu(this)'><a>성장성 [Q]</a></li>
+																				<li onclick='select_menu(this)'><a>안정성 [Q]</a></li>
+																			</ul>
+																		</li>
+																		<li class="dropdown dropdown-submenu">
+																			<a href="#" class="dropdown-toggle sales" data-toggle="dropdown">영업관리</a>
+																			<ul class="dropdown-menu">
+																				<li onclick='select_menu(this)'><a>일일순도 [D]</a></li>
+																				<li onclick='select_menu(this)'><a>직거래매출(재설계)</a></li>
+																				<li onclick='select_menu(this)'><a>일일순도내역</a></li>
+																			</ul>
+																		</li>
+																		<li class="dropdown dropdown-submenu">
+																			<a href="#" class="dropdown-toggle production" data-toggle="dropdown">생산관리</a>
+																			<ul class="dropdown-menu">
+																				<li onclick='select_menu(this)'><a>생산실적</a></li>
+																				<li onclick='select_menu(this)'><a>제조수율</a></li>
+																			</ul>
+																		</li>
+																	</ul>
+																</div>
+															</div>
+															
+															<!-- case M -->
+															<div id="caseM" style="display:none">
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseM_year" type="button" data-toggle="dropdown">
+																			년도 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseM_year")'>2015년</li>
+																			<li onclick='setDate(this, "caseM_year")'>2016년</li>
+																			<li onclick='setDate(this, "caseM_year")'>2017년</li>
+																			<li onclick='setDate(this, "caseM_year")'>2018년</li>
+																			<li onclick='setDate(this, "caseM_year")'>2019년</li>
+																			<li onclick='setDate(this, "caseM_year")'>2020년</li>
+																		</ul>
+																	</div>
+																</div>
+																
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseM_month" type="button" data-toggle="dropdown">
+																			월 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseM_month")'>1월</li>
+																			<li onclick='setDate(this, "caseM_month")'>2월</li>
+																			<li onclick='setDate(this, "caseM_month")'>3월</li>
+																			<li onclick='setDate(this, "caseM_month")'>4월</li>
+																			<li onclick='setDate(this, "caseM_month")'>5월</li>
+																			<li onclick='setDate(this, "caseM_month")'>6월</li>
+																			<li onclick='setDate(this, "caseM_month")'>7월</li>
+																			<li onclick='setDate(this, "caseM_month")'>8월</li>
+																			<li onclick='setDate(this, "caseM_month")'>9월</li>
+																			<li onclick='setDate(this, "caseM_month")'>10월</li>
+																			<li onclick='setDate(this, "caseM_month")'>11월</li>
+																			<li onclick='setDate(this, "caseM_month")'>12월</li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- case Q -->
+															<div id="caseQ" style="display:none">
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseQ_year" type="button" data-toggle="dropdown">
+																			년도 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseQ_year")'>2015년</li>
+																			<li onclick='setDate(this, "caseQ_year")'>2016년</li>
+																			<li onclick='setDate(this, "caseQ_year")'>2017년</li>
+																			<li onclick='setDate(this, "caseQ_year")'>2018년</li>
+																			<li onclick='setDate(this, "caseQ_year")'>2019년</li>
+																			<li onclick='setDate(this, "caseQ_year")'>2020년</li>
+																		</ul>
+																	</div>
+																</div>
+																
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseQ_quarter" type="button" data-toggle="dropdown">
+																			분기 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseQ_quarter")'>1분기</li>
+																			<li onclick='setDate(this, "caseQ_quarter")'>2분기</li>
+																			<li onclick='setDate(this, "caseQ_quarter")'>3분기</li>
+																			<li onclick='setDate(this, "caseQ_quarter")'>4분기</li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- case D -->
+															<div id="caseD" style="display:none">
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseD_year" type="button" data-toggle="dropdown">
+																			년도 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseD_year")'>2015년</li>
+																			<li onclick='setDate(this, "caseD_year")'>2016년</li>
+																			<li onclick='setDate(this, "caseD_year")'>2017년</li>
+																			<li onclick='setDate(this, "caseD_year")'>2018년</li>
+																			<li onclick='setDate(this, "caseD_year")'>2019년</li>
+																			<li onclick='setDate(this, "caseD_year")'>2020년</li>
+																		</ul>
+																	</div>
+																</div>
+																
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseD_month" type="button" data-toggle="dropdown">
+																			월 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseD_month")'>1월</li>
+																			<li onclick='setDate(this, "caseD_month")'>2월</li>
+																			<li onclick='setDate(this, "caseD_month")'>3월</li>
+																			<li onclick='setDate(this, "caseD_month")'>4월</li>
+																			<li onclick='setDate(this, "caseD_month")'>5월</li>
+																			<li onclick='setDate(this, "caseD_month")'>6월</li>
+																			<li onclick='setDate(this, "caseD_month")'>7월</li>
+																			<li onclick='setDate(this, "caseD_month")'>8월</li>
+																			<li onclick='setDate(this, "caseD_month")'>9월</li>
+																			<li onclick='setDate(this, "caseD_month")'>10월</li>
+																			<li onclick='setDate(this, "caseD_month")'>11월</li>
+																			<li onclick='setDate(this, "caseD_month")'>12월</li>
+																		</ul>
+																	</div>
+																</div>
+																
+																<div class="col-sm-2">
+																	<div class="dropdown">
+																		<button class="btn btn-default dropdown-toggle" id="caseD_day" type="button" data-toggle="dropdown">
+																			일 <span class="caret"></span>
+																		</button>
+																		
+																		<ul class="dropdown-menu level">
+																			<li onclick='setDate(this, "caseD_day")'>1일</li>
+																			<li onclick='setDate(this, "caseD_day")'>2일</li>
+																			<li onclick='setDate(this, "caseD_day")'>3일</li>
+																			<li onclick='setDate(this, "caseD_day")'>4일</li>
+																			<li onclick='setDate(this, "caseD_day")'>5일</li>
+																			<li onclick='setDate(this, "caseD_day")'>6일</li>
+																			<li onclick='setDate(this, "caseD_day")'>7일</li>
+																			<li onclick='setDate(this, "caseD_day")'>8일</li>
+																			<li onclick='setDate(this, "caseD_day")'>9일</li>
+																			<li onclick='setDate(this, "caseD_day")'>10일</li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+														</div>
+														
+														<button type="button" class="btn btn-w-m btn-primary" id="btn_link">추가하기</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<!-- 이미지 모달 -->
+								<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+									<div class="modal-dialog modal-md">
+										<div class="modal-content">
+											<div class="modal-header">
+												<form class="form-horizontal" id="formImage" enctype="">
+													<div class="form-group" style="margin-left:15px; margin-right: 15px">
+														<div class="col-sm-9" style="padding:0px;">
+															<input type="text" class="form-control" placeholder="작성하세요." id="file" name="file" value="" autocomplete="off" style="cursor: pointer;" readonly>
+														</div>
+														<div class="col-sm-2" style="padding:0px" id="file_form">
+															<label id="label" class="btn btn-w-m btn-default">
+																파일추가 <input type="file" id="file_search" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>
+															</label>
+														</div>
+													</div>
+													
+													<button type="button" class="btn btn-w-m btn-primary" id="btn_img">추가하기</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+			
+		</div>
+		
+		
+		
+		<script>
+		var selectData = new Object;
+		$(document).ready(function(){
+			$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+				event.preventDefault(); 
+				event.stopPropagation(); 
+				$(this).parent().siblings().removeClass('open');
+				$(this).parent().toggleClass('open');
+			});
+			
+			// 달력 컨트롤
+			$('#date').datepicker({
+				todayBtn : "linked",
+				keyboardNavigation : false,
+				forceParse : false,
+				autoclose : true,
+				format : 'yyyy-mm-dd',
+				keyboardNavigation : true,
+				language : 'ko'
+			});
+			
+			$('.i-checks').iCheck({
+				radioClass: 'iradio_square-green',
+			});
+			
+			$("#calendar").click(function() {
+				$('#date').datepicker('show');
+			})			
+			
+			$("#plus").click(function() {
+				var count = $("#inprogress").children().length;
+			
+				// table 추가
+				add_table($("#inprogress"), count, $("#story_add option:selected").html(), "story");
+				
+				// 일정 주제 초기화
+				$("#date").val("");
+				$("#title").val("");
+			})
+			
+			// 마우스 드래그 시 셋팅 (왼족 추가 밑에)
+			$("#inprogress").sortable({
+				connectWith: ".connectList",
+				update: function( event, ui ) {
+					
+					//var inprogress = $(this).sortable( "toArray" );
+					
+					//for(var i = 0; i < inprogress.length; i++) {
+					//	var id = $("#" + inprogress[i]).find("select").attr("id");
+					
+					//	$("#" +id+ " option:eq("+i+")").prop("selected", true);
+					//}
+				}
+			}).disableSelection();
+			
+			// 마우스 드래그 시 셋팅2 (상세페이지 밑에)
+			$("#inprogress2").sortable({
+				connectWith: ".connectList2",
+				update: function( event, ui ) {
+					
+					var inprogress = $(this).sortable( "toArray" );
+					
+					for(var i = 0; i < inprogress.length; i++) {
+						var id = $("#" + inprogress[i]).find("select").attr("id");
+					
+						$("#" +id+ " option:eq("+i+")").prop("selected", true);
+					}
+				}
+			}).disableSelection();
+			
+			// 파일 추가 클릭
+			$("#file").click(function() {
+				$("#file_search").click();
+			})
+			
+			// 이미지 파일 추가하기
+			$("#btn_img").click(function() {
+				var count = $("#inprogress2").children().length;
+				var name = $("#detail_title").val() + " " + $("#file").val() + "리포트자료 [이미지]"
+			
+				// table 추가
+				add_table($("#inprogress2"), count, name, "file", "new_story.html"); // 마지막 변수 : location.href로 이동할 url
+				
+				// modal
+				$("#myModal2").modal('hide');
+			});
+			
+			// 연결리포트 추가하기
+			$("#btn_link").click(function() {
+				var count = $("#inprogress2").children().length;
+				var name = $("#detail_title").val() + " 리포트자료 링크 [링크]"
+			
+				// table 추가
+				add_table($("#inprogress2"), count, name, "file", "new_story.html"); // 마지막 변수 : location.href로 이동할 url
+			
+				// modal
+				$("#myModal").modal('hide');
+			});
+			
+			$("#compony").on('change', function() {
+				$("#menu_list").html("목록 <span class='caret'></span>");
+				select_menu_init();
+				$("#caseM").hide();
+				$("#caseQ").hide();
+				$("#caseD").hide();
+			});
+		})
+		
+		
+		//----------------------------- function ----------------------------------------
+		
+		// 테이블 추가
+		function add_table(target, seq, text, id, link) {
+			
+			var html= "";
+				html += '<li class="ui-sortable-handle form-inline" id="'+id+'_item'+seq+'">';
+				html += '	<table class="seqtable">';
+				html += '		<colgroup>';
+				html += '			<col width="13%"/>';
+				html += '			<col width="*"/>';
+				html += '		</colgroup>';
+				html += '		<tbody>';
+				html += '			<tr>';
+				html += '				<td>';
+				html += '					<button type="button" class="btn btn-default btn-md minus" onclick="table_delete(this)">';
+				html += '						<i class="fa fa-minus"></i>';
+				html += '					</button>';
+				html += '				</td>';
+				
+				if(id == "story") {
+					html += '			<td onclick="setDetail(this)" style="text-align: left; padding-left: 15px;">';
+					html += '				<div class="story_value">'+text+'</div>';
+					html += '			</td>';
+				}
+				else {
+					html += "			<td onclick='golink(this)' style='text-align: left; padding-left: 15px;'>";
+					html += '				<input type="hidden" value="'+link+'">';
+					html += '				<div class="file_value">'+text+'</div>';
+					html += '			</td>';
+				}
+				
+				html += '			</tr>';
+				html += '		</tbody>';
+				html += '	</table>';
+				html += '</li>';
+				html += '<input type="hidden" id="'+id+'_date" value="'+$("#date").val()+'">';
+				html += '<input type="hidden" id="'+id+'_title" value="'+$("#title").val()+'">';
+				
+			$(target).append(html);
+		}
+		
+		// 시나리오 설정추가후 제목 클릭시
+		function setDetail(obj) {
+			$("#detail_title").val($(obj).children().html());
+
+			$("#inprogress2").children().remove();
+
+			// 임시 : 첫번째 클릭시 자료 셋팅
+			if($(obj).parent().parent().parent().parent().attr("id") == "story_item0") {
+			
+				// table 추가 (1, 2번째 변수는 고정 / 3번째 : 이름 / 4번째 : 이동할 url)
+				add_table($("#inprogress2"), $("#inprogress2").children().length, "손익 @@@리포트자료 링크[링크]", "file", "./new_story.html"); 
+				add_table($("#inprogress2"), $("#inprogress2").children().length, "손익 @@@리포트자료 [이미지]", "file", "./new_story.html"); 
+			}
+		}
+		
+		// 선택시 이동
+		function golink(link) {
+			console.log($(link).find("input").val())
+			location.href = $(link).find("input").val();
+		}
+		
+		// table 삭제
+		function table_delete(obj) {
+			$(obj).parent().parent().parent().parent().parent().remove();
+		}
+		
+		
+		// 추가하기 클릭시
+		function addDetail() {
+			if($("#detail_title").val() == "") {
+				alert("현황리스트 제목을 클릭해 주세요.");
+			} 
+			else {
+				// 연결리포트
+				if($("#link").parent().attr("class") == "iradio_square-green checked") {
+					$("#menu_list").html("목록 <span class='caret'></span>");
+					select_menu_init();
+					$("#caseM").hide();
+					$("#caseQ").hide();
+					$("#caseD").hide();
+					$("#myModal").modal('show');
+				}
+			
+				// 이미지
+				if($("#image").parent().attr("class") == "iradio_square-green checked") {
+					$("#file").val("");
+					$("#file_form").children().remove();
+															
+					var html = "";
+						html +='<label id="label" class="btn btn-w-m btn-default">';
+						html +='파일추가 <input type="file" id="file_search" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>'
+						html +='</label>';
+					$("#file_form").append(html);
+					
+					$("#myModal2").modal('show');
+				}
+			}
+		}
+		
+		// 파일 선택시 이름 셋팅
+		function fileSetting(file) {
+			$("#file").val($(file)[0].files[0].name);
+		}
+		
+		// 연결리포트 - 메뉴 선택시
+		function select_menu(obj) {
+			$("#menu_list").html($(obj).children().html() + " <span class='caret'></span>");
+			
+			var menuCase = $(obj).children().html().substring($(obj).children().html().length -3, $(obj).children().html().length);
+			
+			select_menu_init();
+			if(menuCase == "[M]") {
+				$("#caseM").show();
+				$("#caseQ").hide();
+				$("#caseD").hide();
+			}
+			else if(menuCase == "[Q]") {
+				$("#caseM").hide();
+				$("#caseQ").show();
+				$("#caseD").hide();
+			}
+			else if(menuCase == "[D]") {
+				$("#caseM").hide();
+				$("#caseQ").hide();
+				$("#caseD").show();
+			}
+			// [D]와 같은처리
+			else {
+				$("#caseM").hide();
+				$("#caseQ").hide();
+				$("#caseD").show();
+			}
+			
+		}
+		
+		// 매뉴 년도, 월, 분기, 일 초기화
+		function select_menu_init() {
+			$("#caseM_year").html("년도 <span class='caret'></span>");
+			$("#caseM_month").html("월 <span class='caret'></span>");
+			$("#caseQ_year").html("년도 <span class='caret'></span>");
+			$("#caseQ_quarter").html("분기 <span class='caret'></span>");
+			$("#caseD_year").html("년도 <span class='caret'></span>");
+			$("#caseD_month").html("월 <span class='caret'></span>");
+			$("#caseD_day").html("일 <span class='caret'></span>");
+		}
+		
+		// 연결 리포트 - 메뉴 선택 - 년도, 분기, 월, 일 선택시
+		function setDate(obj, division) {
+			$("#" + division).html($(obj).html() + " <span class='caret'></span>");
+		}
+		
+		// 취소 -> 뒤로가기
+		function cangoback() {
+			var flag = confirm("취소시 작성중인 내용이 삭제됩니다.");
+			if(flag) {
+				window.history.back();
+			}
+		}
+		
+		</script>
+    </body>
+</html>
