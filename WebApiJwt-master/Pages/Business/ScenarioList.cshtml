@@ -1,0 +1,447 @@
+﻿@page "{pageNo?}"
+@model Daewoong.BI.ScenarioListModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, cloudscribe.Web.Pagination
+@{
+    ViewData["Title"] = "ScenarioList";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<link href="~/app/dw/css/ScenarioList.css" rel="stylesheet" />
+
+<script type="text/javascript">
+	$(document).ready(function () {
+        $(".i-checks").click(function() {
+			if($(this).children().attr("class").indexOf("checked") == -1) {
+				$(this).children().addClass("checked");
+			} else {
+				$(this).children().removeClass("checked");
+			}
+		});
+
+    	$("#btnCheckScenario").click(function() {
+			var business_ids = "";
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html()) == "X") {
+						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+					}
+				}
+			}
+				
+			if (business_ids == "") {
+				alert("시나리오 완료할 항목을 선택하거나 또는 시나리오 완료가 이미 된 항목을 선택하셨습니다.");
+				return;
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=CheckScenario",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+
+					//for (var i = 0; i < business_ids.split(",").length; i++) {
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(3)").html("O");
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(7)").html("");
+     //                   $(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(8)").html("<button type=\"button\" class=\"btn btn-w-m btn-default\" style=\"\" onclick=\"modifyAnalysis('" + business_ids.split(",")[i] + "')\">수정</button>");
+					//}
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+
+        $("#btnUnCheckScenario").click(function() {
+			var business_ids = "";
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html()) == "O") {
+						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+					}
+				}
+			}
+				
+			if (business_ids == "") {
+				alert("시나리오 해제할 항목을 선택하거나 또는 시나리오가 완료되지 않은 항목을 선택하셨습니다.");
+				return;
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=UnCheckScenario",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+					//for (var i = 0; i < business_ids.split(",").length; i++) {
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(3)").html("X");
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(7)").html("<button type=\"button\" class=\"btn btn-w-m btn-default\" style=\"\" onclick=\"modifyScenario('" + business_ids.split(",")[i] + "')\">수정</button>");
+
+					//	if ($.trim($(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(4)").html()) == "X") {
+					//		$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(8)").find("button").hide();
+					//	}
+					//}
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+
+        $("#btnCheckAnalysis").click(function() {
+			var business_ids = "";
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+                    if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html()) == "X") {
+						alert("시나리오 완료가 되지 않은 항목이 있습니다.");
+						return;
+					}
+
+					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html()) == "X") {
+						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+					}
+				}
+			}
+				
+			if (business_ids == "") {
+				alert("원인분석을 완료할 항목을 선택하거나 또는 원인분석 완료가 이미 된 항목을 선택하셨습니다.");
+				return;
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=CheckAnalysis",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+					//for (var i = 0; i < business_ids.split(",").length; i++) {
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(4)").html("O");
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(8)").html("");
+					//}
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+
+        $("#btnUnCheckAnalysis").click(function() {
+			var business_ids = "";
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html()) == "O") {
+						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+					}
+				}
+			}
+				
+			if (business_ids == "") {
+				alert("원인분석을 해제할 항목을 선택하거나 또는 원인분석이 완료되지 않은 항목을 선택하셨습니다.");
+				return;
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=UnCheckAnalysis",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+					//for (var i = 0; i < business_ids.split(",").length; i++) {
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(4)").html("X");
+					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(8)").html("<button type=\"button\" class=\"btn btn-w-m btn-default\" style=\"\" onclick=\"modifyAnalysis('" + business_ids.split(",")[i] + "')\">수정</button>");
+					//}
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+
+        $("#btnCheckPublish").click(function() {
+			var business_ids = "";
+			var check_count = 0;
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					check_count++;
+				}
+			}
+
+			if (check_count > 1) {
+				alert("게시할 항목은 한 개만 선택하셔야 합니다.");
+				return;
+			}
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+                    if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html()) == "X" || $.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html()) == "X") {
+						alert("게시를 하기 위해서는 시나리오와 원인분석이 모두 완료 상태여야 합니다.");
+						return;
+					}
+
+					business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+				}
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=CheckPublish",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+
+		$("#btnUnCheckPublish").click(function() {
+			var business_ids = "";
+			var check_count = 0;
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					check_count++;
+				}
+			}
+
+			if (check_count > 1) {
+				alert("게시를 해제할 항목은 한 개만 선택하셔야 합니다.");
+				return;
+			}
+
+			for (var i = 0; i < $(".i-checks").length; i++) {
+				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+                    if ($(".i-checks").eq(i).find(":checkbox").attr("data-is_publish") == "N") {
+						alert("게시된 항목이 아닙니다.");
+						return;
+					}
+
+					//if ($(".i-checks").eq(i).find(":checkbox").attr("data-is_completed_publish") == "Y") {
+					//	alert("게시가 이미 된 항목입니다.");
+					//	return;
+					//}
+
+					business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
+				}
+			}
+
+            $.ajax({
+				url: "/Business/ScenarioList/?handler=UnCheckPublish",
+				data: { "business_ids" : business_ids }, 
+				dataType : "json",
+				type: "GET",
+				success: function (data) {
+					alert(data);
+
+					location.reload();
+				},
+				error: function (message) {
+					alert(message);
+				},
+				complete: function () {
+					$(".i-checks").children().removeClass("checked");
+				}
+			});
+		});
+	});
+
+	function modifyScenario(businessID) {
+		location.href = "/business/scenario/" + businessID;
+	}
+
+	function modifyAnalysis(businessID) {
+        location.href = "/business/causeanalysis/" + businessID;
+	}
+</script>
+
+<div class="col-lg-12">
+    <div class="ibox">
+        <div class="ibox-content">
+            <h5><b>■ 원인분석 첨부</b></h5>
+
+            <div class="content">
+                <table class="table table-bordered table-striped" id="table_list">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">선택</th>
+                            <th rowspan="2">일자</th>
+                            <th rowspan="2">제목</th>
+                            <th colspan="2">작성상태</th>
+                            <th rowspan="2">게시일</th>
+                            <th rowspan="2">업데이트</th>
+                            <th rowspan="2">시나리오<br>수정</th>
+                            <th rowspan="2">원인분석<br>수정</th>
+                        </tr>
+                        <tr>
+                            <th>시나리오</th>
+                            <th>원인분석</th>
+                        </tr>
+                    </thead>
+                    <colgroup>
+                        <col width="5%">
+                        <col width="12%">
+                        <col width="18%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="12%">
+                        <col width="17%">
+                        <col width="8%">
+                        <col width="8%">
+                    </colgroup>
+                    <tbody>
+                        @foreach (var item in Model.PagedResult.Data)
+                        {
+                            <tr>
+                                @{
+                                    var dates = item.Dates.ToString("yyyy-MM-dd");
+									var isPublish = item.IsPublish;
+                                    var isScenario = item.IsScenario;
+                                    var isAnalysis = item.IsAnalysis;
+                                    var publishDates = item.PublishDate.ToString("yyyy-MM-dd");
+									var isCompletedPublish = (publishDates == "9999-12-31") ? "N" : "Y";
+                                    var updateDates = item.UpdateDate.ToString("yyyy-MM-dd HH:mm");
+                                }
+                                <td>
+                                    <div class="i-checks">
+                                        <div class="icheckbox_square-green" style="position: relative;">
+                                            <input type="checkbox" value="" checked="" style="position: absolute; opacity: 0;" data-business_id="@Html.DisplayFor(x => item.BusinessID)" data-is_publish="@Html.DisplayFor(x => item.IsPublish)" data-is_completed_publish="@isCompletedPublish">
+                                            <ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@Html.DisplayFor(x => dates)</td>
+								<td>
+									@if (isPublish == "Y")
+									{
+										@Html.Raw("[게시]")@Html.DisplayFor(x => item.Caption)
+									}
+									else
+									{
+										@Html.DisplayFor(x => item.Caption)
+									}
+								</td>
+                                <td>
+                                    @if (isScenario == "N")
+                                    {
+                                        @Html.Raw("X")
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("O")
+                                    }
+                                </td>
+                                <td>
+                                    @if (isAnalysis == "N")
+                                    {
+                                        @Html.Raw("X")
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("O")
+                                    }
+                                </td>
+                                <td>
+                                    @if (publishDates == "9999-12-31")
+                                    {
+                                        @Html.Raw("-")
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(x => publishDates)
+                                    }
+                                </td>
+                                <td>@Html.DisplayFor(x => updateDates)</td>
+                                <td>
+                                    @if (isScenario == "N")
+                                    {
+                                        <button type="button" class="btn btn-w-m btn-default" style="" onclick="modifyScenario('@Html.DisplayFor(x => item.BusinessID)')">수정</button>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isScenario == "Y" && isAnalysis == "N")
+                                    {
+                                        <button type="button" class="btn btn-w-m btn-default" style="display:" onclick="modifyAnalysis('@Html.DisplayFor(x => item.BusinessID)')">수정</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="row row_button" style="display:flex; margin-top:40px">
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-w-m btn-default" id="btnCheckPublish">게시하기</button>
+                        <button type="button" class="btn btn-w-m btn-default" id="btnUnCheckPublish">게시해제</button>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-w-m btn-default" id="btnCheckScenario">시나리오 완료</button>
+                        <button type="button" class="btn btn-w-m btn-default" id="btnUnCheckScenario">시나리오 해제</button>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-w-m btn-default" id="btnCheckAnalysis">원인분석 완료</button>
+                        <button type="button" class="btn btn-w-m btn-default" id="btnUnCheckAnalysis">원인분석 해제</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12" style="text-align:center">
+                        <cs-pager cs-paging-pagenumber=@Model.PagedResult.PageNumber
+                                  cs-paging-totalitems=@Model.PagedResult.TotalItems
+                                  cs-paging-pagesize=@Model.PagedResult.PageSize
+                                  cs-pagenumber-param="pageNo"
+                                  asp-controller="ScenarioList"
+                                  cs-show-first-last="true"
+                                  cs-first-page-text="«"
+                                  cs-previous-page-text="‹"
+                                  cs-next-page-text="›"
+                                  cs-last-page-text="»"
+                                  cs-pager-li-current-class="footable-page active"
+                                  cs-pager-li-non-active-class="footable-page-arrow disabled"
+                                  cs-pager-li-other-class="footable-page">
+                        </cs-pager>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

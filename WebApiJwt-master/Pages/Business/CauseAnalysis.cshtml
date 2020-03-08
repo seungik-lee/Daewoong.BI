@@ -1,0 +1,264 @@
+﻿@page "{businessID}"
+@model Daewoong.BI.CauseAnalysisModel
+@{
+	ViewData["Title"] = "CauseAnalysis";
+	Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<link href="~/app/dw/css/datepicker/datepicker3.css" rel="stylesheet" />
+<link href="~/app/dw/css/CauseAnalysis.css" rel="stylesheet" />
+<script type="text/javascript" src="~/lib/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript">
+    var file_check_size = 1024 * 1024 * 10;
+	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
+	var businessFiles = '@Html.Raw(Json.Serialize(Model.businessFiles))';
+	var selected_analysis_obj = null;
+	
+	$(document).ready(function () {
+		CKEDITOR.replace("txtContent");
+		
+		if (businessFiles != "null") {
+			var jsonBusinessFiles = JSON.parse(businessFiles);
+
+			var html = "";
+
+			for (var i = 0; i < jsonBusinessFiles.length; i++) {
+				html += '<div class="file_form" style="display:;">';
+				html += '	<div class="form-group" style="margin-left:0px;">';
+				html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html += '		<label class="btn filelabel">' + jsonBusinessFiles[i].fileName + '</label>';
+				html += '		<input type="file" style="display: none; z-index: 0;" data-analysis_id="' + jsonBusinessFiles[i].refID + '" data-file_id="' + jsonBusinessFiles[i].fileID + '" data-file_status="" />';
+				html += '		</label>';
+				html += '	</div>';
+				html += '</div>';
+			}
+
+			$(".buttonDiv").before(html);
+		}
+
+		if (selected_analysis_obj == null) {
+			setTimeout(function () {
+				CKEDITOR.instances.txtContent.setData($("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text());
+			}, 500);
+
+			displayAnalysisData($("li[data-analysis_id]:eq(0)"));
+		}
+
+		$("#btnGoList").click(function () {
+			location.href = "/business/scenariolist/1";
+		});
+
+		$("#btnSaveAnalysis").click(function (e) {
+			var businessAnalysises = [];
+
+			$("li[data-analysis_id]").each(function () {
+				businessAnalysis = {};
+				businessAnalysis.analysisID = $(this).attr("data-analysis_id");
+				businessAnalysis.txt = $("#txt_" + $(this).attr("data-analysis_id")).text();
+
+				var businessFiles = [];
+
+				$(":file[data-analysis_id='" + $(this).attr("data-analysis_id") + "']").each(function (index) {
+					var businessFile = {};
+
+					if ($(this).get(0).files[0] != undefined) {
+						// 파일 업로드
+						var formData = new FormData();
+						formData.append("files", $(this).get(0).files[0]);
+
+						$.ajax({
+							url: "/api/FileUpload/UploadAttachFiles",
+							data: formData,
+							async: false,
+							processData: false,
+							contentType: false,
+							type: "POST",
+							beforeSend: function () {
+							},
+							success: function (data) {
+								businessFile.fileName = data[0].fileName;
+								businessFile.fileSize = data[0].fileSize;
+								businessFile.fileURL = data[0].fileURL;
+
+								businessFiles.push(businessFile);
+
+								e.preventDefault();
+							},
+							error: function (message) {
+								e.preventDefault();
+								alert("Error! : " + message);
+								return false;
+							},
+							complete: function () {
+							}
+						});
+					} else {
+						if ($(this).attr("data-file_status") == "deleted") {
+							businessFile.fileID = $(this).attr("data-file_id");
+							businessFile.Status = "deleted";
+
+							businessFiles.push(businessFile);
+						}
+					}
+				});
+
+				businessAnalysis.businessFiles = businessFiles;
+
+				businessAnalysises.push(businessAnalysis);
+			});
+
+			$.ajax({
+				url: "/api/business/SetBusinessAnalysis",
+				data: JSON.stringify(businessAnalysises),
+				type: "POST",
+				contentType: "application/json",
+				success: function (message) {
+					alert(message);
+
+					location.href = "/business/scenariolist/1";
+				},
+				error: function (message) {
+					alert("error : " + message);
+				}
+			});
+		});
+	});
+
+	function addfile() {
+		var html = "";
+		html += '<div class="file_form">';
+		html += '	<div class="form-group" style="margin-left:0px;">';
+		html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+		html += '		<input type="text" class="form-control file" name="file" value="" autocomplete="off" readonly>';
+		html += '		<label class="btn btn-w-m btn-default" style="line-height: 30px; height: 40px;">';
+		html += '		파일추가 <input type="file" onchange="checkFileSetting(this)" style="display: none; z-index: 0;" data-analysis_id="' + $(selected_analysis_obj).attr("data-analysis_id") + '" data-file_id="0" data-file_status="" />';
+		html += '		</label>';
+		html += '	</div>';
+		html += '</div>';
+					
+		$(".buttonDiv").before(html);
+	}
+
+	// 파일 삭제
+	function fileDelete(obj) {
+		// 업로드된 파일인 경우
+		if ($(obj).parent().find(":file").attr("data-file_id") != "0") {
+			$(obj).parent().find(":file").attr("data-file_status", "deleted");
+			$(obj).parent().parent().hide();
+		} else {
+			$(obj).parent().parent().remove();
+		}
+	}
+
+	function checkFileSetting(obj) {
+		var file = obj.files;
+		var file_check_size = 1024 * 1024 * 10;
+
+		if (file[0].size > file_check_size) {
+			alert("10MB 이하의 파일만 등록할 수 있습니다.\n\n현재파일 용량 : " + (Math.round(file[0].size / 1024 / 1024 * 100) / 100) + "MB");
+
+			$(obj).val("");
+			return;
+		}
+
+		$(obj).parent().parent().find(".file").val($(obj)[0].files[0].name + "");
+	}
+
+	function displayAnalysisData(obj) {
+		if ($(obj)[0] == $(selected_analysis_obj)[0]) {
+			// 선택된 컨텐츠와 같은 경우는 아무 것도 하지 않음
+			return;
+		}
+
+		$("#divItem").children().remove();
+
+		if ($(obj).attr("data-content_type") == "link") {
+			$("#divItem").append("<iframe src=\"" + $(obj).attr("data-content_data") + "\" style=\"width:100%;height:450px;border:none;\"></iframe>");
+		} else {
+			$("#divItem").append("<img src=\"" + $(obj).attr("data-content_data") + "\" style=\"max-width:100%;\"></img>");
+		}
+
+		// 변경된 Comment를 업데이트한다.
+		$("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text(CKEDITOR.instances.txtContent.getData());
+
+		selected_analysis_obj = $(obj);
+
+		$("div.file_form").not("#divAddForm").hide();
+		$(":file[data-analysis_id='" + $(obj).attr("data-analysis_id") + "'][data-file_status='']").closest("div.file_form").show();
+
+		// 에디터에 Comment 설정
+		setTimeout(function () {
+			CKEDITOR.instances.txtContent.setData($("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text());
+		}, 250);
+	}
+</script>
+
+
+<div class="col-lg-8">
+	<div class="ibox">
+		<div class="ibox-content">
+			<form class="form-horizontal" id="form" enctype="multipart/form-data">
+				@{
+					var updateDates = Model.businessBaseObj.UpdateDate;
+				}
+				<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : @updateDates.ToString("yyyy-MM-dd HH:mm")</b></h5>
+
+				@*<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>*@
+				<input type="text" name="Content" id="txtContent" />
+
+				<div id="divComment" style="display:none">
+					@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
+					{
+						@foreach (var businessContent in businessScenario.BusinessContents)
+						{
+							<textarea id="txt_@businessContent.BusinessAnalysis.AnalysisID">@businessContent.BusinessAnalysis.Txt</textarea>
+						}
+					}
+				</div>
+
+				<div id="divAddForm" class="file_form">
+					<button type="button" class="btn btn-w-m btn-default" onclick="addfile()"><i class="fa fa-plus"></i></button>
+
+					<label onclick="addfile()" class="btn filelabel">
+						첨부파일 추가
+					</label>
+				</div>
+
+				<div class="buttonDiv">
+					<button type="button" class="btn btn-w-m btn-primary" id="btnSaveAnalysis">저장하기</button>
+					<button type="button" class="btn btn-w-m btn-primary" id="btnGoList">목록</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="ibox" id="imgdiv">
+		<div id="divItem" class="ibox-content"></div>
+	</div>
+
+</div>
+<div class="col-lg-4">
+	<div class="ibox">
+		<div class="ibox-content">
+			@{
+				var businessDates = Model.businessBaseObj.Dates;
+			}
+
+			<h5><b>@businessDates.ToString("yyyy.MM.dd") : @Model.businessBaseObj.Caption</b></h5>
+
+			<ul class="list-dash" id="list">
+				@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
+				{
+					<li>@businessScenario.TypesName</li>
+
+					@foreach (var businessContent in businessScenario.BusinessContents)
+					{
+						<ul class="list-dash">
+							<li onclick="displayAnalysisData(this)" data-analysis_id="@businessContent.BusinessAnalysis.AnalysisID" data-content_type="@businessContent.ContentType" data-content_data="@businessContent.ContentData">@businessContent.Label</li>
+						</ul>
+					}
+				}
+			</ul>
+		</div>
+	</div>
+</div>

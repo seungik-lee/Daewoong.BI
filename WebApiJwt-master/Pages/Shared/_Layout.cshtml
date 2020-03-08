@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>대웅제약 BI</title>
+
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/app/css/core0220.css" rel="stylesheet" />
+    <link href="~/app/dw/css/style.css" rel="stylesheet" />
+    <link href="~/app/dw/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/app/dw/css/iCheck/custom.css" rel="stylesheet" />
+    <link href="~/app/dw/css/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/app/dw/css/Scenario.css" rel="stylesheet" />
+
+    <script src="~/app/script/jquery.js"></script>
+    <script src="~/app/dw/js/bootstrap.js"></script>
+    <script src="~/app/dw/js/iCheck/icheck.min.js"></script>
+    <script src="~/app/dw/js/jquery-ui/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            //loadHeader("/menu.html");
+
+            $.ajax({
+			    url: "/api/menu/GetMenuList",
+			    data: { "roleID" : localStorage.getItem("roleID"), "companyID": localStorage.getItem("companyCode") },
+			    type: "GET",
+				success: function (data) {
+					$("#ul_navbar").children().remove();
+
+					var menus = "";
+
+					$(data).each(function (i, n) {
+						menus += "  <li class=\"dropdown\">";
+						menus += "      <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">";
+						menus += "          <span class=\"glyphicon glyphicon-print\" aria-hidden=\"true\"></span>" + n.category + "<span class=\"caret\"></span>";
+						menus += "      </a>";
+                        menus += "      <ul class=\"dropdown-menu\">";
+
+						$(n.menus).each(function (j, m) {
+							if (m.level == "" || m.level == 1) {
+                                var menus_level2 = $.grep(n.menus, function (o, i) {
+									return (o.parentID == m.id && o.level == 2);
+								});
+
+								if (menus_level2 != null && menus_level2.length > 0) {
+                                    menus += "      <li class=\"dropdown dropdown-submenu\">";
+								} else {
+                                    menus += "      <li class=\"dropdown\">";
+								}
+
+								if (m.url != "") {
+                                    menus += "          <a href=\"" + m.url + "\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + m.close + "\">" + m.title + "</a>";
+								} else {
+                                    menus += "          <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + m.close + "\">" + m.title + "</a>";
+								}								
+
+								if (menus_level2 != null && menus_level2.length > 0) {
+									menus += "      <ul class=\"dropdown-menu\">";
+
+									for (var x = 0; x < menus_level2.length; x++) {
+                                        var menus_level3 = $.grep(n.menus, function (p, i) {
+									        return (p.parentID == menus_level2[x].id && p.level == 3);
+										});
+
+                                        if (menus_level3 != null && menus_level3.length > 0) {
+                                            menus += "      <li class=\"dropdown dropdown-submenu\">";
+								        } else {
+                                            menus += "      <li class=\"dropdown\">";
+									    }
+
+                                        if (menus_level2[x].url != "") {
+                                            menus += "          <a href=\"" + menus_level2[x].url + "\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + menus_level2[x].close + "\">" + menus_level2[x].title + "</a>";
+								        } else {
+                                            menus += "          <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + menus_level2[x].close + "\">" + menus_level2[x].title + "</a>";
+								        }	
+
+										if (menus_level3 != null && menus_level3.length > 0) {
+											menus += "      <ul class=\"dropdown-menu\">";
+
+											for (var y = 0; y < menus_level3.length; y++) {
+												menus += "      <li class=\"dropdown\">";
+
+                                                if (menus_level3[y].url != "") {
+                                                    menus += "          <a href=\"" + menus_level3[y].url + "\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + menus_level3[y].close + "\">" + menus_level3[y].title + "</a>";
+								                } else {
+                                                    menus += "          <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-close=\"" + menus_level3[y].close + "\">" + menus_level3[y].title + "</a>";
+												}	
+												
+                                                menus += "      </li>";
+											}
+
+                                            menus += "      </ul>";
+										}
+
+										menus += "      </li>";
+									}
+
+                                    menus += "      </ul>";
+								}
+
+							    menus += "      </li>";
+							}
+						});
+
+                        menus += "  </ul>";
+						menus += "</li>";
+					}); 
+
+					$("#ul_navbar").append(menus);
+
+                    $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $(this).parent().siblings().removeClass('open');
+						$(this).parent().toggleClass('open');
+
+						if ($(this).attr("href") != "" && $(this).attr("href") != "#") {
+                            var url = $(this).attr("href");
+                            var linkt = url.lastIndexOf("webroot");
+							var flink = url.substring(0, linkt - 1);
+
+                            //linkt = -1 이면 대시보드 호출 
+                            //linkt > 0 이면 파인리포트 호출
+							if (linkt < 0) {
+								if (url.indexOf("/") == 0) {
+									location.href = url;
+								} else {
+									url += "&X_COMPANY=" + localStorage.getItem("companyCode") + "&X_DATESETTING=" + $(this).attr("data-close") + "&userid=" + localStorage.getItem("roleIDKey");
+                                    location.href = "/detail.html?url=" + url;
+								}
+                            } else if (linkt > 0) {
+                                flink += "?id=" + localStorage.getItem("key") + "&link=" + url.substring(url.lastIndexOf("webroot"));
+                                
+                                location.href = "/detail.html?url=" + flink;
+                            }
+						}
+			        });
+			    },
+			    error: function (message) {
+			    }
+			});
+
+            
+        });
+    </script>
+</head>
+<body class="bg">
+
+    <nav class="navbar navbar-default navbar-fixed-top orange_bar" role="navigation">
+        <div class="container-fluid">
+
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">메뉴</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/" class="navbar-brand blank_logo">  </a>
+            </div>
+
+            <div class="navbar-collapse collapse " id="navbar">
+                <ul id="ul_navbar" class="nav navbar-nav">
+                    @*<li class=" dropdown">
+                        <a href="#" class=" dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+                            FineReport
+                            <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li class="dropdown dropdown-submenu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">MR별 손익</a>
+
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown dropdown-submenu">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">비용취합양식 업로드</a></li>
+                                            <li><a href="#">비용취합양식 다운로드</a></li>
+                                            <li><a href="#">기준정보 다운로드</a></li>
+                                            <li><a href="#">최종파일 업로드</a></li>
+                                            <li><a href="#">비용취합결과 업로드_일비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_스타시상금</a></li>
+                                            <li><a href="#">비용취합결과 업로드_판촉비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_인건비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_경진대회</a></li>
+                                            <li><a href="#">비용취합결과 업로드_디테일</a></li>
+                                            <li><a href="#">비용취합결과 업로드_풀동도</a></li>
+                                            <li><a href="#">비용취합결과 업로드_시상금</a></li>
+                                            <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_사무소운영비</a></li>
+                                            <li><a href="#">수익군 업로드</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Home</a></li>
+                                    <li><a href="#">매출액</a></li>
+                                    <li><a href="#">매출총이익(%)</a></li>
+                                    <li><a href="#">수익군별 매출</a></li>
+                                    <li><a href="#">영업판관비</a></li>
+                                    <li><a href="#">공통비차감전이익</a></li>
+                                    <li><a href="#">손익 요약 </a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown dropdown-submenu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">생산</a>
+
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown dropdown-submenu">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">데이타 입력</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">비용취합양식 업로드</a></li>
+                                            <li><a href="#">비용취합양식 다운로드</a></li>
+                                            <li><a href="#">기준정보 다운로드</a></li>
+                                            <li><a href="#">최종파일 업로드</a></li>
+                                            <li><a href="#">비용취합결과 업로드_일비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_스타시상금</a></li>
+                                            <li><a href="#">비용취합결과 업로드_판촉비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_인건비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_경진대회</a></li>
+                                            <li><a href="#">비용취합결과 업로드_디테일</a></li>
+                                            <li><a href="#">비용취합결과 업로드_풀동도</a></li>
+                                            <li><a href="#">비용취합결과 업로드_시상금</a></li>
+                                            <li><a href="#">비용취합결과 업로드_숙박/시외교통비</a></li>
+                                            <li><a href="#">비용취합결과 업로드_사무소운영비</a></li>
+                                            <li><a href="#">수익군 업로드</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">생산지표</a></li>
+                                    <li><a href="#">생산지표 현황</a></li>
+                                    <li><a href="#">수익성 분석 그래프</a></li>
+                                    <li><a href="#">품목별 ROI 지표</a></li>
+                                    <li><a href="#">R&D비용 수익 분석</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">R&D</a>
+
+                            </li>
+                            <li>
+                                <a href="#">CH마케팅</a>
+
+                            </li>
+
+                        </ul>
+
+
+
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+                            경영관리
+                            <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li><a href="#">손익계산서</a></li>
+                            <li><a href="#">플랜트별손익</a></li>
+                            <li><a href="#">손익예측</a></li>
+                            <li><a href="#">R&D 비용</a></li>
+                            <li><a href="#">인원 / 인건비</a></li>
+                            <li><a href="#">제품별 표준/실제원가비교</a></li>
+                        </ul>
+
+                    </li>
+                    <li class=" dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                            영업관리
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">1</a></li>
+                            <li><a href="#">21</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">Action5</a></li>
+                            <li><a href="#">Action6</a></li>
+                        </ul>
+                    </li>
+                    <li class=" dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                            생산관리
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action1</a></li>
+                            <li><a href="#">Action2</a></li>
+                            <li><a href="#">Action3</a></li>
+                        </ul>
+                    </li>
+                    <li class=" dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                            경영회의
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">시나리오 설정</a></li>
+                            <li><a href="#">원인분석 첨부</a></li>
+                            <li><a href="#">경영회의 진행</a></li>
+                        </ul>
+                    </li>*@
+                </ul>
+
+
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="navbar-form navbar-left">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    대웅제약
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" style="margin-top:14px;" role="menu">
+                                    <li><a href="#">대웅제약</a></li>
+                                    <li><a href="#">(주)대웅제약</a></li>
+                                    <li><a href="#">대웅바이오</a></li>
+                                    <li><a href="#">한울바이오</a></li>
+                                    <li><a href="#">DNC</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            홍길동 <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                    사용자 관리
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+                                    지표 관리
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                                    Dashboard 관리
+                                </a>
+                            </li>
+                            <!--<li role="separator" class="divider"></li>-->
+
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            &nbsp;
+                            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="content">
+        @RenderBody()
+    </div>
+</body>
+</html>

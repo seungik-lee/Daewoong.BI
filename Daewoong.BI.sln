@@ -40,22 +40,4 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FD8B0C12-E16C-4BC8-8EAC-6376710B63B8}
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://tfs.saladsoft.com:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = WebApiJwt-master\\WebApiJwt.csproj
-		SccProjectName1 = WebApiJwt-master
-		SccLocalPath1 = WebApiJwt-master
-		SccProjectUniqueName2 = SAPTest\\SAPTest.csproj
-		SccProjectName2 = SAPTest
-		SccLocalPath2 = SAPTest
-		SccProjectUniqueName3 = ConsoleApp1\\ConsoleApp1.csproj
-		SccProjectName3 = ConsoleApp1
-		SccLocalPath3 = ConsoleApp1
-		SccProjectUniqueName4 = TestData\\TestData.csproj
-		SccProjectName4 = TestData
-		SccLocalPath4 = TestData
-	EndGlobalSection
 EndGlobal

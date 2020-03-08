@@ -43,5 +43,42 @@ namespace Daewoong.BI.Controllers
                 return list;
             }
         }
+
+        /// <summary>
+        /// 시나리오 작성 페이지에서 사용되는 회사 정보
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetCompanyInScenario")]
+        public List<Company> GetCompanyInScenario()
+        {
+            List<Company> list = new List<Company>();
+
+            using (var db = new DWContext())
+            {
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                {
+                    conn.Open();
+
+                    MySqlCommand cmd = new MySqlCommand("select * from company where code in (1200, 1300, 1400, 1500) order by code asc", conn);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Company()
+                            {
+                                ID = Convert.ToInt32(reader["Id"]),
+                                CompanyName = reader["CompanyName"].ToString(),
+                                Logo = reader["Logo"].ToString(),
+                                Code = Convert.ToInt32(reader["Code"]),
+                            });
+                        }
+                    }
+                }
+
+                return list;
+            }
+        }
     }
 }

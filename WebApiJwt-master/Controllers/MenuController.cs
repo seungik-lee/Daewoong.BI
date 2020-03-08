@@ -186,9 +186,110 @@ namespace Daewoong.BI.Controllers
             }
         }
 
-        //private List<KPI> GetKPIs(int v, KPIController c)
-        //{
-        //    return c.GetKpiByPage(v);
-        //}
+        [HttpGet]
+        [Route("GetMenuInScenario")]
+        public List<MenuSet> GetMenuInScenario(string companyCode)
+        {
+            using (var db = new DWContext())
+            {
+                List<Menu> list = new List<Menu>();
+
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                {
+                    conn.Open();
+
+                    MySqlCommand cmd = new MySqlCommand($"select Menu.ID, Menu.Close, Menu.CompanyCode, Menu.Title as MenuTitle, Menu.Url, Menu.Level, Menu.ParentID, Category.Title as CategoryTitle from Menu inner join Category on Menu.categoryCode = Category.id where Menu.companyCode = '{companyCode}' and Menu.CategoryCode in (1, 2, 3)", conn);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Menu()
+                            {
+                                ID = Convert.ToInt32(reader["ID"]),
+                                Category = reader["CategoryTitle"].ToString(),
+                                Close = reader["Close"].ToString(),
+                                CompanyCode = Convert.ToInt32(reader["CompanyCode"]),
+                                Title = reader["MenuTitle"].ToString(),
+                                URL = reader["Url"].ToString(),
+                                Level = reader["Level"].ToString(),
+                                ParentID = reader["ParentID"].ToString(),
+                            });
+                        }
+                    }
+                }
+
+                var results = list.GroupBy(o => o.Category);
+
+                List<MenuSet> menuSet = new List<MenuSet>();
+
+                foreach (var item in results)
+                {
+                    MenuSet set = new MenuSet();
+                    set.Category = item.Key;
+                    set.Menus = getMenu(item);
+                    menuSet.Add(set);
+                }
+
+                return menuSet;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetMenuList")]
+        public List<MenuSet> GetMenuList(string roleID, string companyID)
+        {
+            using (var db = new DWContext())
+            {
+                List<Menu> list = new List<Menu>();
+                KPIController kpi = new KPIController();
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                {
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand("get_menusByCompany", conn);
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new MySqlParameter("@roleID", roleID));
+                    cmd.Parameters.Add(new MySqlParameter("@CompanyCode", companyID));
+
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //2020-01-23 임병규 수정 배포 : 사장님 FineReport 메뉴 사용안함 처리
+                            //if (user.UserID == "younjc@daewoong.co.kr" && reader["Category"].ToString() == "FineReport") { }
+                            //else
+                            //{
+                                list.Add(new Menu()
+                                {
+                                    ID = Convert.ToInt32(reader["Id"]),
+                                    Category = reader["Category"].ToString(),
+                                    Close = reader["Close"].ToString(),
+                                    CompanyCode = Convert.ToInt32(reader["Id"]),
+                                    Title = reader["Title"].ToString(),
+                                    URL = reader["Url"].ToString(),
+                                    Level = reader["Level"].ToString(),
+                                    ParentID = reader["ParentID"].ToString(),
+                                });
+                            //}
+                        }
+                    }
+                }
+                var results = list.GroupBy(o => o.Category);
+
+                List<MenuSet> menuSet = new List<MenuSet>();
+                foreach (var item in results)
+                {
+                    MenuSet set = new MenuSet();
+                    set.Category = item.Key;
+                    set.Menus = getMenu(item);
+                    menuSet.Add(set);
+                }
+
+                return menuSet;
+
+            }
+
+        }
     }
 }

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using MySql.Data.MySqlClient;
 
 namespace Daewoong.BI.Controllers
 {
@@ -50,13 +51,17 @@ namespace Daewoong.BI.Controllers
         [HttpPost]
         public DWBIUser Login([FromBody] LoginDto model)
         {
-           
+            // 양병국
+            // Email : yangnest@daewoong-bio.co.kr
+            // RoleID : BIC1
+            // CompanyID : 1200
+
             //RegistAll();
-           
+
             //Register("wkhong93@bears.co.kr", "dwbi11!!");
             //return null;
 
-            
+
             if (!model.Email.Contains("@"))
             {
                 //string dEmail = HttpUtility.UrlDecode(model.Email);
@@ -70,6 +75,50 @@ namespace Daewoong.BI.Controllers
             }
             try
             {
+
+                #region [ 신규 버전 ] 
+
+                DWBIUser dwbiUser = new DWBIUser();
+
+                using (var db = new DWContext())
+                {
+                    using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                    {
+                        conn.Open();
+
+                        Encryptor ec = new Encryptor(fineKey, fineIV);
+                        string encrypt_password = ec.Encrypt(model.Password);
+
+                        MySqlCommand cmd = new MySqlCommand("get_userInfo", conn);
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.Add(new MySqlParameter("@userID", model.Email));
+                        cmd.Parameters.Add(new MySqlParameter("@pw", encrypt_password));
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                dwbiUser.ID = Convert.ToInt32(reader["ID"].ToString());
+                                dwbiUser.Name = reader["Name"].ToString();
+                                dwbiUser.UserID = reader["UserID"].ToString();
+                                dwbiUser.IsAdmin = (reader["IsAdmin"].ToString() == "0") ? false : true;
+                                dwbiUser.RoleID = reader["RoleID"].ToString();
+                                dwbiUser.UserRole = (Role)int.Parse(reader["UserRole"].ToString());
+                                dwbiUser.CompanyID = Convert.ToInt32(reader["CompanyID"].ToString());
+                                dwbiUser.CompanyCode = Convert.ToInt32(reader["code"].ToString());
+                                dwbiUser.CompanyName = reader["companyName"].ToString();
+                            }
+                        }
+                    }
+                }
+
+                // userID 세팅
+                HttpContext.Session.SetObject("userInfo", dwbiUser);
+
+                //return userInfo;
+
+                #endregion
+
 
                 //UserController uc = new UserController();
                 //20200109 김태규 수정 배포

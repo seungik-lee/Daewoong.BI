@@ -66,7 +66,7 @@ namespace Daewoong.BI
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-                    
+
                 })
                 .AddJwtBearer(cfg =>
                 {
@@ -77,13 +77,16 @@ namespace Daewoong.BI
                         ValidIssuer = Configuration["JwtIssuer"],
                         ValidAudience = Configuration["JwtIssuer"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
-                        
+
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
 
+            services.AddSession();
+
             // ===== Add MVC ========
             services.AddMvc();
+            services.AddCloudscribePagination();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,14 +106,6 @@ namespace Daewoong.BI
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            
-
-
-
-            // ===== Use Authentication ======
-            app.UseAuthentication();
-            app.UseMvc();
-
             // ===== Create tables ======
             dbContext.Database.EnsureCreated();
 
@@ -119,6 +114,11 @@ namespace Daewoong.BI
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
             app.UseStaticFiles();
+
+            // ===== Use Authentication ======
+            app.UseAuthentication();
+            app.UseSession();
+            app.UseMvc();
         }
     }
 }

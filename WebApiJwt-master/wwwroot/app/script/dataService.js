@@ -174,22 +174,22 @@ String.prototype.format = function (args) {
 
 String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
-if (document.referrer.indexOf(getHost()) === -1) {
-    setToken("token", null);
-    location.href = "../login.html";
-}
+//if (document.referrer.indexOf(getHost()) === -1) {
+//    setToken("token", null);
+//    location.href = "../login.html";
+//}
 
-console.log(document.referrer.indexOf(getHost()));
-if (getToken("token") === null) {
-    var ssoid = getParameterByName("ssoid");
-    if (ssoid === "")
-        location.href = "../login.html";
-    else {
-        //login(ssoid);
-        location.href = "../sso.html";
-    }
-    //
-}
+//console.log(document.referrer.indexOf(getHost()));
+//if (getToken("token") === null) {
+//    var ssoid = getParameterByName("ssoid");
+//    if (ssoid === "")
+//        location.href = "../login.html";
+//    else {
+//        //login(ssoid);
+//        location.href = "../sso.html";
+//    }
+//    //
+//}
 
 //파라미터 타입에 따른 날짜를 가저온다.
 function getDate(type) {

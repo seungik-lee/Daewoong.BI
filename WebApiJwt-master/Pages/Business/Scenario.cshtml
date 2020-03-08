@@ -1,0 +1,918 @@
+﻿@page "{businessID?}"
+@model Daewoong.BI.ScenarioModel
+@{
+	ViewData["Title"] = "Scenario";
+	Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<link href="~/app/dw/css/datepicker/datepicker3.css" rel="stylesheet" />
+<script src="~/app/dw/js/datepicker/bootstrap-datepicker.js"></script>
+
+<script type="text/javascript">
+	var dic_relation_report = {};
+    var scenario_index = 1;
+    var content_index = 1;
+    var file_check_size = 1024 * 1024 * 10;
+	var selected_scenario_obj = null;
+	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
+
+	$(document).ready(function () {
+        // 달력 컨트롤
+		$("#txtCalendar").datepicker({
+			todayBtn : "linked",
+			keyboardNavigation : false,
+			forceParse : false,
+			autoclose : true,
+			format : 'yyyy-mm-dd',
+			keyboardNavigation : true,
+			language: 'ko',
+			setDate: 'today'
+		});
+
+		// 오늘 날짜 넣기
+		$("#txtCalendar").datepicker('setDate', new Date); 
+
+        $('.i-checks').iCheck({
+			radioClass: 'iradio_square-green',
+		});
+
+		$("#spnCalendar").click(function () {
+			$("#txtCalendar").datepicker('show');
+		});
+
+        // 추가 버튼 클릭 시
+		$("#btnAppendScenario").click(function () {
+			var html= "";
+			html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="0" data-sc_type="' + $("#selScenarioType").val() + '" data-sc_status="">';
+			html += '	<table class="seqtable">';
+			html += '		<colgroup>';
+			html += '			<col width="13%"/>';
+			html += '			<col width="*"/>';
+			html += '		</colgroup>';
+			html += '		<tbody>';
+			html += '			<tr>';
+			html += '				<td>';
+			html += '					<button type="button" class="btn btn-default btn-md minus" onclick="deleteScenario(this)">';
+			html += '						<i class="fa fa-minus"></i>';
+			html += '					</button>';
+			html += '				</td>';
+			html += '			    <td onclick="setScenarioDetail(this)" style="text-align: left; padding-left: 15px;">';
+			html += '				    <div class="story_value">' + $("#selScenarioType option:selected").text() + '</div>';
+			html += '			    </td>';
+			html += '			</tr>';
+			html += '		</tbody>';
+			html += '	</table>';
+			html += '</li>';
+
+			$("#ul_scerarios").append(html);
+
+			scenario_index++;
+		});
+
+        // 회사 코드 조회
+		$.ajax({
+			url: "/api/company/GetCompanyInScenario",
+			data: null,
+			type: "GET",
+			success: function (data) {
+				var optionCompany = "";
+
+				$(data).each(function (i, n) {
+					optionCompany += "<option value='" + n.code + "'>" + n.companyName + "</option>";
+				});
+
+				$("#selCompany").append(optionCompany);
+
+				// 연결 리포트 정보 조회
+				getRelationReport($("#selCompany").val());
+			},
+			error: function (message) {
+			}
+		});
+
+        // 회사 코드 선택 시
+		$("#selCompany").change(function () {
+			getRelationReport($(this).val());
+
+			$("#btnMenuList").html("목록 <span class='caret'></span>");
+			$("#btnMenuList").attr("data-selected_menu_id", "0");
+
+			$("#caseM").hide();
+			$("#caseQ").hide();
+			$("#caseD").hide();
+		});
+
+        // 연결리포트 추가하기
+		$("#btnAddContentReport").click(function () {
+            if ($("#btnMenuList").attr("data-selected_menu_id") == "0") {
+				$("#myModal").modal("hide");
+			} else {
+				var match_report_obj = $("#ul_menus").find("li[data-menu_id='" + $("#btnMenuList").attr("data-selected_menu_id") + "']");
+                var menuCase = $(match_report_obj).attr("data-close");
+				var link_url = $(match_report_obj).attr("data-url") + "&userid=Fdjsb3bv%2BvxqSRzrfeNONQ%3D%3D&X_COMPANY=" + $("#selCompany").val() + "&X_DATESETTING=";
+
+			    if (menuCase.indexOf("m") >= 0) {
+					if ($.trim($("#caseM_year").text()) == "년도") {
+						alert("년도를 선택하세요.");
+						return;
+					}
+
+                    if ($.trim($("#caseM_month").text()) == "월") {
+						alert("월을 선택하세요.");
+						return;
+					}
+
+					link_url +=  $.trim($("#caseM_year").text().replace("년", "")) + $.trim($("#caseM_month").text().replace("월", ""));
+			    } else if (menuCase.indexOf("q") >= 0) {
+				    if ($.trim($("#caseQ_year").text()) == "년도") {
+						alert("년도를 선택하세요.");
+						return;
+					}
+
+                    if ($.trim($("#caseQ_quarter").text()) == "분기") {
+						alert("분기를 선택하세요.");
+						return;
+					}
+
+                    link_url += $.trim($("#caseQ_year").text().replace("년", "")) + $.trim($("#caseQ_quarter").text().replace("분기", ""));
+			    } else {
+				    if ($.trim($("#caseD_year").text()) == "년도") {
+						alert("년도를 선택하세요.");
+						return;
+					}
+
+                    if ($.trim($("#caseD_month").text()) == "월") {
+						alert("월을 선택하세요.");
+						return;
+					}
+
+                    if ($.trim($("#caseD_day").text()) == "일") {
+						alert("일을 선택하세요.");
+						return;
+					}
+
+					var month_text = $.trim($("#caseD_month").text().replace("월", ""));
+					month_text = (month_text.length == 1) ? "0" + month_text : month_text;
+
+                    var day_text = $.trim($("#caseD_day").text().replace("일", ""));
+					day_text = (day_text.length == 1) ? "0" + day_text : day_text;
+
+					link_url += $.trim($("#caseD_year").text().replace("년", "")) + month_text + day_text;
+			    }
+
+                // 컨텐츠 첨부 파일 추가
+				addContentList("link", $("#txtContentTitle").val(), link_url, "0");
+
+                $("#myModal").modal("hide");
+			}
+		});
+
+        // 이미지 파일 추가하기
+		$("#btnAddContentImage").click(function () {
+			if ($("#fileContent").val() == "") {
+				$("#myModal2").modal("hide");
+			} else {
+				addContentList("img", $("#txtContentTitle").val(), "", "0");
+
+				var clone_file_element = $("#fileContent").clone();
+				clone_file_element.removeAttr("id");
+				$("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)").after(clone_file_element)
+
+                $("#myModal2").modal("hide");
+			}
+		});
+
+		// 저장하기
+		$("#btnSaveScenario").click(function (e) {
+            if ($("#txtCalendar").val() == "") {
+				alert("일정을 선택하세요.");
+				return;
+			}
+
+			if ($("#txtTitle").val() == "") {
+				alert("주제를 입력하세요.");
+				return;
+			}
+
+			if ($("#ul_scerarios").find("li").length == 0) {
+				alert("설정된 시나리오가 없습니다.");
+				return;
+			}
+
+			var is_exist_not_set_content = false;
+
+			$("#ul_scerarios li").each(function () {
+				// 시나리오에 컨텐츠가 설정되어 있지 않은 항목이 존재하는 경우
+				if ($("#ul_contents").find("li[data-sc_ref_id='" + $(this).attr("id") + "']").length == 0) {
+					is_exist_not_set_content = true;
+				}
+			});
+
+			if (is_exist_not_set_content) {
+				if (!window.confirm("연결리포트 혹은 이미지가 추가되지 않은 시나리오가 있습니다. 진행하시겠습니까?")) {
+					return;
+				}
+			}
+
+			var businessBase = {};
+			businessBase.businessID = $("#txtTitle").attr("data-bs_id");
+			businessBase.dates = $("#txtCalendar").val();
+			businessBase.caption = $("#txtTitle").val();
+
+			var businessScenarios = [];
+			var scenario_sorting = 1;
+
+			// 시나리오 정보 추출
+			$("#ul_scerarios li").each(function (i) {
+				var businessScenario = {};
+				businessScenario.scenarioID = $(this).attr("data-sc_id");
+				businessScenario.types = $(this).attr("data-sc_type");
+				businessScenario.sorting = scenario_sorting;
+
+				if ($(this).attr("data-sc_status") == "deleted") {
+					// 기존에 추가된 항목을 삭제한 경우
+					// 상태값만 넣어주고 시나리오/컨텐츠/파일 정보를 삭제할 것이기 때문에 아무 정보도 추가하지 않는다.
+					businessScenario.status = "deleted";
+				} else {
+					scenario_sorting++;
+
+					var businessContents = [];
+					var content_sorting = 1;
+
+					// 컨텐츠 정보 추출
+					$("#ul_contents").find("li[data-sc_ref_id='" + $(this).attr("id") + "']").each(function (j) {
+						var businessContent = {};
+						businessContent.contentID = $(this).attr("data-ct_id");
+						businessContent.label = $(this).find("td:eq(1)").find("div:eq(0)").html();
+						businessContent.sorting = content_sorting;
+						businessContent.contentType = $(this).find("td:eq(1)").find("div:eq(1)").html();
+						businessContent.contentData = $(this).find("td:eq(1)").find("div:eq(2)").html();
+
+						if ($(this).attr("data-ct_status") == "deleted") {
+							// 기존에 추가된 항목을 삭제한 경우
+							businessContent.status = "deleted";
+						} else {
+							content_sorting++;
+
+							if ($(this).find(":file").length > 0 && $(this).find(":file").get(0).files[0] != undefined) {
+								// 파일 업로드
+								var formData = new FormData();
+								formData.append("files", $(this).find(":file").get(0).files[0]);
+
+								$.ajax({
+									url: "/api/FileUpload/UploadAttachFiles",
+									data: formData,
+									async: false,
+									processData: false,
+									contentType: false,
+									type: "POST",
+									beforeSend: function () {
+									},
+									success: function (data) {
+										var businessFile = {};
+										businessFile.fileName = data[0].fileName;
+										businessFile.fileSize = data[0].fileSize;
+										businessFile.fileURL = data[0].fileURL;
+
+										businessContent.businessFile = businessFile;
+										businessContent.contentData = data[0].fileURL;
+
+										e.preventDefault();
+									},
+									error: function (message) {
+										e.preventDefault();
+										alert("Error! : " + message);
+										return false;
+									},
+									complete: function () {
+									}
+								});
+							}
+						}
+
+						businessContents.push(businessContent);
+					});
+
+					businessScenario.businessContents = businessContents;
+				}
+				
+				businessScenarios.push(businessScenario);
+			});
+
+			businessBase.businessScenarios = businessScenarios;
+
+			$.ajax({
+				url: "/api/business/CreateBusinessScenario",
+				data: JSON.stringify(businessBase),
+				type: "POST",
+				contentType: "application/json",
+				success: function (message) {
+					alert(message);
+
+					location.href = "/business/scenariolist/1";
+				},
+				error: function (message) {
+					alert("error : " + message);
+				}
+			});
+		});
+
+		// 수정 화면인 경우
+		if (businessBaseObj != "null") {
+			var jsonBusinessBaseObj = JSON.parse(businessBaseObj);
+
+			$("#txtCalendar").val(jsonBusinessBaseObj.dates.substring(0, 10));
+			$("#txtTitle").val(jsonBusinessBaseObj.caption);
+			$("#txtTitle").attr("data-bs_id", jsonBusinessBaseObj.businessID);
+
+			if (jsonBusinessBaseObj.businessScenarios != null && jsonBusinessBaseObj.businessScenarios.length > 0) {
+				var scenario_html = "";
+
+				for (var i = 0; i < jsonBusinessBaseObj.businessScenarios.length; i++) {
+					scenario_html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="' + jsonBusinessBaseObj.businessScenarios[i].scenarioID + '" data-sc_type="' + jsonBusinessBaseObj.businessScenarios[i].types + '" data-sc_status="">';
+					scenario_html += '	<table class="seqtable">';
+					scenario_html += '		<colgroup>';
+					scenario_html += '			<col width="13%"/>';
+					scenario_html += '			<col width="*"/>';
+					scenario_html += '		</colgroup>';
+					scenario_html += '		<tbody>';
+					scenario_html += '			<tr>';
+					scenario_html += '				<td>';
+					scenario_html += '					<button type="button" class="btn btn-default btn-md minus" onclick="deleteScenario(this)">';
+					scenario_html += '						<i class="fa fa-minus"></i>';
+					scenario_html += '					</button>';
+					scenario_html += '				</td>';
+					scenario_html += '			    <td onclick="setScenarioDetail(this)" style="text-align: left; padding-left: 15px;">';
+					scenario_html += '				    <div class="story_value">' + jsonBusinessBaseObj.businessScenarios[i].typesName + '</div>';
+					scenario_html += '			    </td>';
+					scenario_html += '			</tr>';
+					scenario_html += '		</tbody>';
+					scenario_html += '	</table>';
+					scenario_html += '</li>';
+
+					if (jsonBusinessBaseObj.businessScenarios[i].businessContents != null && jsonBusinessBaseObj.businessScenarios[i].businessContents.length > 0) {
+						for (var j = 0; j < jsonBusinessBaseObj.businessScenarios[i].businessContents.length; j++) {
+							addContentList(jsonBusinessBaseObj.businessScenarios[i].businessContents[j].contentType, jsonBusinessBaseObj.businessScenarios[i].businessContents[j].label, jsonBusinessBaseObj.businessScenarios[i].businessContents[j].contentData, jsonBusinessBaseObj.businessScenarios[i].businessContents[j].contentID);
+
+							$("li[data-ct_id='" + jsonBusinessBaseObj.businessScenarios[i].businessContents[j].contentID + "']").attr("data-sc_ref_id", "li_scenario_item" + scenario_index);
+						}
+					}
+
+					scenario_index++;
+				}
+
+				$("#ul_scerarios").append(scenario_html);
+				$("#ul_contents li").hide();
+			}
+		}
+
+		// 마우스 드래그 시 셋팅 (왼족 추가 밑에)
+		$("#ul_scerarios").sortable({
+			connectWith: ".connectList",
+		}).disableSelection();
+
+		$("#ul_contents").sortable({
+			connectWith: ".connectList",
+		}).disableSelection();
+	});
+
+    // 컨텐츠 첨부 파일 추가
+    function addContentList(content_type, text, link_url, content_id) {
+		var html = "";
+        html += '<li class="ui-sortable-handle form-inline" id="li_content_item' + content_index + '" data-sc_ref_id="' + $(selected_scenario_obj).attr("id") + '" data-ct_id="' + content_id + '" data-ct_status="">';
+		html += '	<table class="seqtable">';
+		html += '		<colgroup>';
+		html += '			<col width="13%"/>';
+		html += '			<col width="*"/>';
+		html += '		</colgroup>';
+		html += '		<tbody>';
+		html += '			<tr>';
+		html += '				<td>';
+		html += '					<button type="button" class="btn btn-default btn-md minus" onclick="deleteContent(this)">';
+		html += '						<i class="fa fa-minus"></i>';
+		html += '					</button>';
+		html += '				</td>';
+		html += "			    <td onclick='goReportLink(this)' style='text-align: left; padding-left: 15px;'>";
+		html += '				    <div class="file_value">' + text + '</div>';
+		html += '				    <div style="display:none;">' + content_type + '</div>';
+        html += '				    <div style="display:none;">' + link_url + '</div>';
+		html += '			    </td>';
+		html += '			</tr>';
+		html += '		</tbody>';
+		html += '	</table>';
+		html += '</li>';
+
+		$("#ul_contents").append(html);
+
+		content_index++;
+	}
+
+    //----------------------------- function ----------------------------------------
+
+    // 시나리오 설정추가 후 제목 클릭시
+	function setScenarioDetail(obj) {
+		if (selected_scenario_obj != null) {
+			if ($(obj).closest("li")[0] == $(selected_scenario_obj)[0]) {
+				// 선택된 시나리오가 같은 경우는 아무 것도 하지 않음
+				return;
+			}
+		}
+
+		$("#ul_contents").find("li[data-sc_ref_id='" + $(selected_scenario_obj).attr("id") + "']").hide();
+
+		// 수정된 제목을 현재 선택된 td쪽에 변경 처리
+		//if ($("#txtContentTitle").val() != "") {
+		//	$(selected_scenario_obj).find("td:eq(1)").find("div:eq(1)").text($("#txtContentTitle").val());
+		//}
+
+		selected_scenario_obj = $(obj).closest("li");
+
+		$("#ul_contents").find("li[data-sc_ref_id='" + $(selected_scenario_obj).attr("id") + "'][data-ct_status='']").show();
+
+		$("#txtContentTitle").val($(obj).find("div:eq(0)").text());
+	}
+
+	function deleteScenario(obj) {
+		// 선택된 시나리오를 삭제하는 경우에는 초기화
+		if ($(obj).closest("li")[0] == $(selected_scenario_obj)[0]) {
+			$("#ul_contents").find("li[data-sc_ref_id='" + $(selected_scenario_obj).attr("id") + "']").remove();
+
+			$("#txtContentTitle").val("");
+			$("#rdoLink").prop("checked", true);
+			$("#rdoLink").parent("div").addClass("checked");
+			$("#rdoImage").parent("div").removeClass("checked");
+
+			selected_scenario_obj = null;
+		}
+
+		if ($(obj).closest("li").attr("data-sc_id") != "0") {
+			$(obj).closest("li").attr("data-sc_status", "deleted");
+
+			$(obj).closest("li").hide();
+		} else {
+			$(obj).closest("li").remove();
+		}
+	}
+
+	function deleteContent(obj) {
+		// 저장되어 있는 content id인 경우
+		if ($(obj).closest("li").attr("data-ct_id") != "0") {
+			$(obj).closest("li").attr("data-ct_status", "deleted");
+
+			$(obj).closest("li").hide();
+		} else {
+			$(obj).closest("li").remove();
+		}
+	}
+
+    // 추가하기 클릭시
+	function addContent() {
+		if (selected_scenario_obj == null) {
+			alert("현황리스트 제목을 클릭해 주세요.");
+			return;
+		}
+
+		if ($("#txtContentTitle").val() == "") {
+			alert("연결리포트 혹은 업로드할 이미지에 사용할 제목을 입력해 주세요.");
+			return;
+		}
+
+		// 연결리포트
+		if ($("#rdoLink").parent().attr("class") == "iradio_square-green checked") {
+			$("#btnMenuList").html("목록 <span class='caret'></span>");
+			$("#btnMenuList").attr("data-selected_menu_id", "0");
+
+			$("#caseM").hide();
+			$("#caseQ").hide();
+			$("#caseD").hide();
+			$("#myModal").modal('show');
+		} else {
+			$("#file").val("");
+            $("#fileContent").val("");
+			$("#myModal2").modal('show');
+		}
+	}
+
+    function getRelationReport(companyCode) {
+		if (dic_relation_report[companyCode] != null) {
+			displayRelationReport(dic_relation_report[companyCode]);
+			return;
+		}
+
+		$.ajax({
+			url: "/api/menu/GetMenuInScenario",
+			data: { "companyCode": companyCode },
+			type: "GET",
+			success: function (data) {
+				dic_relation_report[companyCode] = data;
+				displayRelationReport(dic_relation_report[companyCode]);
+			},
+			error: function (message) {
+			}
+		});
+	}
+
+    function displayRelationReport(reportData) {
+		if (reportData == null || reportData == undefined) {
+			return;
+		}
+
+		$("#ul_menus").html("");
+
+		var menus = "";
+
+		$(reportData).each(function (i, n) {
+			menus += "<li class=\"dropdown dropdown-submenu\">";
+			menus += "  <a href=\"#\" class=\"dropdown-toggle operation\" data-toggle=\"dropdown\">" + n.category + "</a>";
+			menus += "  <ul class=\"dropdown-menu\">";
+
+			$(n.menus).each(function (j, m) {
+				menus += "<li onclick=\"selectReport(this)\" data-url=\"" + m.url + "\" data-close=\"" + m.close + "\" data-menu_id=\"" + m.id + "\">";
+				menus += "<a>" + m.title + "</a>";
+				menus += "</li>";
+			});
+
+			menus += "  </ul>";
+			menus += "</li>";
+		});
+
+		$("#ul_menus").html(menus);
+
+        $('#ul_menus [data-toggle=dropdown]').on('click', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			$(this).parent().siblings().removeClass('open');
+			$(this).parent().toggleClass('open');
+		});
+	}
+
+    function selectReport(obj) {
+		$("#btnMenuList").html($(obj).children().html() + " <span class='caret'></span>");
+		$("#btnMenuList").attr("data-selected_menu_id", $(obj).attr("data-menu_id"));
+
+		initSelectReportDetail();
+
+		var menuCase = $(obj).attr("data-close");
+
+		if (menuCase.indexOf("m") >= 0) {
+			$("#caseM").show();
+			$("#caseQ").hide();
+			$("#caseD").hide();
+		} else if (menuCase.indexOf("q") >= 0) {
+			$("#caseM").hide();
+			$("#caseQ").show();
+			$("#caseD").hide();
+		} else if (menuCase.indexOf("d") >= 0) {
+			$("#caseM").hide();
+			$("#caseQ").hide();
+			$("#caseD").show();
+		} else {
+            // [D]와 같은처리
+			$("#caseM").hide();
+			$("#caseQ").hide();
+			$("#caseD").show();
+		}
+	}
+
+	function initSelectReportDetail() {
+        $("#caseM_year").html("년도 <span class='caret'></span>");
+		$("#caseM_month").html("월 <span class='caret'></span>");
+		$("#caseQ_year").html("년도 <span class='caret'></span>");
+		$("#caseQ_quarter").html("분기 <span class='caret'></span>");
+		$("#caseD_year").html("년도 <span class='caret'></span>");
+		$("#caseD_month").html("월 <span class='caret'></span>");
+		$("#caseD_day").html("일 <span class='caret'></span>");
+	}
+
+    // 연결 리포트 - 메뉴 선택 - 년도, 분기, 월, 일 선택시
+	function setDate(obj, division) {
+		$("#" + division).html($(obj).html() + " <span class='caret'></span>");
+	}
+
+	function goReportLink(obj) {
+		if ($(obj).find("div:eq(1)").html() == "link") {
+			window.open($(obj).find("div:eq(2)").text(), "reportLink");
+		} else {
+			// 업로드된 이미지 파일인 경우에만 표시
+			if ($(obj).closest("li").attr("data-ct_id") != "0") {
+				window.open($(obj).find("div:eq(2)").text(), "reportLink");
+			}
+		}
+	}
+
+	function checkFileSetting(obj) {
+        // files 로 해당 파일 정보 얻기.
+		var file = obj.files;
+		var file_check_size = 1024 * 1024 * 10;
+
+		if (file[0].size > file_check_size) {
+			alert("10MB 이하의 파일만 등록할 수 있습니다.\n\n현재파일 용량 : " + (Math.round(file[0].size / 1024 / 1024 * 100) / 100) + "MB");
+
+			$("#fileContent").val("");
+			return;
+		}
+
+        //$("#file").val($(obj).val().replace("C:\\fakepath\\", ""));
+		$("#file").val($(obj)[0].files[0].name + "");
+	}
+
+    function cancelScenario() {
+		var flag = confirm("취소시 작성중인 내용이 삭제됩니다.");
+
+		if (flag) {
+			location.href = "/business/scenariolist/1";
+		}
+	}
+</script>
+
+<div class="col-lg-12">
+	<div class="ibox">
+		<div class="ibox-content">
+			<h5><b>■ 회의 시나리오 설정</b></h5>
+			<div class="content">
+				<div class="row">
+					<div class="col-sm-6 b-r">
+
+						<form class="form-horizontal" id="formBase" enctype="multipart/form-data">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">일정 :</label>
+								<div class="col-sm-10">
+									<div class="input-group">
+										<input type="text" id="txtCalendar" placeholder="yyyy-mm-dd" class="form-control" data-mask="9999-99-99" autocomplete="off" maxlength="10" value="" style="cursor:pointer">
+										<span class="input-group-addon" style="background:white; cursor:pointer" id="spnCalendar"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label">주제 :</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" placeholder="주제를 입력하세요." id="txtTitle" name="title" value="" autocomplete="off" maxlength="100" data-bs_id="0">
+								</div>
+							</div>
+
+							<br>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">추가 :</label>
+								<div class="col-sm-8">
+									<select class="form-control" id="selScenarioType">
+										<option value="1">매출현황</option>
+										<option value="2">손익현황</option>
+										<option value="3">재고현황</option>
+										<option value="4">생산현황</option>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<button type="button" class="btn btn-default btn-md" id="btnAppendScenario"><i class="fa fa-plus"></i></button>
+								</div>
+							</div>
+
+							<br>
+							<ul class="sortable-list connectList agile-list ui-sortable" id="ul_scerarios">
+							</ul>
+						</form>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group">
+							<form class="form-horizontal" id="formDetail" enctype="multipart/form-data">
+								<input type="text" class="form-control" placeholder="작성하세요." id="txtContentTitle" name="title" value="" autocomplete="off" maxlength="100">
+
+								<br>
+								<div class="form-group">
+									<div class="i-checks col-sm-5">
+										<label class="">
+											<div class="iradio_square-green" style="position: relative;">
+												<input type="radio" value="연결리포트" name="ladio" id="rdoLink" style="position: absolute; opacity: 0;" checked="checked">
+											</div>
+											<i></i> 연결리포트
+										</label>
+									</div>
+
+									<div class="i-checks col-sm-5">
+										<label class="">
+											<div class="iradio_square-green" style="position: relative;">
+												<input type="radio" value="이미지" name="ladio" id="rdoImage" style="position: absolute; opacity: 0;">
+											</div>
+											<i></i> 이미지
+										</label>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="i-checks col-sm-12 text-center">
+										<button type="button" class="btn btn-w-m btn-primary" onclick="addContent()">추가하기</button>
+									</div>
+								</div>
+
+								<br>
+								<ul class="sortable-list connectList2 agile-list ui-sortable" id="ul_contents">
+								</ul>
+							</form>
+						</div>
+					</div>
+
+
+					<div class="col-sm-12 text-center">
+						<button type="button" class="btn btn-w-m btn-primary" id="btnSaveScenario">저장</button>
+						<button type="button" class="btn btn-w-m btn-default" onclick="cancelScenario()">취소</button>
+					</div>
+
+					<!-- 연결리포트 모달 -->
+					<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+						<div class="modal-dialog modal-md">
+							<div class="modal-content">
+								<div class="modal-header">
+
+									<div class="form-group">
+										<form class="form-horizontal" id="formlink" enctype="">
+
+											<div class="form-group">
+												<div class="col-sm-6">
+													<select class="form-control" id="selCompany"></select>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<div class="col-sm-4 text-left">
+													<div class="dropdown">
+														<button class="btn btn-default dropdown-toggle" id="btnMenuList" type="button" data-toggle="dropdown" data-selected_menu_id="0">
+															목록 <span class="caret"></span>
+														</button>
+
+														<ul id="ul_menus" class="dropdown-menu">
+														</ul>
+													</div>
+												</div>
+
+												<!-- case M -->
+												<div id="caseM" style="display:none">
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseM_year" type="button" data-toggle="dropdown">
+																년도 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																@foreach (var item in Model.DisplayYearList)
+																{
+																	<li onclick='setDate(this, "caseM_year")'>@item</li>
+																}
+															</ul>
+														</div>
+													</div>
+
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseM_month" type="button" data-toggle="dropdown">
+																월 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																<li onclick='setDate(this, "caseM_month")'>1월</li>
+																<li onclick='setDate(this, "caseM_month")'>2월</li>
+																<li onclick='setDate(this, "caseM_month")'>3월</li>
+																<li onclick='setDate(this, "caseM_month")'>4월</li>
+																<li onclick='setDate(this, "caseM_month")'>5월</li>
+																<li onclick='setDate(this, "caseM_month")'>6월</li>
+																<li onclick='setDate(this, "caseM_month")'>7월</li>
+																<li onclick='setDate(this, "caseM_month")'>8월</li>
+																<li onclick='setDate(this, "caseM_month")'>9월</li>
+																<li onclick='setDate(this, "caseM_month")'>10월</li>
+																<li onclick='setDate(this, "caseM_month")'>11월</li>
+																<li onclick='setDate(this, "caseM_month")'>12월</li>
+															</ul>
+														</div>
+													</div>
+												</div>
+
+												<!-- case Q -->
+												<div id="caseQ" style="display:none">
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseQ_year" type="button" data-toggle="dropdown">
+																년도 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																@foreach (var item in Model.DisplayYearList)
+																{
+																	<li onclick='setDate(this, "caseQ_year")'>@item</li>
+																}
+															</ul>
+														</div>
+													</div>
+
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseQ_quarter" type="button" data-toggle="dropdown">
+																분기 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																<li onclick='setDate(this, "caseQ_quarter")'>1분기</li>
+																<li onclick='setDate(this, "caseQ_quarter")'>2분기</li>
+																<li onclick='setDate(this, "caseQ_quarter")'>3분기</li>
+																<li onclick='setDate(this, "caseQ_quarter")'>4분기</li>
+															</ul>
+														</div>
+													</div>
+												</div>
+
+												<!-- case D -->
+												<div id="caseD" style="display:none">
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseD_year" type="button" data-toggle="dropdown">
+																년도 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																@foreach (var item in Model.DisplayYearList)
+																{
+																	<li onclick='setDate(this, "caseD_year")'>@item</li>
+																}
+															</ul>
+														</div>
+													</div>
+
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseD_month" type="button" data-toggle="dropdown">
+																월 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																<li onclick='setDate(this, "caseD_month")'>1월</li>
+																<li onclick='setDate(this, "caseD_month")'>2월</li>
+																<li onclick='setDate(this, "caseD_month")'>3월</li>
+																<li onclick='setDate(this, "caseD_month")'>4월</li>
+																<li onclick='setDate(this, "caseD_month")'>5월</li>
+																<li onclick='setDate(this, "caseD_month")'>6월</li>
+																<li onclick='setDate(this, "caseD_month")'>7월</li>
+																<li onclick='setDate(this, "caseD_month")'>8월</li>
+																<li onclick='setDate(this, "caseD_month")'>9월</li>
+																<li onclick='setDate(this, "caseD_month")'>10월</li>
+																<li onclick='setDate(this, "caseD_month")'>11월</li>
+																<li onclick='setDate(this, "caseD_month")'>12월</li>
+															</ul>
+														</div>
+													</div>
+
+													<div class="col-sm-2">
+														<div class="dropdown">
+															<button class="btn btn-default dropdown-toggle" id="caseD_day" type="button" data-toggle="dropdown">
+																일 <span class="caret"></span>
+															</button>
+
+															<ul class="dropdown-menu level">
+																<li onclick='setDate(this, "caseD_day")'>1일</li>
+																<li onclick='setDate(this, "caseD_day")'>2일</li>
+																<li onclick='setDate(this, "caseD_day")'>3일</li>
+																<li onclick='setDate(this, "caseD_day")'>4일</li>
+																<li onclick='setDate(this, "caseD_day")'>5일</li>
+																<li onclick='setDate(this, "caseD_day")'>6일</li>
+																<li onclick='setDate(this, "caseD_day")'>7일</li>
+																<li onclick='setDate(this, "caseD_day")'>8일</li>
+																<li onclick='setDate(this, "caseD_day")'>9일</li>
+																<li onclick='setDate(this, "caseD_day")'>10일</li>
+															</ul>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<button type="button" class="btn btn-w-m btn-primary" id="btnAddContentReport">추가하기</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 이미지 모달 -->
+					<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+						<div class="modal-dialog modal-md">
+							<div class="modal-content">
+								<div class="modal-header">
+									<form class="form-horizontal" id="formImage" enctype="">
+										<div class="form-group" style="margin-left:15px; margin-right: 15px">
+											<div class="col-sm-9" style="padding:0px;">
+												<input type="text" class="form-control" placeholder="작성하세요." id="file" name="file" value="" autocomplete="off" style="cursor: pointer;" readonly>
+											</div>
+											<div class="col-sm-2" style="padding:0px" id="file_form">
+												<label id="label" class="btn btn-w-m btn-default">
+													파일추가 <input type="file" id="fileContent" onchange="checkFileSetting(this)" style="display: none; z-index: 0;" />
+												</label>
+											</div>
+										</div>
+
+										<button type="button" class="btn btn-w-m btn-primary" id="btnAddContentImage">추가하기</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
