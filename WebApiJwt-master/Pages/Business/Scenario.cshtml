@@ -174,18 +174,38 @@
 
         // 이미지 파일 추가하기
 		$("#btnAddContentImage").click(function () {
-			if ($("#fileContent").val() == "") {
-				$("#myModal2").modal("hide");
-			} else {
+			if ($("#fileContent").val() != "") {
 				addContentList("img", $("#txtContentTitle").val(), "", "0");
 
-				var clone_file_element = $("#fileContent").clone();
-				clone_file_element.removeAttr("id");
-				
-				$("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)").after(clone_file_element);
-				
-                $("#myModal2").modal("hide");
+				// 파일 업로드
+				var formData = new FormData();
+				formData.append("files", $("#fileContent")[0].files[0]);
+
+				$.ajax({
+					url: "/api/FileUpload/UploadAttachFiles",
+					data: formData,
+					async: false,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					beforeSend: function () {
+					},
+					success: function (data) {
+						var $targetObj = $("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)");
+						$targetObj.attr("data-file_name", data[0].fileName);
+						$targetObj.attr("data-file_size", data[0].fileSize);
+						$targetObj.html(data[0].fileURL);
+					},
+					error: function (data) {
+						alert("오류가 발생하였습니다. [" + data.responseText + "]");
+						return false;
+					},
+					complete: function () {
+					}
+				});
 			}
+
+			$("#myModal2").modal("hide");
 		});
 
 		// 저장하기
@@ -260,39 +280,13 @@
 						} else {
 							content_sorting++;
 
-							if ($(this).find(":file").length > 0 && $(this).find(":file").get(0).files[0] != undefined) {
-								// 파일 업로드
-								var formData = new FormData();
-								formData.append("files", $(this).find(":file").get(0).files[0]);
+							if (businessContent.contentType == "img") {
+								var businessFile = {};
+								businessFile.fileName = $(this).find("td:eq(1)").find("div:eq(2)").attr("data-file_name");
+								businessFile.fileSize = $(this).find("td:eq(1)").find("div:eq(2)").attr("data-file_size");
+								businessFile.fileURL = $(this).find("td:eq(1)").find("div:eq(2)").html();
 
-								$.ajax({
-									url: "/api/FileUpload/UploadAttachFiles",
-									data: formData,
-									async: false,
-									processData: false,
-									contentType: false,
-									type: "POST",
-									beforeSend: function () {
-									},
-									success: function (data) {
-										var businessFile = {};
-										businessFile.fileName = data[0].fileName;
-										businessFile.fileSize = data[0].fileSize;
-										businessFile.fileURL = data[0].fileURL;
-
-										businessContent.businessFile = businessFile;
-										businessContent.contentData = data[0].fileURL;
-
-										e.preventDefault();
-									},
-									error: function (data) {
-										e.preventDefault();
-										alert("오류가 발생하였습니다. [" + data.responseText + "]");
-										return false;
-									},
-									complete: function () {
-									}
-								});
+								businessContent.businessFile = businessFile;
 							}
 						}
 
@@ -610,9 +604,7 @@
 			window.open($(obj).find("div:eq(2)").text(), "reportLink");
 		} else {
 			// 업로드된 이미지 파일인 경우에만 표시
-			if ($(obj).closest("li").attr("data-ct_id") != "0") {
-				window.open($(obj).find("div:eq(2)").text(), "reportLink");
-			}
+			window.open($(obj).find("div:eq(2)").text(), "reportLink");
 		}
 	}
 
@@ -633,7 +625,6 @@
 			return;
 		}
 
-        //$("#file").val($(obj).val().replace("C:\\fakepath\\", ""));
 		$("#file").val($(obj)[0].files[0].name + "");
 	}
 

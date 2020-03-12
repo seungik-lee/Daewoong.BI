@@ -39,6 +39,9 @@ namespace Daewoong.BI
                 return Redirect("/login.html");
             }
 
+            // 이전 게시된 정보 조회
+            SetPublishedBusinessInfo();
+
             using (var db = new DWContext())
             {
                 using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
@@ -161,9 +164,6 @@ namespace Daewoong.BI
                     }
                 }
             }
-
-            // 이전 게시된 정보 조회
-            SetPublishedBusinessInfo();
 
             return Page();
         }

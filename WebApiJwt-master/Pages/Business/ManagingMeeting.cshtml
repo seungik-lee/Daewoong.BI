@@ -32,6 +32,12 @@
 			//location.href = "/business/scenariolist/1";
 		}
 
+		if (businessBaseObjCount == 0 && prevBusinessBaseObjCount > 0) {
+			// 현재 탭 숨김
+			$("#list_tabs li:eq(0)").hide();
+			$("#list_tabs li:eq(1) a").trigger("click");
+		}
+
 		// 경영회의 진행 화면 목록 탭버튼 클릭시 해당 탭의 컨텐츠 영역 활성화 처리
 		$('#list_tabs a').click(function (e) {
 			e.preventDefault();

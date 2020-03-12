@@ -74,7 +74,8 @@
     <script src="~/app/dw/js/jquery-ui/jquery-ui.min.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function () {
+		$(document).ready(function () {
+            $("#divAnalysis").html($("#txtAnalysis").text());
 		});
 
 		function closeWindow() {
@@ -91,24 +92,29 @@
                         <h4>@Model.businessCaption > 총평/지시사항</h4>
                     </div>
                     <div class="ibox-content">
-						<form class="form-horizontal" id="form" enctype="multipart/form-data">
-							<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : @Model.analysisUpdateDate</b></h5>
+                        <form class="form-horizontal" id="form" enctype="multipart/form-data">
+                            <h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : @Model.analysisUpdateDate</b></h5>
 
-							<div>
-								@Model.analysisObj.Txt
-							</div>
+                            <div id="divAnalysis"></div>
 
-							<div class="file_form">
-								@foreach (var businessFile in Model.businessFiles)
-								{
-									<i class="glyphicon glyphicon-download"></i><a href="@businessFile.FileURL" target="_blank">@businessFile.FileName</a>
-								}
-							</div>
+                            <textarea id="txtAnalysis" style="display:none">
+							    @Model.analysisObj.Txt
+						    </textarea>
 
-							<div class="buttonDiv">
-								<button type="button" class="btn btn-w-m btn-primary" onclick="closeWindow();">창닫기</button>
-							</div>
-						</form>
+                            <div class="file_form">
+                                @if (Model.businessFiles != null && Model.businessFiles.Count > 0)
+                                {
+                                    foreach (var businessFile in Model.businessFiles)
+                                    {
+                                        <i class="glyphicon glyphicon-download"></i><a href="@businessFile.FileURL" target="_blank"> @businessFile.FileName</a>
+                                    }
+                                }
+                            </div>
+
+                            <div class="buttonDiv">
+                                <button type="button" class="btn btn-w-m btn-primary" onclick="closeWindow();">창닫기</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
