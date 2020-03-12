@@ -1,0 +1,274 @@
+﻿@page "{scenarioID}"
+@model Daewoong.BI.GeneralCommentModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>대웅제약 BI</title>
+
+    <link href="~/app/css/core0220.css" rel="stylesheet" />
+    <link href="~/app/dw/css/style.css" rel="stylesheet" />
+    <link href="~/app/dw/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/app/dw/css/iCheck/custom.css" rel="stylesheet" />
+    <link href="~/app/dw/css/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <style>
+        .content {
+            margin: 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 5px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            min-height: 40px;
+            min-width: 40px;
+        }
+
+        .filelabel {
+            width: auto;
+            padding: 10px 12px;
+            border: 0px;
+            z-index: 1;
+        }
+
+        .file_form {
+            margin-top: 15px;
+        }
+
+        .buttonDiv {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+            .buttonDiv > button {
+                min-width: 85px;
+            }
+
+        .file {
+            width: auto;
+            display: inline-block;
+            cursor: pointer;
+            margin-bottom: 5px;
+            margin-left: 12px;
+            margin-right: -5px;
+            height: 40px;
+        }
+    </style>
+
+    <script src="~/app/script/jquery.js"></script>
+    <script src="~/app/dw/js/bootstrap.js"></script>
+    <script src="~/app/dw/js/iCheck/icheck.min.js"></script>
+    <script src="~/app/dw/js/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/lib/ckeditor4/ckeditor.js"></script>
+    
+    <script type="text/javascript">
+        var file_check_size = 1024 * 1024 * 10;
+	    var pageStatus = "@Model.PageStatus";
+        var businessFiles = '@Html.Raw(Json.Serialize(Model.businessFiles))';
+
+		$(document).ready(function () {
+			if (pageStatus == "SessionExpired") {
+			    alert("로그인 정보가 없습니다. 다시 로그인하세요.");
+				opener.location.href = "/login.html";
+				window.close();
+			}
+
+            CKEDITOR.replace("txtContent");
+
+            setTimeout(function () {
+				CKEDITOR.instances.txtContent.setData($("#txtComment").text());
+			}, 700);
+
+            if (businessFiles != "null") {
+			    var jsonBusinessFiles = JSON.parse(businessFiles);
+
+			    var html = "";
+
+			    for (var i = 0; i < jsonBusinessFiles.length; i++) {
+				    html += '<div class="file_form" style="display:;">';
+				    html += '	<div class="form-group" style="margin-left:0px;">';
+				    html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				    html += '		<label class="btn filelabel" onclick="openAttachFile(this)" data-file_url="' + jsonBusinessFiles[i].fileURL + '">' + jsonBusinessFiles[i].fileName + '</label>';
+				    html += '		<input type="file" style="display: none; z-index: 0;" data-file_id="' + jsonBusinessFiles[i].fileID + '" data-file_status="" />';
+				    html += '		</label>';
+				    html += '	</div>';
+				    html += '</div>';
+			    }
+
+			    $(".buttonDiv").before(html);
+			}
+
+			$("#btnSave").click(function (e) {
+                var businessAnalysis = {};
+				businessAnalysis.analysisID = @Model.analysisObj.AnalysisID;
+				businessAnalysis.txt = CKEDITOR.instances.txtContent.getData();
+
+				var businessFiles = [];
+
+				$(":file[data-file_id]").each(function (index) {
+					var businessFile = {};
+
+					if ($(this).get(0).files[0] != undefined) {
+						// 파일 업로드
+						var formData = new FormData();
+						formData.append("files", $(this).get(0).files[0]);
+
+						$.ajax({
+							url: "/api/FileUpload/UploadAttachFiles",
+							data: formData,
+							async: false,
+							processData: false,
+							contentType: false,
+							type: "POST",
+							beforeSend: function () {
+							},
+							success: function (data) {
+								businessFile.fileName = data[0].fileName;
+								businessFile.fileSize = data[0].fileSize;
+								businessFile.fileURL = data[0].fileURL;
+
+								businessFiles.push(businessFile);
+
+								e.preventDefault();
+							},
+							error: function (message) {
+								e.preventDefault();
+								alert("Error! : " + message);
+								return false;
+							},
+							complete: function () {
+							}
+						});
+					} else {
+						if ($(this).attr("data-file_status") == "deleted") {
+							businessFile.fileID = $(this).attr("data-file_id");
+							businessFile.Status = "deleted";
+
+							businessFiles.push(businessFile);
+						}
+					}
+				});
+
+				businessAnalysis.businessFiles = businessFiles;
+
+				$.ajax({
+					url: "/api/business/SetBusinessComment",
+					data: JSON.stringify(businessAnalysis),
+					type: "POST",
+					contentType: "application/json",
+					success: function (message) {
+						alert(message);
+
+						window.location.reload();
+					},
+					error: function (data) {
+						// 세션이 끊긴 상태
+						if (data.status == 600) {
+							alert("로그인 정보가 없습니다. 다시 로그인하세요.");
+							opener.location.href = "/login.html";
+							window.close();
+						} else {
+							alert("error : " + data.responseText);
+						}
+					}
+				});
+			});
+		});
+
+        function addfile() {
+		    var html = "";
+		    html += '<div class="file_form">';
+		    html += '	<div class="form-group" style="margin-left:0px;">';
+		    html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+		    html += '		<input type="text" class="form-control file" name="file" value="" autocomplete="off" readonly>';
+		    html += '		<label class="btn btn-w-m btn-default" style="line-height: 30px; height: 40px;">';
+		    html += '		파일추가 <input type="file" onchange="checkFileSetting(this)" style="display: none; z-index: 0;" data-file_id="0" data-file_status="" />';
+		    html += '		</label>';
+		    html += '	</div>';
+		    html += '</div>';
+
+		    $(".buttonDiv").before(html);
+		}
+
+        // 파일 삭제
+	    function fileDelete(obj) {
+		    // 업로드된 파일인 경우
+		    if ($(obj).parent().find(":file").attr("data-file_id") != "0") {
+			    $(obj).parent().find(":file").attr("data-file_status", "deleted");
+			    $(obj).parent().parent().hide();
+		    } else {
+			    $(obj).parent().parent().remove();
+		    }
+		}
+
+        function checkFileSetting(obj) {
+		    var file = obj.files;
+		    var file_check_size = 1024 * 1024 * 10;
+
+		    if (file[0].size > file_check_size) {
+			    alert("10MB 이하의 파일만 등록할 수 있습니다.\n\n현재파일 용량 : " + (Math.round(file[0].size / 1024 / 1024 * 100) / 100) + "MB");
+
+			    $(obj).val("");
+			    return;
+		    }
+
+		    $(obj).parent().parent().find(".file").val($(obj)[0].files[0].name + "");
+		}
+
+		function closeWindow() {
+            window.close();
+		}
+
+		function openAttachFile(obj) {
+			window.open($(obj).attr("data-file_url"), "reportLink");
+		}
+    </script>
+</head>
+<body>
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h4>@Model.businessCaption > 총평/지시사항</h4>
+                    </div>
+                    <div class="ibox-content">
+						<form class="form-horizontal" id="form" enctype="multipart/form-data">
+							<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : @Model.analysisUpdateDate</b></h5>
+
+							<input type="text" name="Content" id="txtContent" />
+							<textarea id="txtComment" style="display:none;">@Model.analysisObj.Txt</textarea>
+
+							<div class="file_form">
+								<button type="button" class="btn btn-w-m btn-default" onclick="addfile()"><i class="fa fa-plus"></i></button>
+								<label onclick="addfile()" class="btn filelabel">
+									첨부파일 추가
+								</label>
+							</div>
+
+							<div class="buttonDiv">
+								<button type="button" class="btn btn-w-m btn-primary" id="btnSave">저장하기</button>
+								<button type="button" class="btn btn-w-m btn-primary" onclick="closeWindow();">창닫기</button>
+							</div>
+						</form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

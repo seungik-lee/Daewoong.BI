@@ -1,189 +1,264 @@
 ﻿
-<script src="../app/script/auth.js"></script>
 <script src="../app/script/menu.js"></script>
-<script src="../app/script/validator.js"></script>
 <style>
-    .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
-        background: none !important;
-    }
+	.orange_bar_1200 {
+		background: #f77822;
+		background-image: url(/images/logo_1200.png);
+		background-repeat: no-repeat;
+		background-size: 155px 32px;
+		background-position: 0px 7px;
+	}
 
-    .dropdown-menu i {
-        padding-right: 10px;
-    }
+	.orange_bar_1300 {
+		background: #f77822;
+		background-image: url(/images/logo_1300.png);
+		background-repeat: no-repeat;
+		background-size: 155px 32px;
+		background-position: 0px 7px;
+	}
 
-    .nav > li > a {
-        padding-left: 0 !important;
-        margin-right: 20px;
-    }
+	.orange_bar_1400 {
+		background: #f77822;
+		background-image: url(/images/logo_1400.png);
+		background-repeat: no-repeat;
+		background-size: 155px 32px;
+		background-position: 0px 7px;
+	}
 
-    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
-        background: #bdbdbd !important;
-    }
+	.orange_bar_1500 {
+		background: #f77822;
+		background-image: url(/images/logo_1500.png);
+		background-repeat: no-repeat;
+		background-size: 155px 32px;
+		background-position: 0px 7px;
+	}
 
-    /*.open a {
-        color : black !important;
-        font-weight: bold !important;
-    }*/
+	.blank_logo {
+		width: 158px;
+		height: 50px;
+		margin-right: 0px;
+		display: block;
+	}
 
-    .menu li > a:hover, .menu li > a:focus {
-        color: #808080 !important;
-    }
+	.navbar {
+		background-color: #f77822;
+	}
 
-    .menu li > a:hover, .menu li > a:focus {
-        color: #efefef !important;
-    }
-    .level {
-        cursor:pointer;
-        padding:5px;
-    }
+	.navbar-default .navbar-nav > li > a, .navbar-default .navbar-brand {
+		color: #ffffff;
+	}
 
-        .level :hover {
-       
-    }
+	.navbar-default .navbar-nav > li > a:hover,
+	.navbar-default .navbar-nav > li > a:focus {
+		color: #fcd6bc;
+		background-color: #db5c09;
+	}
 
-    .level1 {
-        font-size:18px;
-        font-weight:600;
-        color:orange;
-    }
-        .level1 > div {
-        }
-    
-    .level2 {
-        padding-left:20px;
-        font-size:16px;
-        font-weight:500;
-        color:black;
-    }
+	/* dropdown 메뉴간격 */
+	.navbar-nav > li > .dropdown-menu {
+		margin-top: 5px;
+	}
 
-    .level2:hover {
-        background:#efefef;
-    }
+	.dropdown-menu > li > a {
+		line-height: 20px;
+	}
 
-    .level3 {
-        padding-left:40px;
-        font-size:13px;
-        font-weight:500;
+	.navbar-default .navbar-nav > li.open > a {
+		color: #dbdbdb !important;
+		background-color: #b54d06 !important;
+	}
 
-        color:black;
-    }
+	/* 단축메뉴 */
+	@media (max-width: 767px) {
+		.navbar {
+			background-color: #f77822;
+		}
 
-        .level3:hover {
-        background:#efefef;
-    }
+		.navbar-default .navbar-nav .open .dropdown-menu > li {
+			margin-left: 5px;
+		}
 
-    .fine-menu-container {
-        display:none;
-        position:absolute;
-        z-index:1100;
-        left:20px;right:20px;
-        top:68px;
-    }
-    .fine-menu {
-        background:#fff;
-        position:relative;
-        padding:20px;
-    }
+		.navbar-default .navbar-nav .open .dropdown-menu > li {
+			background-color: #e3e3e3;
+		}
+
+		.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+			color: #333333;
+		}
+
+		.navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+		.navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+			background-color: #ffffff;
+			color: #333333;
+		}
+	}
+
+	.navbar-default .navbar-toggle {
+		border-color: #f77822;
+	}
+
+	.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+		background-color: #db5c09;
+	}
+
+	.navbar-default .navbar-toggle .icon-bar {
+		background-color: #ffffff;
+	}
+
+	/* submenu */
+	.dropdown-submenu {
+		position: relative;
+	}
+
+	.dropdown-submenu > .dropdown-menu {
+		top: 0 !important;
+		left: 100% !important;
+		margin-top: -10px;
+		margin-left: -1px;
+		-webkit-border-radius: 0 6px 6px 6px;
+		-moz-border-radius: 0 6px 6px 6px;
+		border-radius: 0 6px 6px 6px;
+	}
+
+	.dropdown-submenu > a:after {
+		display: block;
+		content: " ";
+		float: right;
+		width: 0;
+		height: 0;
+		border-color: transparent;
+		border-style: solid;
+		border-width: 5px 0 5px 5px;
+		border-left-color: #c0c0c0;
+		margin-top: 5px;
+		margin-right: -10px;
+	}
+
+	.dropdown-submenu:hover > a:after {
+		border-left-color: #404040;
+	}
+
+	.dropdown-submenu.pull-left {
+		float: none;
+	}
+
+	.dropdown-submenu.pull-left > .dropdown-menu {
+		left: -100%;
+		margin-left: 10px;
+		-webkit-border-radius: 6px 0 6px 6px;
+		-moz-border-radius: 6px 0 6px 6px;
+		border-radius: 6px 0 6px 6px;
+	}
+
+	.dropdown-menu > li > a {
+		margin: 4px;
+	}
+
+	.btn-group, .btn-group-vertical {
+		position: relative;
+		display: inline-block;
+		vertical-align: middle;
+		margin:0;
+	}
 </style>
 
-<!--
-<nav class="navbar navbar-default" style="background:none;border:none">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">
-                <img alt="Brand" src="../images/logo_1200.png">
-            </a>
+<nav id="navLogoImage" class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">메뉴</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="/index.html" class="navbar-brand blank_logo">  </a>
+		</div>
 
-        </div>
+		<div class="navbar-collapse collapse" id="navbar">
+			<ul id="ul_navbar" class="nav navbar-nav"></ul>
 
-
-        <div class="collapse navbar-collapse">
-
-            <ul class="nav navbar-nav">
-
-                <li role="presentation"><a href="#"><img id="companyLogo" src=""></a></li>
-                <li role="presentation"><a href="#">FineReport</a></li>
-                <li role="presentation"><a href="#">경영관리</a></li>
-                <li role="presentation"><a href="#">영업관리</a></li>
-                <li role="presentation"><a href="#">생산관리</a></li>
-
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-
-
-                <li role="presentation" class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="true" aria-expanded="false">
-                        관리 <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                    </ul>
-                </li>
-
-            </ul>
-
-        </div>
-            
-
-</div>
+			<ul class="nav navbar-nav navbar-right">
+				<li id="liCompanyList" style="display:none;">
+					<div class="navbar-form navbar-left">
+						<div class="btn-group">
+							<button type="button" id="btnCompany" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							</button>
+							<ul id="ulCompanies" class="dropdown-menu" style="margin-top:40px;" role="menu"></ul>
+						</div>
+					</div>
+				</li>
+				<li class="dropdown">
+					<a id="lnkUserName" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
+					<ul class="dropdown-menu">
+						<li id="liManagingItem1" style="display:none;">
+							<a href="/admin/user.html">
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+								사용자 관리
+							</a>
+						</li>
+						<li id="liManagingItem2" style="display:none;">
+							<a href="/admin/kpi.html">
+								<span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+								지표 관리
+							</a>
+						</li>
+						<li id="liManagingItem3">
+							<a href="/setting.html">
+								<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+								Dashboard 관리
+							</a>
+						</li>
+						<li id="liManagingItem4">
+							<a href="#" onclick="showUserInfo()">
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+								사용자 비밀번호 변경
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" onclick="logout();">
+						&nbsp;
+						<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
 </nav>
--->
 
-    
-    <ul class="nav navbar-nav top-nav menu" style="margin-right:30px;width:100%;height:52px;">
-        <li style="float:left"><a href="../index.html" style="opacity:1;padding:10px;"><img style="width:160px;max-height:40px;margin-left:5px;" id="companyLogo" src="" /></a></li>
-        <li style="width:100px;">&nbsp;</li>
+<div class="modal fade in" id="divUserModal" tabindex="999" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display:none; padding-right: 17px;">
+	<div class="modal-dialog" role="document">
 
-        <li id="myDashboardMenu">
-            <a class="dropdown-toggle " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="../images/3.png">
-                <span style="font-size: 16px;letter-spacing:-0.3px;">My Dashboard</span> <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu menu2" id="myMenu" role="menu"></ul>
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="ModalLabel" style="position:relative;top:10px;">사용자 비밀번호 변경</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position:relative;top:-15px;" onclick="closeModal();">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
 
-        </li>
-        <li style="float:right;width:400px;margin-top:10px;margin-right:30px;">
-            <div style="float:right;">
-                <a class="dropdown-toggle " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding:16px 20px 15px 20px;text-decoration:none;">
-                    <img src="../images/ico-user.png" height="28" />
-                    <span style="font-size: 16px;letter-spacing:-0.3px;color:#fff;" id="userName"></span> <span class="caret" style="color:#fff;"></span>
-                </a>
-                <ul class="dropdown-menu menu2" role="menu">
-                    <li role="menuitem" id="userM" style="display:none"><a href="../admin/user.html"><i class="fa fa-user"></i>사용자관리</a></li>
-                    <li role="menuitem" id="kpiM" style="display:none"><a href="../admin/kpi.html"><i class="fa fa-bar-chart"></i>지표관리 </a></li>
-                    <li role="menuitem"><a href="../setting.html"><i class="fa fa-pie-chart"></i>Dashboard관리 </a></li>
-                    <li role="menuitem"><a onClick="logout()"><i class="fa fa-power-off"></i>로그아웃</a></li>
-                </ul>
-            </div>
-            <div style="float:right;display:none;" id="companyListContainer">
-                <button class="btn btn-dropdown dropdown-toggle form-control w200" style="width:150px;" aria-expanded="false" aria-haspopup="true" type="button" data-toggle="dropdown">
-                    <span class="text-bold" id="selectedCompanyTop">회사 선택</span>
-                    <span class="text-accent-color">
-                        <i class="fa fa-sort-down pull-right accent-color" aria-hidden="true"></i>
-                    </span>
-
-                </button>
-                <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button" id="companyList"></ul>
-            </div>
-
-        </li>
-    </ul>
-    <div class="fine-menu-container">
-        <div class="row fine-menu">
-            <div class="col-md-3" id="lvl1"></div>
-            <div class="col-md-3" id="lvl2"></div>
-            <div class="col-md-3" id="lvl3"></div>
-            <div class="col-md-3" id="lvl4"></div>
-        </div>
-        <div><button class="btn btn-primary" id="fineClose" style="width:100px;border-top-left-radius:0;border-top-right-radius:0;">Close</button></div>
-    </div>
-    <script>
-        var userName = localStorage.getItem("userName");
-        var companyID = localStorage.getItem("companyCode");
-        $("#userName").text(userName);
-        $("#companyLogo").attr("src", "../images/logo_" + companyID + ".png");
-    </script>
-        
+			<div class="modal-body">
+				<div class="form-group">
+					<label>이전 비밀번호</label>
+					<input type="password" class="form-control w200" data-minlength="6" style="" id="txtOldPassword" maxlength="20" placeholder="이전 비밀번호를 입력하세요." autocomplete="off" onfocus="removeErrorStyle(this)" />
+					<div class="help-block with-errors"></div>
+				</div>
+				<div class="form-group">
+					<label>변경할 비밀번호</label>
+					<input type="password" class="form-control w200" data-minlength="6" style="" id="txtNewPassword" maxlength="20" placeholder="변경할 비밀번호를 입력하세요." autocomplete="off" onfocus="removeErrorStyle(this)" />
+					<div class="help-block with-errors"></div>
+				</div>
+				<div class="form-group">
+					<label>변경할 비밀번호 확인</label>
+					<input type="password" class="form-control w200" data-minlength="6" style="" id="txtConfirmPassword" maxlength="20" placeholder="변경할 비밀번호를 동일하게 입력하세요." autocomplete="off" onfocus="removeErrorStyle(this)" />
+					<div class="help-block with-errors"></div>
+				</div>
+				<div class="modal-footer form-group">
+					<button type="button" class="btn btn-secondary cancel-button" onclick="closeModal();">취소</button>
+					<button type="submit" class="btn btn-primary save-button disabled" onclick="savePassword();" style="width:150px;">저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

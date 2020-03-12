@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,33 @@ namespace Daewoong.BI.Controllers
     [ApiController]
     public class BusinessController : ControllerBase
     {
+        private DWBIUser DWUserInfo
+        {
+            get
+            {
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
+            }
+        }
+
         [HttpPost]
         [Route("CreateBusinessScenario")]
         public string CreateBusinessScenario([FromBody] BusinessBase businessBaseObject)
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+                return null;
+            }
+
             if (businessBaseObject == null)
             {
                 Response.StatusCode = 500;
                 return "시스템 오류가 발생하였습니다. 잠시 후에 다시 시도해 주세요.";
             }
 
-            string writer_id = "yangnest@daewoong-bio.co.kr";
+            string writer_id = DWUserInfo.UserID;
+            bool is_create_business = (businessBaseObject.BusinessID == 0);
 
             using (var db = new DWContext())
             {
@@ -36,7 +53,7 @@ namespace Daewoong.BI.Controllers
                         conn.Open();
 
                         string bb_sql = $@" insert into business_base (dates, caption, ispublish, update_date, writer, isScenario, isAnalysis) 
-                                            values('{businessBaseObject.Dates.ToString("yyyy-MM-dd")}', '{businessBaseObject.Caption}', 'N', now(), '{writer_id}', 'N', 'N');";
+                                            values('{businessBaseObject.Dates.ToString("yyyy-MM-dd")}', '{WebUtility.HtmlEncode(businessBaseObject.Caption)}', 'N', now(), '{writer_id}', 'N', 'N');";
 
                         if (businessBaseObject.BusinessID > 0)
                         {
@@ -63,6 +80,25 @@ namespace Daewoong.BI.Controllers
                             }
                         }
 
+                        if (is_create_business)
+                        {
+                            // 총평 지시사항 관련 데이터 추가
+                            BusinessScenario scenario = new BusinessScenario();
+                            scenario.Sorting = 999;
+                            scenario.Types = 5;
+
+                            BusinessContent content = new BusinessContent();
+                            content.Label = "총평/지시사항";
+                            content.Sorting = 1;
+                            content.ContentType = "";
+                            content.ContentData = "";
+
+                            scenario.BusinessContents = new List<BusinessContent>();
+                            scenario.BusinessContents.Add(content);
+
+                            businessBaseObject.BusinessScenarios.Add(scenario);
+                        }
+
                         // 시나리오 정보 저장
                         foreach (BusinessScenario scenario in businessBaseObject.BusinessScenarios)
                         {
@@ -75,7 +111,9 @@ namespace Daewoong.BI.Controllers
                                 // 삭제된 시나리오 처리
                                 if (scenario.Status == "deleted")
                                 {
-                                    bs_sql = $@"delete from business_content 
+                                    bs_sql = $@"delete from business_analysis 
+                                                where scenario_id = {scenario.ScenarioID}; 
+                                                delete from business_content 
                                                 where scenario_id = {scenario.ScenarioID}; 
                                                 delete from business_scenario 
                                                 where scenario_id = {scenario.ScenarioID}";
@@ -187,13 +225,20 @@ namespace Daewoong.BI.Controllers
         [Route("SetBusinessAnalysis")]
         public string SetBusinessAnalysis([FromBody] List<BusinessAnalysis> businessAnalysises)
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+                return null;
+            }
+
             if (businessAnalysises == null || businessAnalysises.Count == 0)
             {
                 Response.StatusCode = 500;
                 return "시스템 오류가 발생하였습니다. 잠시 후에 다시 시도해 주세요.";
             }
 
-            string writer_id = "yangnest@daewoong-bio.co.kr";
+            string writer_id = DWUserInfo.UserID;
 
             using (var db = new DWContext())
             {
@@ -206,7 +251,7 @@ namespace Daewoong.BI.Controllers
                         foreach (BusinessAnalysis businessAnalysis in businessAnalysises)
                         {
                             string ba_upd_sql = $@"update business_analysis 
-                                    set txt = '{businessAnalysis.Txt}'
+                                    set txt = '{WebUtility.HtmlEncode(businessAnalysis.Txt)}'
                                         , update_date = now()
                                     where analysis_id = {businessAnalysis.AnalysisID};";
 
@@ -238,8 +283,75 @@ namespace Daewoong.BI.Controllers
                     }
                     catch (Exception ex)
                     {
-                        //tran.Rollback();
+                        Response.StatusCode = 500;
+                        return ex.ToString();
+                    }
+                }
+            }
 
+            Response.StatusCode = 200;
+            return "정상적으로 처리되었습니다.";
+        }
+
+        [HttpPost]
+        [Route("SetBusinessComment")]
+        public string SetBusinessComment([FromBody] BusinessAnalysis businessAnalysis)
+        {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+                return null;
+            }
+
+            if (businessAnalysis == null)
+            {
+                Response.StatusCode = 500;
+                return "시스템 오류가 발생하였습니다. 잠시 후에 다시 시도해 주세요.";
+            }
+
+            string writer_id = DWUserInfo.UserID;
+
+            using (var db = new DWContext())
+            {
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+
+                        string ba_upd_sql = $@" update business_analysis 
+                                                set txt = '{WebUtility.HtmlEncode(businessAnalysis.Txt)}'
+                                                    , update_date = now()
+                                                where analysis_id = {businessAnalysis.AnalysisID};";
+
+                        MySqlCommand cmd = new MySqlCommand(ba_upd_sql, conn);
+                        cmd.ExecuteNonQuery();
+
+                        if (businessAnalysis.BusinessFiles != null && businessAnalysis.BusinessFiles.Count > 0)
+                        {
+                            foreach (BusinessFile businessFile in businessAnalysis.BusinessFiles)
+                            {
+                                string bf_sql = "";
+
+                                if (businessFile.Status == "deleted")
+                                {
+                                    // 업로드된 파일정보 삭제
+                                    bf_sql = $@"delete from business_file where file_id = {businessFile.FileID}";
+                                }
+                                else
+                                {
+                                    // 파일 정보 저장
+                                    bf_sql = $@"insert into business_file (ref_id, table_header, file_name, file_size, file_url, writer, update_date) values ({businessAnalysis.AnalysisID}, 'analysis', '{businessFile.FileName}', {businessFile.FileSize}, '{businessFile.FileURL}', '{writer_id}', now())";
+                                }
+
+                                cmd = new MySqlCommand(bf_sql, conn);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
                         Response.StatusCode = 500;
                         return ex.ToString();
                     }

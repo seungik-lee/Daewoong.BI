@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,14 @@ namespace Daewoong.BI.Controllers
     //[ApiController]
     public class CompanyController : ControllerBase
     {
+        private DWBIUser DWUserInfo
+        {
+            get
+            {
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
+            }
+        }
+
         [HttpGet]
         public List<Company> Get()
         {
@@ -42,6 +51,31 @@ namespace Daewoong.BI.Controllers
                 }
                 return list;
             }
+        }
+
+        /// <summary>
+        /// 접속한 회원이 가지고 있는 모든 회사 리스트 조회
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetCompanies")]
+        public List<Company> GetCompanies()
+        {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+
+                return null;
+            }
+
+            if (DWUserInfo.UserRole == Role.Member)
+            {
+                return null;
+            }
+
+            // 모든 회사 코드 조회해서 넘겨줌
+            return Get();
         }
 
         /// <summary>

@@ -7,8 +7,6 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<link href="~/app/dw/css/ScenarioList.css" rel="stylesheet" />
-
 <script type="text/javascript">
 	$(document).ready(function () {
         $(".i-checks").click(function() {
@@ -65,6 +63,11 @@
 
 			for (var i = 0; i < $(".i-checks").length; i++) {
 				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html()) == "O") {
+						alert("제목 [" + $("#table_list").find("tbody").children().eq(i).find("td").eq(2).html() + "] 항목은 게시된 상태이므로, 시나리오를 해제할 수 없습니다.");
+						return;
+					}
+
 					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(3).html()) == "O") {
 						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
 					}
@@ -152,6 +155,11 @@
 
 			for (var i = 0; i < $(".i-checks").length; i++) {
 				if ($(".i-checks").eq(i).children().attr("class").indexOf("checked") >= 0) {
+					if ($(".i-checks").eq(i).find(":checkbox").attr("data-is_publish") == "Y") {
+						alert("제목 [" + $("#table_list").find("tbody").children().eq(i).find("td").eq(2).html() + "] 항목은 게시된 상태이므로, 원인분석을 해제할 수 없습니다.");
+						return;
+					}
+
 					if ($.trim($("#table_list").find("tbody").children().eq(i).find("td").eq(4).html()) == "O") {
 						business_ids += $(".i-checks").eq(i).find(":checkbox").attr("data-business_id") + ",";
 					}
@@ -337,6 +345,7 @@
                                     var publishDates = item.PublishDate.ToString("yyyy-MM-dd");
 									var isCompletedPublish = (publishDates == "9999-12-31") ? "N" : "Y";
                                     var updateDates = item.UpdateDate.ToString("yyyy-MM-dd HH:mm");
+									var scenarioTitle = (isPublish == "Y") ? $"[게시]{item.Caption}" : item.Caption;
                                 }
                                 <td>
                                     <div class="i-checks">
@@ -347,16 +356,7 @@
                                     </div>
                                 </td>
                                 <td>@Html.DisplayFor(x => dates)</td>
-								<td>
-									@if (isPublish == "Y")
-									{
-										@Html.Raw("[게시]")@Html.DisplayFor(x => item.Caption)
-									}
-									else
-									{
-										@Html.DisplayFor(x => item.Caption)
-									}
-								</td>
+								<td style="width:auto;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;position:relative;">@scenarioTitle</td>
                                 <td>
                                     @if (isScenario == "N")
                                     {
@@ -436,7 +436,8 @@
                                   cs-last-page-text="»"
                                   cs-pager-li-current-class="footable-page active"
                                   cs-pager-li-non-active-class="footable-page-arrow disabled"
-                                  cs-pager-li-other-class="footable-page">
+                                  cs-pager-li-other-class="footable-page"
+								  cs-suppress-empty-pager="false">
                         </cs-pager>
                     </div>
                 </div>

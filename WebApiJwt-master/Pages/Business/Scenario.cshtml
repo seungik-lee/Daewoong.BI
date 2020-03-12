@@ -14,6 +14,7 @@
     var file_check_size = 1024 * 1024 * 10;
 	var selected_scenario_obj = null;
 	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
+	var dWUserInfo = '@Html.Raw(Json.Serialize(Model.DWUserInfo))';
 
 	$(document).ready(function () {
         // 달력 컨트롤
@@ -121,7 +122,10 @@
 						return;
 					}
 
-					link_url +=  $.trim($("#caseM_year").text().replace("년", "")) + $.trim($("#caseM_month").text().replace("월", ""));
+					var month_text = $.trim($("#caseM_month").text().replace("월", ""));
+					month_text = (month_text.length == 1) ? "0" + month_text : month_text;
+
+					link_url +=  $.trim($("#caseM_year").text().replace("년", "")) + month_text;
 			    } else if (menuCase.indexOf("q") >= 0) {
 				    if ($.trim($("#caseQ_year").text()) == "년도") {
 						alert("년도를 선택하세요.");
@@ -134,7 +138,7 @@
 					}
 
                     link_url += $.trim($("#caseQ_year").text().replace("년", "")) + $.trim($("#caseQ_quarter").text().replace("분기", ""));
-			    } else {
+			    } else if (menuCase.indexOf("d") >= 0) {
 				    if ($.trim($("#caseD_year").text()) == "년도") {
 						alert("년도를 선택하세요.");
 						return;
@@ -157,7 +161,9 @@
 					day_text = (day_text.length == 1) ? "0" + day_text : day_text;
 
 					link_url += $.trim($("#caseD_year").text().replace("년", "")) + month_text + day_text;
-			    }
+				} else {
+					link_url = $(match_report_obj).attr("data-url");
+				}
 
                 // 컨텐츠 첨부 파일 추가
 				addContentList("link", $("#txtContentTitle").val(), link_url, "0");
@@ -175,8 +181,9 @@
 
 				var clone_file_element = $("#fileContent").clone();
 				clone_file_element.removeAttr("id");
-				$("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)").after(clone_file_element)
-
+				
+				$("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)").after(clone_file_element);
+				
                 $("#myModal2").modal("hide");
 			}
 		});
@@ -278,9 +285,9 @@
 
 										e.preventDefault();
 									},
-									error: function (message) {
+									error: function (data) {
 										e.preventDefault();
-										alert("Error! : " + message);
+										alert("오류가 발생하였습니다. [" + data.responseText + "]");
 										return false;
 									},
 									complete: function () {
@@ -300,6 +307,8 @@
 
 			businessBase.businessScenarios = businessScenarios;
 
+			$("#btnSaveScenario").prop("disabled", true);
+
 			$.ajax({
 				url: "/api/business/CreateBusinessScenario",
 				data: JSON.stringify(businessBase),
@@ -310,8 +319,16 @@
 
 					location.href = "/business/scenariolist/1";
 				},
-				error: function (message) {
-					alert("error : " + message);
+				error: function (data) {
+					// 세션이 끊긴 상태
+					if (data.status == 600) {
+						location.href = "/login.html";
+					} else {
+						alert("오류가 발생하였습니다. [" + data.responseText + "]");
+					}
+				},
+				complete: function (data) {
+					$("#btnSaveScenario").prop("disabled", false);
 				}
 			});
 		});
@@ -394,7 +411,7 @@
 		html += "			    <td onclick='goReportLink(this)' style='text-align: left; padding-left: 15px;'>";
 		html += '				    <div class="file_value">' + text + '</div>';
 		html += '				    <div style="display:none;">' + content_type + '</div>';
-        html += '				    <div style="display:none;">' + link_url + '</div>';
+		html += '				    <div style="display:none;">' + link_url + '</div>';
 		html += '			    </td>';
 		html += '			</tr>';
 		html += '		</tbody>';
@@ -506,7 +523,7 @@
 				dic_relation_report[companyCode] = data;
 				displayRelationReport(dic_relation_report[companyCode]);
 			},
-			error: function (message) {
+			error: function (data) {
 			}
 		});
 	}
@@ -569,7 +586,7 @@
             // [D]와 같은처리
 			$("#caseM").hide();
 			$("#caseQ").hide();
-			$("#caseD").show();
+			$("#caseD").hide();
 		}
 	}
 
@@ -611,6 +628,11 @@
 			return;
 		}
 
+		if (!/\.(gif|jpg|jpeg|png)$/i.test(file[0].name)) {
+			alert('gif, jpg, png 파일만 선택해 주세요.\n\n현재 파일 : ' + file[0].name);
+			return;
+		}
+
         //$("#file").val($(obj).val().replace("C:\\fakepath\\", ""));
 		$("#file").val($(obj)[0].files[0].name + "");
 	}
@@ -646,7 +668,7 @@
 							<div class="form-group">
 								<label class="col-sm-2 control-label">주제 :</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" placeholder="주제를 입력하세요." id="txtTitle" name="title" value="" autocomplete="off" maxlength="100" data-bs_id="0">
+									<input type="text" class="form-control" placeholder="주제를 입력하세요." id="txtTitle" name="title" value="" autocomplete="off" maxlength="30" data-bs_id="0">
 								</div>
 							</div>
 
@@ -667,14 +689,16 @@
 							</div>
 
 							<br>
+							<p><i class="fa fa-reorder"></i> 현황 리스트</p>
 							<ul class="sortable-list connectList agile-list ui-sortable" id="ul_scerarios">
 							</ul>
 						</form>
 					</div>
 					<div class="col-sm-6">
 						<div class="form-group">
+							<p><i class="fa fa-info-circle"></i> 현황 리스트를 선택후 추가 하세요.</p>
 							<form class="form-horizontal" id="formDetail" enctype="multipart/form-data">
-								<input type="text" class="form-control" placeholder="작성하세요." id="txtContentTitle" name="title" value="" autocomplete="off" maxlength="100">
+								<input type="text" class="form-control" placeholder="작성하세요." id="txtContentTitle" name="title" value="" autocomplete="off" maxlength="30">
 
 								<br>
 								<div class="form-group">

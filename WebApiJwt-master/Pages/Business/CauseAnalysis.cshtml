@@ -1,45 +1,51 @@
-﻿@page "{businessID}"
+﻿@page "{businessID?}"
 @model Daewoong.BI.CauseAnalysisModel
 @{
 	ViewData["Title"] = "CauseAnalysis";
 	Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+<style type="text/css">
+	.agile-list {
+		padding-top: 0px;
+	}
+
+	.agile-list > li {
+		border: 0px;
+		padding: 0px;
+	}
+
+	.btn {
+		min-height: 40px;
+		min-width: 40px;
+	}
+
+    .depth2 li {
+		cursor:pointer;
+	}
+
+	h4 {
+		padding-bottom:15px;
+		font-size:12pt;
+		font-weight:bold
+	}
+</style>
+
 <link href="~/app/dw/css/datepicker/datepicker3.css" rel="stylesheet" />
-<link href="~/app/dw/css/CauseAnalysis.css" rel="stylesheet" />
-<script type="text/javascript" src="~/lib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="~/lib/ckeditor4/ckeditor.js"></script>
 
 <script type="text/javascript">
     var file_check_size = 1024 * 1024 * 10;
 	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
-	var businessFiles = '@Html.Raw(Json.Serialize(Model.businessFiles))';
 	var selected_analysis_obj = null;
 	
 	$(document).ready(function () {
 		CKEDITOR.replace("txtContent");
 		
-		if (businessFiles != "null") {
-			var jsonBusinessFiles = JSON.parse(businessFiles);
-
-			var html = "";
-
-			for (var i = 0; i < jsonBusinessFiles.length; i++) {
-				html += '<div class="file_form" style="display:;">';
-				html += '	<div class="form-group" style="margin-left:0px;">';
-				html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
-				html += '		<label class="btn filelabel">' + jsonBusinessFiles[i].fileName + '</label>';
-				html += '		<input type="file" style="display: none; z-index: 0;" data-analysis_id="' + jsonBusinessFiles[i].refID + '" data-file_id="' + jsonBusinessFiles[i].fileID + '" data-file_status="" />';
-				html += '		</label>';
-				html += '	</div>';
-				html += '</div>';
-			}
-
-			$(".buttonDiv").before(html);
-		}
-
 		if (selected_analysis_obj == null) {
 			setTimeout(function () {
 				CKEDITOR.instances.txtContent.setData($("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text());
+                //$("#page_path").text($("#path_" + $(selected_analysis_obj).attr("data-analysis_id")).text()); //path 지정
 			}, 500);
 
 			displayAnalysisData($("li[data-analysis_id]:eq(0)"));
@@ -50,6 +56,11 @@
 		});
 
 		$("#btnSaveAnalysis").click(function (e) {
+			// 에디터에 Comment 설정 => 입력하고 바로 저장 버튼 누를 시 세팅이 안될 수 있으므로,
+			if (CKEDITOR.instances.txtContent.getData() != $("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text()) {
+				$("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text(CKEDITOR.instances.txtContent.getData())
+			}
+
 			var businessAnalysises = [];
 
 			$("li[data-analysis_id]").each(function () {
@@ -116,10 +127,15 @@
 				success: function (message) {
 					alert(message);
 
-					location.href = "/business/scenariolist/1";
+					location.reload();
 				},
-				error: function (message) {
-					alert("error : " + message);
+				error: function (data) {
+					// 세션이 끊긴 상태
+					if (data.status == 600) {
+						location.href = "/login.html";
+					} else {
+						alert("error : " + data.responseText);
+					}
 				}
 			});
 		});
@@ -169,7 +185,11 @@
 		if ($(obj)[0] == $(selected_analysis_obj)[0]) {
 			// 선택된 컨텐츠와 같은 경우는 아무 것도 하지 않음
 			return;
-		}
+        }
+
+		// 2020-03-09 추가
+        $("#page_path span").html( $(obj).parent().parent().find("span").text() + " <i class='fa fa-chevron-right' /></i> " + $(obj).text());
+
 
 		$("#divItem").children().remove();
 
@@ -192,6 +212,10 @@
 			CKEDITOR.instances.txtContent.setData($("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text());
 		}, 250);
 	}
+
+	function openAttachFile(obj) {
+		window.open($(obj).attr("data-file_url"), "reportLink");
+	}
 </script>
 
 
@@ -201,17 +225,25 @@
 			<form class="form-horizontal" id="form" enctype="multipart/form-data">
 				@{
 					var updateDates = Model.businessBaseObj.UpdateDate;
+					var businesscaption = Model.businessBaseObj.Caption;
 				}
-				<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : @updateDates.ToString("yyyy-MM-dd HH:mm")</b></h5>
 
-				@*<textarea placeholder="Comments를 입력하세요." id="comments"></textarea>*@
+				<h4 id="page_path">@businesscaption <i class="fa fa-chevron-right"></i>  <span></span></h4>
+
+				<h5 style="color: #ef2565" id="modified_date"><b>마지막 수정일 : @updateDates.ToString("yyyy-MM-dd HH:mm")</b></h5>
+
 				<input type="text" name="Content" id="txtContent" />
 
-				<div id="divComment" style="display:none">
+				<div id="divComment" style="display: none">
 					@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
 					{
+
+
 						@foreach (var businessContent in businessScenario.BusinessContents)
 						{
+							//var businesslable2 = businessContent.Label;
+
+
 							<textarea id="txt_@businessContent.BusinessAnalysis.AnalysisID">@businessContent.BusinessAnalysis.Txt</textarea>
 						}
 					}
@@ -225,8 +257,22 @@
 					</label>
 				</div>
 
+				@if (Model.businessFiles != null && Model.businessFiles.Count > 0)
+				{
+					foreach (var businessFile in Model.businessFiles)
+					{
+						<div class="file_form">
+							<div class="form-group" style="margin-left:0px;">
+								<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>
+								<label class="btn filelabel" onclick="openAttachFile(this)" data-file_url="@businessFile.FileURL">@businessFile.FileName</label>
+								<input type="file" style="display: none; z-index: 0;" data-analysis_id="@businessFile.RefID" data-file_id="@businessFile.FileID" data-file_status="" />
+							</div>
+						</div>
+					}
+				}
+
 				<div class="buttonDiv">
-					<button type="button" class="btn btn-w-m btn-primary" id="btnSaveAnalysis">저장하기</button>
+					<button type="button" class="btn btn-w-m btn-primary" id="btnSaveAnalysis">전체 저장하기</button>
 					<button type="button" class="btn btn-w-m btn-primary" id="btnGoList">목록</button>
 				</div>
 			</form>
@@ -246,17 +292,19 @@
 
 			<h5><b>@businessDates.ToString("yyyy.MM.dd") : @Model.businessBaseObj.Caption</b></h5>
 
-			<ul class="list-dash" id="list">
+			<ul class="list-dash " id="list">
 				@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
 				{
-					<li>@businessScenario.TypesName</li>
+					<li><span>@businessScenario.TypesName </span>
+                        <ul class="list-dash depth2">
+                            @foreach (var businessContent in businessScenario.BusinessContents)
+                            {
 
-					@foreach (var businessContent in businessScenario.BusinessContents)
-					{
-						<ul class="list-dash">
-							<li onclick="displayAnalysisData(this)" data-analysis_id="@businessContent.BusinessAnalysis.AnalysisID" data-content_type="@businessContent.ContentType" data-content_data="@businessContent.ContentData">@businessContent.Label</li>
+                                <li onclick="displayAnalysisData(this)" data-analysis_id="@businessContent.BusinessAnalysis.AnalysisID" data-content_type="@businessContent.ContentType" data-content_data="@businessContent.ContentData">@businessContent.Label</li>
+                                
+                            }
 						</ul>
-					}
+					</li>
 				}
 			</ul>
 		</div>

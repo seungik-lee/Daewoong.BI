@@ -75,18 +75,20 @@
             }
 
         .kpi-bank {
-            height:600px;
-            overflow-y:auto;
+            height: 600px;
+            overflow-y: auto;
         }
     </style>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            $.get("/menu.html", function (data) {
+                $("body").prepend(data);
+            });
+        });
+    </script>
 </head>
-<body class="bg2">
-    <div class="nav" style="background:#f77822;padding:5px;">
-        
-
-    </div>
-
-    <div class="layout-common"  style="min-width:1440px;">
+<body class="bg2" style="opacity:1;">
+    <div class="layout-common" style="min-width:1440px;top:60px;">
         <div class="left">
             <div class="command-section">
                 <div class="command-header">페이지 정보</div>
@@ -106,7 +108,7 @@
                             <div>
                                 <input type="text" id="title" class="form-control" />
                             </div>
-                            
+
                         </div>
                         <div class="col-md-3 ">
                             <div class="command-group">
@@ -123,7 +125,7 @@
                                         <!--<li><a class="layout-button" data-layout="3by3">3 X 3</a></li>-->
                                         <li><a class="layout-button" data-layout="3by2">3 X 2</a></li>
                                         <!--<li><a class="layout-button" data-layout="2by3">2 X 3</a></li>-->
-                              
+
                                 </div>
                             </div>
                         </div>
@@ -135,7 +137,7 @@
                 </div>
             </div>
             <div class="" style="position:absolute;bottom:10px;top:140px;right:0;left:0;">
-                    <div id="pageDetail"></div>
+                <div id="pageDetail"></div>
             </div>
         </div>
         <div class="right">

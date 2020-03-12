@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,8 +22,22 @@ namespace Daewoong.BI
 
         public List<BusinessFile> businessFiles { get; set; }
 
+        private DWBIUser DWUserInfo
+        {
+            get
+            {
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
+            }
+        }
+
         public IActionResult OnGet()
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                return Redirect("/login.html");
+            }
+
             if (this.businessID == 0)
             {
                 return Redirect("/business/scenariolist/1");
@@ -46,6 +62,7 @@ namespace Daewoong.BI
                         inner join business_analysis analysis
                         on content.content_id = analysis.content_id
                         where base.business_id = {businessID}
+                        and scenario.types <> 5
                         order by scenario.sorting asc, content.sorting asc";
 
                     MySqlCommand cmd = new MySqlCommand(bs_read_sql, conn);
@@ -87,7 +104,7 @@ namespace Daewoong.BI
 
                         BusinessAnalysis businessAnalysis = new BusinessAnalysis();
                         businessAnalysis.AnalysisID = int.Parse(dr["analysis_id"].ToString());
-                        businessAnalysis.Txt = dr["txt"].ToString();
+                        businessAnalysis.Txt = WebUtility.HtmlDecode(dr["txt"].ToString());
 
                         BusinessContent businessContent = new BusinessContent()
                         {

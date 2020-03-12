@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -25,43 +26,15 @@ namespace Daewoong.BI.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
-
         string fineKey = "~gw-biadvancement-SecretKey";
         string fineIV = "~gw-biadvancement-InitVector";
 
         string biKey = "~gw-biportal-SecretKey";
         string biIV = "~gw-biportal-InitVector";
 
-        public AccountController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration
-            )
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-        }
-
-        private Task<IdentityUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
-
         [HttpPost]
         public DWBIUser Login([FromBody] LoginDto model)
         {
-            // 양병국
-            // Email : yangnest@daewoong-bio.co.kr
-            // RoleID : BIC1
-            // CompanyID : 1200
-
-            //RegistAll();
-
-            //Register("wkhong93@bears.co.kr", "dwbi11!!");
-            //return null;
-
-
             if (!model.Email.Contains("@"))
             {
                 //string dEmail = HttpUtility.UrlDecode(model.Email);
@@ -73,13 +46,11 @@ namespace Daewoong.BI.Controllers
                 model.Email = loginID;
                 model.Password = "dwbi11!!";
             }
+
+            DWBIUser dwbiUser = new DWBIUser();
+
             try
             {
-
-                #region [ 신규 버전 ] 
-
-                DWBIUser dwbiUser = new DWBIUser();
-
                 using (var db = new DWContext())
                 {
                     using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
@@ -94,256 +65,113 @@ namespace Daewoong.BI.Controllers
                         cmd.Parameters.Add(new MySqlParameter("@userID", model.Email));
                         cmd.Parameters.Add(new MySqlParameter("@pw", encrypt_password));
 
-                        using (var reader = cmd.ExecuteReader())
+                        DataTable dt = new DataTable();
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                        adapter.Fill(dt);
+
+                        if (dt != null && dt.Rows.Count == 1)
                         {
-                            while (reader.Read())
+                            dwbiUser.ID = Convert.ToInt32(dt.Rows[0]["ID"].ToString());
+                            dwbiUser.Name = dt.Rows[0]["Name"].ToString();
+                            dwbiUser.UserID = dt.Rows[0]["UserID"].ToString();
+                            dwbiUser.IsAdmin = (dt.Rows[0]["IsAdmin"].ToString() == "0") ? false : true;
+                            dwbiUser.RoleID = dt.Rows[0]["RoleID"].ToString();
+                            dwbiUser.UserRole = (Role)int.Parse(dt.Rows[0]["UserRole"].ToString());
+                            dwbiUser.CompanyID = Convert.ToInt32(dt.Rows[0]["CompanyID"].ToString());
+                            dwbiUser.CompanyCode = Convert.ToInt32(dt.Rows[0]["code"].ToString());
+                            dwbiUser.CompanyName = dt.Rows[0]["companyName"].ToString();
+                            dwbiUser.Companies = GetCompanies(dwbiUser.ID);
+                            dwbiUser.key = ec.Encrypt(dwbiUser.UserID.Split('@')[0]);
+                            dwbiUser.RoleIDKey = ec.Encrypt(dwbiUser.RoleID);
+
+                            // Admin, Manager인 경우 회사 코드를 변경해 주고, 회사 정보를 설정
+                            if (dwbiUser.UserRole != Role.Member)
                             {
-                                dwbiUser.ID = Convert.ToInt32(reader["ID"].ToString());
-                                dwbiUser.Name = reader["Name"].ToString();
-                                dwbiUser.UserID = reader["UserID"].ToString();
-                                dwbiUser.IsAdmin = (reader["IsAdmin"].ToString() == "0") ? false : true;
-                                dwbiUser.RoleID = reader["RoleID"].ToString();
-                                dwbiUser.UserRole = (Role)int.Parse(reader["UserRole"].ToString());
-                                dwbiUser.CompanyID = Convert.ToInt32(reader["CompanyID"].ToString());
-                                dwbiUser.CompanyCode = Convert.ToInt32(reader["code"].ToString());
-                                dwbiUser.CompanyName = reader["companyName"].ToString();
+                                dwbiUser.CompanyCode = 1200;
+                                // 모든 회사 코드 조회해서 넘겨줌
+                                //dwbiUser.Companies = GetAllCompanies();
                             }
+
+                            HttpContext.Session.SetObject("DWUserInfo", dwbiUser);
                         }
                     }
                 }
-
-                // userID 세팅
-                HttpContext.Session.SetObject("userInfo", dwbiUser);
-
-                //return userInfo;
-
-                #endregion
-
-
-                //UserController uc = new UserController();
-                //20200109 김태규 수정 배포
-                UserController uc = new UserController(null, null, null);
-                ApplicationDbContext context = new ApplicationDbContext();
-                var result = _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false).Result;
-
-                if (result.Succeeded)
-                {
-                    var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                    DWBIUser userInfo = uc.GetByKey(model.Email, Request);
-                    userInfo.Token = GenerateJwtToken(model.Email, appUser).Result;
-                    var user = GetCurrentUserAsync().Result;
-                    Encryptor ec1 = new Encryptor(fineKey, fineIV);
-                    Encryptor ec2 = new Encryptor(fineKey, fineIV);
-                    userInfo.key = ec1.Encrypt(model.Email.Split('@')[0]);
-                    userInfo.RoleIDKey = ec2.Encrypt(userInfo.RoleID);
-
-
-                    //ClaimsPrincipal currentUser = this.User;
-                    //var currentUserName = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-                    //var user2 = await _userManager.FindByNameAsync(currentUserName);
-
-                    return userInfo;
-
-                }
-
             }
             catch (Exception ex)
             {
+                dwbiUser.Token = ex.InnerException.Message + ex.Message;
+            }
 
-                System.Diagnostics.Debug.WriteLine( ">>>>"+ ex.InnerException.Message + ex.Message);
-                return new DWBIUser
+            return dwbiUser;
+        }
+
+        /// <summary>
+        /// ID가 속해 있는 회사 코드 조회
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private List<Company> GetCompanies(int id)
+        {
+            List<Company> companies = new List<Company>();
+
+            using (var db = new DWContext())
+            {
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
                 {
-                    Token = ex.InnerException.Message + ex.Message
-                };
-                
-            }
-           // finally { }
-            throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
-            
-
-        }
-       
-        [HttpPost]
-        //public async Task<object> Register([FromBody] RegisterDto model)
-
-		//2019-12-26 김태규 수정 배포
-        [HttpDelete]
-
-        public async void DeleteUser(string email)
-        {
-            IdentityUser user = new IdentityUser();
-            user.Email = email;
-            await _userManager.DeleteAsync(user);
-        }
-
-        public async Task<object> Register([FromBody] DWBIUser model)
-        {
-            var user = new IdentityUser
-            {
-                UserName = model.UserID, 
-                Email = model.UserID
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                //UserController uc = new UserController();
-                //20200109 김태규 수정 배포
-                UserController uc = new UserController(null, null, null);
-                uc.SaveUser(model);
-                return true;
-            }
-            
-            throw new ApplicationException("UNKNOWN_ERROR");
-        }
-
-//20200109 김태규 수정 배포
-/*
-        public bool Register(string email, string password)
-        {
-            var user = new IdentityUser
-            {
-                UserName = email,
-                Email = email
-            };
-            var result = _userManager.CreateAsync(user, password).Result;
-
-            if (result.Succeeded)
-            {
-                return true;
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand("get_CompaniesByUserID", conn);
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new MySqlParameter("@id", id));
+                    
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            companies.Add(new Company()
+                            {
+                                CompanyName = reader["companyName"].ToString(),
+                                Code = Convert.ToInt32(reader["code"]),
+                            });
+                        }
+                    }
+                }
             }
 
-            return false;
+            return companies;
         }
 
-        private void RegistAll()
+        /// <summary>
+        /// 모든 회사 코드 조회
+        /// </summary>
+        /// <returns></returns>
+        private List<Company> GetAllCompanies()
         {
-            Register("sjw1969@daewoong.co.kr", "dwbi11!!");
-            Register("2040131@daewoong.co.kr", "dwbi11!!");
-            Register("yoonjs@daewoong.co.kr", "dwbi11!!");
-            Register("younjc@daewoong.co.kr", "dwbi11!!");
-            Register("gyn05@daewoong.co.kr", "dwbi11!!");
-            Register("leejw@daewoong.co.kr", "dwbi11!!");
-            Register("stomeve@daewoong.co.kr", "dwbi11!!");
-            Register("hsj1222@daewoong.co.kr", "dwbi11!!");
-            Register("yangnest@daewoong-bio.co.kr", "dwbi11!!");
-            Register("pyh@daewoong.co.kr", "dwbi11!!");
-            Register("sjw1969@daewoong.co.kr", "dwbi11!!");
-            Register("skpark@hanall.co.kr", "dwbi11!!");
-            Register("sylim@hanall.co.kr", "dwbi11!!");
-            Register("2150227@daewoong.co.kr", "dwbi11!!");
-            Register("kbkim011@daewoong.co.kr", "dwbi11!!");
-            Register("gyn05@daewoong.co.kr", "dwbi11!!");
-            Register("hongjs@daewoong.co.kr", "dwbi11!!");
-            Register("pyh@daewoong.co.kr", "dwbi11!!");
-            Register("jhkwon215@daewoong.co.kr", "dwbi11!!");
-            Register("yhjang530@daewoong.co.kr", "dwbi11!!");
-            Register("jaihag@daewoong.co.kr", "dwbi11!!");
-            Register("night525@daewoong.co.kr", "dwbi11!!");
-            Register("cji1@daewoong.co.kr", "dwbi11!!");
-            Register("jyyoon004@daewoong.co.kr", "dwbi11!!");
-            Register("yann@daewoong.co.kr", "dwbi11!!");
-            Register("hyun-jin.park@daewoong.co.kr", "dwbi11!!");
-            Register("pjh9274@daewoong.co.kr", "dwbi11!!");
-            Register("yangkiho@daewoong.co.kr", "dwbi11!!");
-            Register("2080004@daewoong.co.kr", "dwbi11!!");
-            Register("2030273@daewoong.co.kr", "dwbi11!!");
-            Register("terr3@daewoong.co.kr", "dwbi11!!");
-            Register("yjch1214@daewoong.co.kr", "dwbi11!!");
-            Register("1970433@daewoong.co.kr", "dwbi11!!");
-            Register("ssung67@daewoong.co.kr", "dwbi11!!");
-            Register("redrooster@daewoong.co.kr", "dwbi11!!");
-            Register("area202@daewoong.co.kr", "dwbi11!!");
-            Register("2010115@daewoong.co.kr", "dwbi11!!");
-            Register("night525@daewoong.co.kr", "dwbi11!!");
-            Register("yum7711@daewoong-bio.co.kr", "dwbi11!!");
-            Register("jsgon@daewoong-bio.co.kr", "dwbi11!!");
-            Register("leckw@daewoong-bio.co.kr", "dwbi11!!");
-            Register("shpark97@daewoong-bio.co.kr", "dwbi11!!");
-            Register("bkson@hanall.co.kr", "dwbi11!!");
-            Register("yslee309@daewoong.co.kr", "dwbi11!!");
-            Register("shin@hanall.co.kr", "dwbi11!!");
-            Register("jklee77@hanall.co.kr", "dwbi11!!");
-            Register("diglers@hanall.co.kr", "dwbi11!!");
-            Register("hayasi05@daewoong.co.kr", "dwbi11!!");
-            Register("yuji@daewoong.co.kr", "dwbi11!!");
-            Register("kbs1002@daewoong.co.kr", "dwbi11!!");
-            Register("ihkim010@daewoong.co.kr", "dwbi11!!");
-            Register("jhsung022@daewoong.co.kr", "dwbi11!!");
-            Register("letup@daewoong.co.kr", "dwbi11!!");
-            Register("cuyer@daewoong.co.kr", "dwbi11!!");
-            Register("shpark079@daewoong.co.kr", "dwbi11!!");
-            Register("kkoon@daewoong.co.kr", "dwbi11!!");
-            Register("1980654@daewoong.co.kr", "dwbi11!!");
-            Register("jangmook.lee@daewoong.co.kr", "dwbi11!!");
-            Register("dcma081@daewoong.co.kr", "dwbi11!!");
-            Register("univerjuny@daewoong.co.kr", "dwbi11!!");
-            Register("ek0831@daewoong.co.kr", "dwbi11!!");
-            Register("yclee208@daewoong.co.kr", "dwbi11!!");
-            Register("9501003@daewoong.co.kr", "dwbi11!!");
-            Register("bslee054@daewoong.co.kr", "dwbi11!!");
-            Register("hunsang@daewoong.co.kr", "dwbi11!!");
-            Register("jhpark298@daewoong.co.kr", "dwbi11!!");
-            Register("yoonkyoung@daewoong.co.kr", "dwbi11!!");
-            Register("hwlee160@daewoong.co.kr", "dwbi11!!");
-            Register("hwangmk@daewoong.co.kr", "dwbi11!!");
-            Register("skkim156@daewoong.co.kr", "dwbi11!!");
-            Register("boruem0223@daewoong.co.kr", "dwbi11!!");
-            Register("yum7711@daewoong-bio.co.kr", "dwbi11!!");
-            Register("kylee@daewoong-bio.co.kr", "dwbi11!!");
-            Register("junseo7@daewoong-bio.co.kr", "dwbi11!!");
-            Register("y2k8495@daewoong-bio.co.kr", "dwbi11!!");
-            Register("nano9@daewoong-bio.co.kr", "dwbi11!!");
-            Register("coralboy@hanall.co.kr", "dwbi11!!");
-            Register("choipk@hanall.co.kr", "dwbi11!!");
-            Register("admhkim@hanall.co.kr", "dwbi11!!");
-            Register("bkson@hanall.co.kr", "dwbi11!!");
-            Register("sjchoi@hanall.co.kr", "dwbi11!!");
-            Register("namoosh@hanall.co.kr", "dwbi11!!");
-            Register("parkdh@hanall.co.kr", "dwbi11!!");
-            Register("syhwang@hanall.co.kr", "dwbi11!!");
-            Register("pansuk@hanall.co.kr", "dwbi11!!");
-            Register("jangseob@hanall.co.kr", "dwbi11!!");
-            Register("dsdo@hanall.co.kr", "dwbi11!!");
-            Register("yssong@hanall.co.kr", "dwbi11!!");
-            Register("kbchoi@hanall.co.kr", "dwbi11!!");
-            Register("echobok@daewoong.co.kr", "dwbi11!!");
-            Register("is.shim@daewoong.co.kr", "dwbi11!!");
-            Register("shaiel48@daewoong.co.kr", "dwbi11!!");
-            Register("smkim165@daewoong.co.kr", "dwbi11!!");
-            Register("echobok@daewoong.co.kr", "dwbi11!!");
-        }
-*/
-        [Authorize]
-        [HttpGet]
-        public async Task<object> Protected()
-        {
-            return "Protected area";
-        }
-        
-        private async Task<object> GenerateJwtToken(string email, IdentityUser user)
-        {
-            var claims = new List<Claim>
+            List<Company> list = new List<Company>();
+
+            using (var db = new DWContext())
             {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            };
+                using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
+                {
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand("select * from company order by (case id when 2 then 0 else 1 end) asc, id asc", conn);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Company()
+                            {
+                                ID = Convert.ToInt32(reader["Id"]),
+                                CompanyName = reader["CompanyName"].ToString(),
+                                Logo = reader["Logo"].ToString(),
+                                Code = Convert.ToInt32(reader["Code"]),
+                            });
+                        }
+                    }
+                }
+            }
 
-            var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-
+            return list;
         }
 
         public String AESEncrypt128(String Input, String key)

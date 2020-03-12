@@ -348,6 +348,4 @@
     getSetting();
     getCompanies();
     setChartTypes();
-    loadHeader("../menu.html");
-
 });

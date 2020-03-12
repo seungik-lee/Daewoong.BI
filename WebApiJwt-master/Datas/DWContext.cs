@@ -8,8 +8,8 @@ namespace Daewoong.BI.Datas
 {
     public class DWContext : IDisposable
     {
-        //public string ConnectionString = "server=localhost;port=3306;database=daewoongbi;uid=root;password=000000;allow user variables=true";
-        public string ConnectionString = "server=175.207.12.61;port=3306;database=daewoongbi;uid=dwadmin;password=dwbi11!!;allow user variables=true";
+        public string ConnectionString = "server=localhost;port=3306;database=daewoongbi;uid=root;password=000000;allow user variables=true";
+        //public string ConnectionString = "server=175.207.12.61;port=3306;database=daewoongbi;uid=dwadmin;password=dwbi11!!;allow user variables=true";
         //public string ConnectionString = "server=10.1.20.120;port=3306;database=daewoongbi;uid=dwadmin;password=dwbi11!!;allow user variables=true";        
 
         public MySqlConnection Connection;

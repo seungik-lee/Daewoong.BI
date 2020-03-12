@@ -72,7 +72,7 @@ function login(id, pw) {
 
 function loadHeader(url, callback) {
     $.get(url, function (data) {
-        $(".nav").append(data);
+        $("body").after(data);
         if (callback)
             callback();
     });
@@ -90,21 +90,24 @@ function getService(endPoint, callback) {
 
         },
         beforeSend: function (request) {
-            request.setRequestHeader("Authorization",
-                "Bearer " + getToken("token"));
+            //request.setRequestHeader("Authorization",
+            //    "Bearer " + getToken("token"));
 
-            request.setRequestHeader("company",
-                getToken("companyCode"));
+            //request.setRequestHeader("company",
+            //    getToken("companyCode"));
         },
         success: function (data) {
             callback(data);
         },
-        fail: function (m) {
-            alert(m);
+        error: function (data) {
+            // 세션이 끊긴 상태
+            if (data.status == 600) {
+                location.href = "../login.html";
+            } else {
+                alert("error : " + data.responseText);
+            }
         }
     });
-
-
 }
 
 function saveService(endPoint, data, callback) {

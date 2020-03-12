@@ -21,8 +21,22 @@ namespace Daewoong.BI
 
         public BusinessBase businessBaseObj { get; set; }
 
-        public void OnGet()
+        public DWBIUser DWUserInfo
         {
+            get
+            {
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
+            }
+        }
+
+        public IActionResult OnGet()
+        {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                return Redirect("/login.html");
+            }
+
             DisplayYearList = new List<string>();
 
             int nowYear = DateTime.Now.Year;
@@ -33,6 +47,11 @@ namespace Daewoong.BI
                 DisplayYearList.Add($"{startYear.ToString()}년");
 
                 startYear++;
+            }
+
+            if (this.businessID == 0)
+            {
+                return Page();
             }
 
             using (var db = new DWContext())
@@ -51,6 +70,7 @@ namespace Daewoong.BI
                         inner join business_content content 
                         on scenario.scenario_id = content.scenario_id
                         where base.business_id = {businessID}
+                        and scenario.types <> 5
                         order by scenario.sorting asc, content.sorting asc";
 
                     MySqlCommand cmd = new MySqlCommand(bs_read_sql, conn);
@@ -59,49 +79,49 @@ namespace Daewoong.BI
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
-                    if (dt == null || dt.Rows.Count == 0)
+                    if (dt != null && dt.Rows.Count > 0)
                     {
-                        return;
-                    }
+                        businessBaseObj = new BusinessBase();
+                        businessBaseObj.BusinessID = int.Parse(dt.Rows[0]["business_id"].ToString());
+                        businessBaseObj.Caption = dt.Rows[0]["caption"].ToString();
+                        businessBaseObj.Dates = Convert.ToDateTime(dt.Rows[0]["dates"].ToString());
+                        businessBaseObj.UpdateDate = Convert.ToDateTime(dt.Rows[0]["update_date"].ToString());
+                        businessBaseObj.BusinessScenarios = new List<BusinessScenario>();
 
-                    businessBaseObj = new BusinessBase();
-                    businessBaseObj.BusinessID = int.Parse(dt.Rows[0]["business_id"].ToString());
-                    businessBaseObj.Caption = dt.Rows[0]["caption"].ToString();
-                    businessBaseObj.Dates = Convert.ToDateTime(dt.Rows[0]["dates"].ToString());
-                    businessBaseObj.UpdateDate = Convert.ToDateTime(dt.Rows[0]["update_date"].ToString());
-                    businessBaseObj.BusinessScenarios = new List<BusinessScenario>();
-
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        if (businessBaseObj.BusinessScenarios.Where(x => x.ScenarioID == int.Parse(dr["scenario_id"].ToString())).Count() == 0)
+                        foreach (DataRow dr in dt.Rows)
                         {
-                            BusinessScenario subScenario = new BusinessScenario();
-                            subScenario.ScenarioID = int.Parse(dr["scenario_id"].ToString());
-                            subScenario.Types = int.Parse(dr["types"].ToString());
-                            subScenario.TypesName = subScenario.GetTypesName(subScenario.Types);
-                            subScenario.Sorting = int.Parse(dr["scenario_sorting"].ToString());
+                            if (businessBaseObj.BusinessScenarios.Where(x => x.ScenarioID == int.Parse(dr["scenario_id"].ToString())).Count() == 0)
+                            {
+                                BusinessScenario subScenario = new BusinessScenario();
+                                subScenario.ScenarioID = int.Parse(dr["scenario_id"].ToString());
+                                subScenario.Types = int.Parse(dr["types"].ToString());
+                                subScenario.TypesName = subScenario.GetTypesName(subScenario.Types);
+                                subScenario.Sorting = int.Parse(dr["scenario_sorting"].ToString());
 
-                            businessBaseObj.BusinessScenarios.Add(subScenario);
+                                businessBaseObj.BusinessScenarios.Add(subScenario);
+                            }
+
+                            BusinessScenario findScenario = businessBaseObj.BusinessScenarios.Single(x => x.ScenarioID == int.Parse(dr["scenario_id"].ToString()));
+
+                            if (findScenario.BusinessContents == null || findScenario.BusinessContents.Count == 0)
+                            {
+                                findScenario.BusinessContents = new List<BusinessContent>();
+                            }
+
+                            findScenario.BusinessContents.Add(new BusinessContent()
+                            {
+                                ContentID = int.Parse(dr["content_id"].ToString()),
+                                Label = dr["content_label"].ToString(),
+                                ContentType = dr["content_type"].ToString(),
+                                ContentData = dr["content_data"].ToString(),
+                                Sorting = int.Parse(dr["content_sorting"].ToString())
+                            });
                         }
-
-                        BusinessScenario findScenario = businessBaseObj.BusinessScenarios.Single(x => x.ScenarioID == int.Parse(dr["scenario_id"].ToString()));
-
-                        if (findScenario.BusinessContents == null || findScenario.BusinessContents.Count == 0)
-                        {
-                            findScenario.BusinessContents = new List<BusinessContent>();
-                        }
-
-                        findScenario.BusinessContents.Add(new BusinessContent()
-                        {
-                            ContentID = int.Parse(dr["content_id"].ToString()),
-                            Label = dr["content_label"].ToString(),
-                            ContentType = dr["content_type"].ToString(),
-                            ContentData = dr["content_data"].ToString(),
-                            Sorting = int.Parse(dr["content_sorting"].ToString())
-                        });
                     }
                 }
             }
+
+            return Page();
         }
     }
 }

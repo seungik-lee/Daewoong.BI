@@ -23,8 +23,8 @@ namespace Daewoong.BI.Datas
 
         private static string GetConnectionString()
         {
-            //return "server=localhost;port=3306;database=webapijwt;uid=root;password=000000;allow user variables=true;";
-            return "server=175.207.12.61;port=3306;database=webapijwt;uid=dwadmin;password=dwbi11!!;allow user variables=true;";
+            return "server=localhost;port=3306;database=webapijwt;uid=root;password=000000;allow user variables=true;";
+            //return "server=175.207.12.61;port=3306;database=webapijwt;uid=dwadmin;password=dwbi11!!;allow user variables=true;";
             //return "server=10.1.20.120;port=3306;database=webapijwt;uid=dwadmin;password=dwbi11!!;allow user variables=true;";
         }
 

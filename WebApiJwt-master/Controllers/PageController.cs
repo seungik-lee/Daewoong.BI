@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,49 +17,36 @@ namespace Daewoong.BI.Controllers
     //[ApiController]
     public class PageController : ControllerBase
     {
-        #region UserController
-        private UserController _userController;
-        public UserController UserController
+        private DWBIUser DWUserInfo
         {
             get
             {
-                if (_userController == null)
-                {
-                	//20200109 김태규 수정 배포
-                    //_userController = new UserController();
-                    _userController = new UserController(null, null, null);
-                }
-                return _userController;
-            }
-
-        }
-
-        #endregion
-
-        private string UserID
-        {
-            get
-            {
-                return User.FindFirst("sub")?.Value;
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
             }
         }
 
-        [Authorize]
         [HttpGet]
-        public List<Page> Get(string companyCode)
+        public List<Page> Get()
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+
+                return null;
+            }
+
             try
             {
                 using (var db = new DWContext())
                 {
-                    var user = UserController.GetByKey(UserID, Request);
-
                     List<Page> list = new List<Page>();
                     KPIController kpi = new KPIController();
+
                     using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
                     {
                         conn.Open();
-                        MySqlCommand cmd = new MySqlCommand("select * from pages where userID = '" + UserID + "' and companyCode = '" + companyCode + "' order by seq asc", conn);
+                        MySqlCommand cmd = new MySqlCommand("select * from pages where userID = '" + DWUserInfo.UserID + "' and companyCode = '" + DWUserInfo.CompanyCode + "' order by seq asc", conn);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -68,13 +56,14 @@ namespace Daewoong.BI.Controllers
                                 {
                                     ID = Convert.ToInt32(reader["Id"]),
                                     Seq = Convert.ToInt32(reader["Seq"]),
-                                    KPIs = GetKPIs(Convert.ToInt32(reader["Id"]), kpi, user, companyCode),
+                                    KPIs = kpi.GetKpiByPage(Convert.ToInt32(reader["Id"]), DWUserInfo.CompanyCode.ToString()),
                                     Title = reader["Title"].ToString(),
                                     Layout = reader["Layout"].ToString()
                                 });
                             }
                         }
                     }
+
                     return list;
                 }
             }
@@ -90,7 +79,6 @@ namespace Daewoong.BI.Controllers
                 p.Add(p2);
                 return p;
             }
-
         }
 
         [HttpPost]

@@ -57,7 +57,7 @@ namespace Daewoong.BI.Controllers
                 {
                     if (file.Length > 0)
                     {
-                        var filePath = Path.Combine(uploadFilePath, file.FileName);
+                        var filePath = Path.Combine(uploadFilePath, Path.GetFileName(file.FileName));
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
@@ -65,7 +65,7 @@ namespace Daewoong.BI.Controllers
                         }
 
                         BusinessFile result = new BusinessFile();
-                        result.FileName = file.FileName;
+                        result.FileName = Path.GetFileName(file.FileName);
                         result.FileSize = file.Length;
                         result.FileURL = filePath.Replace(hostingEnvironment.WebRootPath, "").Replace("\\", "/");
                         results.Add(result);

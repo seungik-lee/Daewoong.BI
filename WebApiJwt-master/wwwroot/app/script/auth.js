@@ -24,12 +24,21 @@ function login() {
     var id = $("#id").val();
     var pw = $("#pw").val();
 
-    var url = apiService + "/account/login";
+    if (id == "") {
+        $("#msg").text("User Email을 입력하세요.");
+        $("#id").focus();
+        return false;
+    }
 
-    var data = {
-        "Email": id,
-        "Password": pw
-    };
+    if (pw == "") {
+        $("#msg").text("비밀번호를 입력하세요.");
+        $("#pw").focus();
+        return false;
+    }
+
+    var url = apiService + "/account/login";
+    var data = { "Email": id, "Password": pw };
+
     $.ajax({
         type: "POST",
         url: url,
@@ -37,43 +46,29 @@ function login() {
         dataType: 'json',
         data: JSON.stringify(data),
         success: function (result) {
-            setToken("token", result.token);
+            if (result.id == 0) {
+                $("#msg").text("User Email 혹은 Password가 틀렸습니다.");
+                return false;
+            }
+
             setToken("userName", result.name);
             setToken("userID", result.userID);
             setToken("company", result.companyCode);
-            //2019-12-26 김태규 수정 배포            
             setToken("companies", JSON.stringify(result.companies));
-            if (result.userRole !== 2)
-                setToken("companyCode", 1200);
-            else
-                setToken("companyCode", result.companyCode);
-           
-            //setToken("companies", result.companyCode);
-            //setToken("companyCode", result.companyCode);
-            //2019-12-12 김태규 수정 배포
-            //console.log('userRole', result.userRole);            
-            /*
-            if (result.userRole !== 2) {
-                setToken("companies", '1200');
-                setToken("companyCode", '1200');
-            }
-            else {
-                setToken("companies", JSON.stringify(result.companies);
-                setToken("companyCode", result.companyCode);
-            }
-            */
+            setToken("companyCode", result.companyCode);
+            setToken("companyName", result.companyName);
             setToken("isAdmin", result.isAdmin);
             setToken("role", result.userRole);
+            setToken("roleID", result.roleID);
             setToken("key", result.key);
             setToken("roleIDKey", result.roleIDKey);
 
-            
-            setToken("roleID", result.roleID);
             setClose();
+
             location.href = "index.html";
-            
         }, error: function (result) {
-            $("#msg").text("ID혹은 Password가 바르지 않습니다.");
+            $("#msg").text("User Email 혹은 Password가 틀렸습니다.");
+            return false;
         }
     });
 

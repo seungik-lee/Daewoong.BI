@@ -7,32 +7,201 @@
     <link href="app/css/bootstrap.min.css" rel="stylesheet" />
     <script src="app/script/jquery.js"></script>
     <script src="app/script/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    <script src="app/script/dashboard.js"></script>
-    <!--<script src="app/script/menu.js"></script>-->
-
-
-    <script src="app/script/dataService.js"></script>
     <script src="app/script/moment.js"></script>
     <script src="app/script/bootstrap.min.js"></script>
     <link href="app/css/button.css" rel="stylesheet" />
     <link href="app/css/text.css" rel="stylesheet" />
     <link href="app/css/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <style>
+        /*.content {
+	        margin-top: 30px;
+	        margin-left: 15px;
+	        margin-right: 15px;
+	        margin-bottom: 30px;
+        }*/
+    </style>
+    <script type="text/javascript" language="javascript">
+		var pages = [];
+		var pageLineTempate = "<div class='container-flex'>{0}</div>";
 
+        String.prototype.format = function (args) {
+            var str = this;
+            return str.replace(String.prototype.format.regex, function (item) {
+                var intVal = parseInt(item.substring(1, item.length - 1));
+                var replace;
+                if (intVal >= 0) {
+                    replace = args[intVal];
+                } else if (intVal === -1) {
+                    replace = "{";
+                } else if (intVal === -2) {
+                    replace = "}";
+                } else {
+                    replace = "";
+                }
+                return replace;
+            });
+        };
 
-
-</head>
-<body class="bg">
-    <div class="nav" style="background:#f77822;padding:5px;">
+        String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         
-    </div>
+		$(document).ready(function () {
+			$.ajaxSetup({ cache: false });
 
-    <!--한줄-->
+            $.get("menu.html", function (data) {
+                $("body").prepend(data);
+			});
+		});
+
+		$(window).load(function () {
+            var dpid = getParameterByName('dpid');
+			var page = null;
+
+            // My DashBoard 조회
+            $.ajax({
+                url: "/api/page",
+                type: "GET",
+                data: null,
+                success: function (data) {
+					pages = data;
+
+                    if (dpid !== "") {
+				        page = getPageByID(dpid);
+			        } else {
+                        if (pages.length > 0) {
+                            page = pages[0];
+                        }
+			        }
+
+			        if (page !== null) {
+                        $("#inform").hide();
+				        newPage(page);
+			        }
+                },
+                error: function (data) {
+                    // 세션이 끊긴 상태
+                    if (data.status == 600) {
+                        location.href = "../login.html";
+                    } else {
+                        alert("error : " + data.responseText);
+                    }
+                }
+            });
+		});
+
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, ""));
+		}
+
+        function getPageByID(id) {
+            var result = $.grep(pages, function (page) {
+                return page.id === Number(id);
+            });
+
+			if (result.length > 0) {
+				return result[0];
+			} else {
+				return null;
+			}
+		};
+
+        //페이지 생성(신규/기존)
+        function newPage (page) {
+			$("#kpiContainer").html("");
+
+            var l = page.layout.split("by");
+            var lineItems = "";
+			var k = 0;
+
+            $.get("app/template/chartTemplateDS.html", function (data) {
+                for (var i = 0; i < l[1]; i++) {
+                    for (var j = 0; j < l[0]; j++) {
+                        lineItems = lineItems + data.format([k]);
+                        k++;
+					}
+
+                    var newLine = pageLineTempate.format([lineItems]);
+                    $("#kpiContainer").append(newLine);
+                    lineItems = "";
+                }
+
+                bindKPI(page);
+            });
+		}
+
+        function bindKPI(page) {
+            $(page.kpIs).each(function (i, n) {
+                var cTarget = $("#chart_" + n.seq);
+                var iTarget = $(cTarget).find("iframe");
+                var urlMask = $(cTarget).find(".target-mask");
+				var date = getDate(n.close);
+				var key = localStorage.getItem("roleIDKey");
+				var companyCode = localStorage.getItem("companyCode");
+
+				urlMask.click(function () {
+                    var params = n.detailURL + "&X_COMPANY=" + companyCode + "&X_DATESETTING=" + date + "&userid=" + key;
+                    location.href = "../detail.html?url=" + params;
+                });
+
+				iTarget.attr("src", n.url + "&X_COMPANY=" + companyCode + "&X_DATESETTING=" + date + "&userid=" + encodeURIComponent(key));
+            });
+        }
+
+        function getDate(type) {
+            //1. 전일 -1D
+            //2. 전월 -1D-1M (YYYYMM)
+            //3. 당월 -1D (YYYYMM)
+            //4. 마감월 전역
+            //5. 전분기  
+
+            if (typeof type === 'undefined')
+                return "";
+            var now = moment();
+            var isClose = localStorage.getItem("close");
+            var s = (isClose) ? -1 : -2;
+
+            //마감이 된 경우, -2를 리턴한다.
+
+            switch (type.toUpperCase()) {
+                case "D": //전일
+                    return now.add(-1, "days").format("YYYYMMDD");
+                case "2M": //전전월
+                    //return now.add(-1, "days").add(-1, "months").format("YYYYMM"); //전월 -1
+                    return now.add(-10, "days").add(-2, "months").format("YYYYMM"); //전전월 -2
+                case "1M": //당월
+                    //return now.add(-1, "days").format("YYYYMM"); //실제
+                    return now.add(-10, "days").add(-1, "months").format("YYYYMM"); //전월 -1
+                case "0M": //당월 : 매출액실적
+                    return now.add(-10, "days").add(0, "months").format("YYYYMM"); //전월 -1
+                case "CM"://마감월 적용
+                    return now.add(-10, "days").add(s, "months").format("YYYYMM");
+                case "Q": //분기
+                    //var cQ = Math.floor(now.add(-1, "days").format('YYYMMDD') / 3);
+                    //var cQ = Math.floor(now.add(-1, "days").month() / 3);
+                    //var cQ = Math.floor(now.add(-1, "days").add(-1, "months").month() / 3);            
+
+                    var cQ = Math.ceil((now.add(-1, "days").month() + 1) / 3);
+
+                    if (cQ === 1) {
+                        return now.add(-1, "years").format("YYYY") + 3; //4분기 -1분기
+                    }
+                    else {
+                        return now.format("YYYY") + (cQ - 1);
+                    }
+                default:
+                    return "";
+            }
+        }
+    </script>
+</head>
+<body class="bg" style="overflow-y: hidden;">
     <div id="kpiContainer" style="margin-top:90px;"></div>
     <div id="inform">
         <div><img src="images/inform.png" /></div>
         <div style="padding:20px;">등록된 대시보드가 없습니다</div>
         <div><button onclick="location.href='setting.html'" class="btn btn-default">대시보드 등록</button></div>
     </div>
-    <!--한줄-->
 </body>
-</html>
+</html >

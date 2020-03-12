@@ -30,6 +30,7 @@
     $("body").on("pagesLoaded", function () {
         init();
     });
+
     function init() {
         var dpid = getParameterByName('dpid');
         var page = null;

@@ -387,7 +387,6 @@
     getCategoris();
     getKPIBank();
     getPages();
-    loadHeader("../menu.html");
 });
 
 function login() {

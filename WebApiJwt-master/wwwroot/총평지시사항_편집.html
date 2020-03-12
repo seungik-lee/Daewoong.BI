@@ -1,0 +1,176 @@
+<html>
+    <head>
+    <meta charset="utf-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>대웅제약 BI</title>
+    <!--<link href="app/css/core.css" rel="stylesheet">-->
+    
+    <link href="app/css/core0220.css?v=202002261036" rel="stylesheet">
+    <link href="dist/css/style.css?v=202002261036" rel="stylesheet">
+    <link href="dist/css/bootstrap.min.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/iCheck/custom.css?v=202002241036" rel="stylesheet">
+	<link href="dist/css/font-awesome/css/font-awesome.css?v=202002241036" rel="stylesheet">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="dist/js/bootstrap.min.js"></script>
+	<script src="dist/js/iCheck/icheck.min.js"></script>
+	<script src="dist/js/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="dist/ckeditor4/ckeditor.js"></script>
+    <style>
+			.content {
+				margin: 0;
+			}
+			
+			textarea {
+				width: 100%;
+				min-height: 120px;
+				padding: 5px;
+				margin-top: 10px;
+			}
+			
+			.btn {
+				min-height: 40px;
+				min-width: 40px;
+			}
+			
+			.filelabel {
+				width: auto;
+				padding: 10px 12px;
+				border: 0px;
+				z-index: 1;
+			}
+			
+			.file_form {
+				margin-top: 15px;
+			}
+			
+			.buttonDiv {
+				margin-top: 15px;
+				text-align: center;
+			}
+			
+			.buttonDiv > button {
+				min-width: 85px;
+			}
+
+			.file {
+				width: auto;
+				display: inline-block;
+				cursor:pointer;
+				margin-bottom: 5px;
+				margin-left: 12px;
+				margin-right: -5px;
+				height: 40px;
+			}
+
+    </style>   
+
+    </head>
+    <body>
+		<div class="content">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="ibox">
+						<div class="ibox-title">
+							<h4>2020년 사업계획 및 방안 > 총평/지시 사항</h4>
+						</div>
+						<div class="ibox-content">
+							<form class="form-horizontal" id="form" enctype="">
+								<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
+									
+								<textarea class="form-control" placeholder="Comments를 입력하세요." id="comments"></textarea>
+								
+								<div class="file_form">
+									<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>
+									
+									<label onclick="addfile()" class="btn filelabel">
+										첨부파일 추가
+									</label>
+								</div>
+								
+								
+								
+								<div class="buttonDiv">
+									<button type="button" class="btn btn-w-m btn-primary" onclick="doSave()">저장하기</button>
+									<button type="button" class="btn btn-w-m btn-primary" id="btnClose">창닫기</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+		<script>
+		// 파일 선택시 이름 셋팅
+		function fileSetting(file) {
+			$(file).parent().parent().find(".file").val($(file)[0].files[0].name + "");
+		}
+		
+		// 파일 삭제
+		function fileDelete(obj) {
+			$(obj).parent().parent().remove();
+			
+			// 삭제한 파일 이름 저장 후 DB저장시 처리하시기 바랍니다.
+		}
+		
+		// 첨부 파일 추가
+		function addfile() {
+			var html = "";
+				html += '<div class="file_form">';
+				html += '	<div class="form-group" style="margin-left:0px;">';
+				html += '		<button type="button" class="btn btn-w-m btn-default" onclick="fileDelete(this)"><i class="fa fa-minus"></i></button>';
+				html += '		<input type="text" class="form-control file" name="file" value="" autocomplete="off" readonly>';
+				html += '		<label class="btn btn-w-m btn-default" style="line-height: 30px; height: 40px;">';
+				html += '			파일추가 <input type="file" onchange="fileSetting(this)" style="display: none; z-index: 0;"/>';
+				html += '		</label>';
+				html += '	</div>';
+				html += '</div>';
+					
+			$(".buttonDiv").before(html);
+		}
+		
+		// 파일 + 선택시
+		function filePlus() {
+			addfile();
+		}
+		
+		// 창닫기
+		$('#btnClose').click(function() {
+			window.close();
+		});
+		
+		// CK에디터 실행
+		$(function() {
+			CKEDITOR.replace("comments");
+		});
+
+		// 저장시 에디터 관련을 설명 드리기 위한 임시 함수입니다.
+		function doSave() {
+			
+			// 내용의 입력 유무를 체크하실 경우, 스크립트로 아래와 같이 체크할 수 있습니다.
+			if($.trim(CKEDITOR.instances["comments"].getData()) == "") {
+				alert("내용을 입력해주세요.");
+				CKEDITOR.instances["comments"].focus();
+				return;
+			}
+
+			// 에디터로 작성한 내용이 form submit 으로 그냥 처리하면 서버에서 받지를 못하게 됩니다.
+			// 아래 처럼 에디터의 내용이 textarea 에 저장하도록 처리 후, submit 을 진행하시면 됩니다.
+			$("#comments").val(CKEDITOR.instances["comments"].getData());
+
+				
+		}
+		
+
+		
+		</script>
+    </body>
+</html>

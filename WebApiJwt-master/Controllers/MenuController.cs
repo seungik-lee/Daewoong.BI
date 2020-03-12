@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,55 +16,50 @@ namespace Daewoong.BI.Controllers
     //[ApiController]
     public class MenuController : ControllerBase
     {
-        #region UserController
-        private UserController _userController;
-        public UserController UserController
+        private DWBIUser DWUserInfo
         {
             get
             {
-                if (_userController == null)
-                {
-                    //20200109 김태규 수정 배포
-                    //_userController = new UserController();
-                    _userController = new UserController(null, null, null);
-                }
-                return _userController;
-            }
-
-        }
-
-        #endregion
-
-        private string UserID {
-            get {
-                return User.FindFirst("sub")?.Value;
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
             }
         }
-        [Authorize]
+
+        //[Authorize]
         [HttpGet]
         public List<MenuSet> Get(string companyID)
         {
-            var user = UserController.GetByKey(UserID, Request);
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+
+                return null;
+            }
+
             using (var db = new DWContext())
             {
                 List<Menu> list = new List<Menu>();
-                KPIController kpi = new KPIController();
+
                 using (MySqlConnection conn = new MySqlConnection(db.ConnectionString))
                 {   
                     conn.Open();
+
                     MySqlCommand cmd = new MySqlCommand("get_menusByCompany", conn);
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new MySqlParameter("@roleID", user.RoleID));
-                    cmd.Parameters.Add(new MySqlParameter("@CompanyCode", companyID));
-
+                    cmd.Parameters.Add(new MySqlParameter("@roleID", DWUserInfo.RoleID));
+                    cmd.Parameters.Add(new MySqlParameter("@CompanyCode", DWUserInfo.CompanyCode));
 
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             //2020-01-23 임병규 수정 배포 : 사장님 FineReport 메뉴 사용안함 처리
-                            if (user.UserID == "younjc@daewoong.co.kr" && reader["Category"].ToString() == "FineReport") { }                          
-                            else {
+                            if (DWUserInfo.UserID == "younjc@daewoong.co.kr" && reader["Category"].ToString() == "FineReport") 
+                            { 
+                                
+                            }                          
+                            else 
+                            {
                                 list.Add(new Menu()
                                 {
                                     ID = Convert.ToInt32(reader["Id"]),
@@ -79,9 +75,11 @@ namespace Daewoong.BI.Controllers
                         }
                     }
                 }
-                var results = list.GroupBy(o=>o.Category);
+
+                var results = list.GroupBy(o => o.Category);
 
                 List<MenuSet> menuSet = new List<MenuSet>();
+
                 foreach (var item in results)
                 {
                     MenuSet set = new MenuSet();
@@ -91,9 +89,7 @@ namespace Daewoong.BI.Controllers
                 }
 
                 return menuSet;
-
             }
-
         }
 
         private List<Menu> getMenu(IGrouping<string, Menu> item)
@@ -198,7 +194,7 @@ namespace Daewoong.BI.Controllers
                 {
                     conn.Open();
 
-                    MySqlCommand cmd = new MySqlCommand($"select Menu.ID, Menu.Close, Menu.CompanyCode, Menu.Title as MenuTitle, Menu.Url, Menu.Level, Menu.ParentID, Category.Title as CategoryTitle from Menu inner join Category on Menu.categoryCode = Category.id where Menu.companyCode = '{companyCode}' and Menu.CategoryCode in (1, 2, 3)", conn);
+                    MySqlCommand cmd = new MySqlCommand($"select Menu.ID, ifnull(Menu.Close, '') as Close, Menu.CompanyCode, Menu.Title as MenuTitle, Menu.Url, Menu.Level, Menu.ParentID, Category.Title as CategoryTitle from Menu inner join Category on Menu.categoryCode = Category.id where Menu.companyCode = '{companyCode}' and Menu.CategoryCode in (1, 2, 3)", conn);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -237,8 +233,16 @@ namespace Daewoong.BI.Controllers
 
         [HttpGet]
         [Route("GetMenuList")]
-        public List<MenuSet> GetMenuList(string roleID, string companyID)
+        public List<MenuSet> GetMenuList()
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+
+                return null;
+            }
+
             using (var db = new DWContext())
             {
                 List<Menu> list = new List<Menu>();
@@ -248,18 +252,18 @@ namespace Daewoong.BI.Controllers
                     conn.Open();
                     MySqlCommand cmd = new MySqlCommand("get_menusByCompany", conn);
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new MySqlParameter("@roleID", roleID));
-                    cmd.Parameters.Add(new MySqlParameter("@CompanyCode", companyID));
-
+                    cmd.Parameters.Add(new MySqlParameter("@roleID", DWUserInfo.RoleID));
+                    cmd.Parameters.Add(new MySqlParameter("@CompanyCode", DWUserInfo.CompanyCode));
 
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            //2020-01-23 임병규 수정 배포 : 사장님 FineReport 메뉴 사용안함 처리
-                            //if (user.UserID == "younjc@daewoong.co.kr" && reader["Category"].ToString() == "FineReport") { }
-                            //else
-                            //{
+                            if (DWUserInfo.UserID == "younjc@daewoong.co.kr" && reader["Category"].ToString() == "FineReport") 
+                            { 
+                            }
+                            else
+                            {
                                 list.Add(new Menu()
                                 {
                                     ID = Convert.ToInt32(reader["Id"]),
@@ -271,7 +275,7 @@ namespace Daewoong.BI.Controllers
                                     Level = reader["Level"].ToString(),
                                     ParentID = reader["ParentID"].ToString(),
                                 });
-                            //}
+                            }
                         }
                     }
                 }

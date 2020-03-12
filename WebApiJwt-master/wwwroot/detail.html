@@ -3,21 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <title>대웅제약 BI</title>
-    <link href="app/css/core.css" rel="stylesheet" />
-    <link href="app/css/bootstrap.min.css" rel="stylesheet" />
     <script src="app/script/jquery.js"></script>
     <script src="app/script/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    <script src="app/script/dataService.js"></script>
-    <script src="app/script/detail.js"></script>
-    <link href="app/css/main.css" rel="stylesheet" />
+    <script src="app/script/moment.js"></script>
     <script src="app/script/bootstrap.min.js"></script>
+    <link href="app/css/core.css" rel="stylesheet" />
+    <link href="app/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="app/css/main.css" rel="stylesheet" />
     <link href="app/css/button.css" rel="stylesheet" />
     <link href="app/css/text.css" rel="stylesheet" />
     <link href="app/css/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
-    <script src="app/script/moment.js"></script>
-
-
-
 
     <style>
         #content {
@@ -25,13 +20,34 @@
             height: 900px;
         }
     </style>
-</head>
-<body class="bg2">
-    <div class="nav" style="background:#f77822;padding:5px;">
-    </div>
+
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            $.get("menu.html", function (data) {
+                $("body").prepend(data);
+			});
+
+            var urlTemp = location.search;
+
+            var newUrlS = urlTemp.lastIndexOf("userid=");
+
+			if (newUrlS === -1) {
+                var aTemp = location.search.lastIndexOf("jsp?");
+                var root = location.search.substring(5, aTemp + 4);
+				var params = location.search.substring(aTemp + 4);
+
+                $("#content").attr("src", root + params);
+            } else {
+                var key = urlTemp.substring(newUrlS + 7);
+                var newURl = urlTemp.substring(5, newUrlS + 7) + encodeURIComponent(key);
+                $("#content").attr("src", newURl);
+            }
+		});
+    </script>
+</head >
+<body class="bg2" style="opacity:1;">
     <div class="container-flex">
         <iframe scrolling="no" id="content"></iframe>
     </div>
-    
 </body>
-</html>
+</html >

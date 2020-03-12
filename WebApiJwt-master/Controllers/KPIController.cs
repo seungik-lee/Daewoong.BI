@@ -4,9 +4,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
@@ -16,30 +18,11 @@ namespace Daewoong.BI.Controllers
     
     public class KPIController : ControllerBase
     {
-        #region UserController
-        private UserController _userController;
-        public UserController UserController
+        private DWBIUser DWUserInfo
         {
             get
             {
-                if (_userController == null)
-                {
-                    //20200109 김태규 수정 배포
-                    //_userController = new UserController();
-                    _userController = new UserController(null, null, null);
-                }
-                return _userController;
-            }
-
-        }
-
-        #endregion
-
-        private string UserID
-        {
-            get
-            {
-                return User.FindFirst("sub")?.Value;
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
             }
         }
 
@@ -52,16 +35,19 @@ namespace Daewoong.BI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
         public List<KPI> Get()
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                Response.StatusCode = 600;
+                
+                return null;
+            }
+
             List<KPI> list = new List<KPI>();
-            var user = UserController.GetByKey(UserID, Request);
-			//2019-12-26 김태규 수정 배포
-			var id = HttpContext.Request.Headers["company"];
-            var company = "";
-            if (id.Count > 0)
-                company = id.FirstOrDefault();
+
+            int mainCompanyCode = DWUserInfo.CompanyCode;
 
             using (var db = new DWContext())
             {
@@ -70,9 +56,7 @@ namespace Daewoong.BI.Controllers
                     conn.Open();
                     MySqlCommand cmd = new MySqlCommand("get_AllKPIs", conn);
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    //2019-12-26 김태규 수정 배포
-                    //cmd.Parameters.Add(new MySqlParameter("@companyCode", user.CompanyCode));
-                    cmd.Parameters.Add(new MySqlParameter("@companyCode", company));
+                    cmd.Parameters.Add(new MySqlParameter("@companyCode", mainCompanyCode));
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -94,15 +78,13 @@ namespace Daewoong.BI.Controllers
                         }
                     }
                 }
-                if (user.UserRole == Role.Member) {
-                    //return list.Where(o => o.CompanyCode == user.CompanyCode.ToString()).ToList();
-                    //2019-12-26 김태규 수정 배포
-                    return list.Where(o => o.CompanyCode == company).ToList();
+
+                if (DWUserInfo.UserRole == Role.Member) {
+                    return list.Where(o => o.CompanyCode == mainCompanyCode.ToString()).ToList();
                 } else {
                     return list;
               	}
             }
-
         }
 
         public List<KPI> GetKpiByPage(int pageID, string companyCode)
@@ -139,9 +121,9 @@ namespace Daewoong.BI.Controllers
                     }
                   
                 }
+
                 return list.Where(o=>o.CompanyCode == companyCode).ToList();
             }
-
         }
 
         [HttpPost]

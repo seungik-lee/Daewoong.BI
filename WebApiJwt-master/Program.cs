@@ -21,5 +21,6 @@ namespace Daewoong.BI
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build();
+
     }
 }

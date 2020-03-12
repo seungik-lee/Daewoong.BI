@@ -1,0 +1,331 @@
+﻿@page
+@model Daewoong.BI.ManagingModel
+@{
+    ViewData["Title"] = "ManagingMeeting";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dropdown-menu > li > a {
+        margin: 4px;
+    }
+</style>
+<script type="text/javascript">
+    var file_check_size = 1024 * 1024 * 10;
+	var pageStatus = "@Model.PageStatus";
+	var businessCaption = "@Model.businessBaseObj.Caption";
+
+	$(document).ready(function () {
+		if (pageStatus == "NoData") {
+			alert("게시된 경영회의 내용이 없습니다.");
+			location.href = "/business/scenariolist/1";
+		}
+
+		// 경영회의 진행 화면 목록 탭버튼 클릭시 해당 탭의 컨텐츠 영역 활성화 처리
+		$('#list_tabs a').click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+
+		// 총평지시사항 편집/뷰 용 팝업 실행
+		$("#lblCommnet").click(function (e) {
+			e.stopPropagation();
+
+			var h = document.body.offsetHeight * 0.8;	// 고정값 또는 브라우저 높이의 %
+			var w = document.body.offsetWidth * 0.8; // 고정값 또는 브라우저 너비의 %
+			var x = (document.body.offsetWidth / 2) - (w / 2);
+			var y = (document.body.offsetHeight / 2) - (h / 2);
+
+			var option = '';
+			option += 'status=no';
+			option += ',resizable=yes';
+			option += ',scrollbars=1';
+			option += ',height=' + h;
+			option += ',width=' + w;
+			option += ',left=' + x;
+			option += ',top=' + y;
+
+			window.open('/business/generalcomment/' + $(this).attr("data-scenario_id"), 'general_comment', option);
+		});
+
+		$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            $(this).parent().siblings().removeClass('open');
+            $(this).parent().toggleClass('open');
+		});
+
+		// 경영회의 진행 화면 버튼 토글로 펼쳐진 UI영역이 보이는 상태로 유지하기 위한 처리
+		$('.dropdown-menu.keep_open').on('click', function (e) {
+			e.stopPropagation();
+		});
+
+		// 경영회의 진행 화면 목록 트리 메뉴 토글처리
+		$('label.tree-toggler').on("click", document, function () {
+			$(this).parent().children('ul.tree').toggle(100);
+		});
+
+		// 제일 첫 컨텐츠 정보 표시
+		$("#tab_current").find("li[data-depth='3']:eq(0)").trigger("click");
+
+		// 이전 게시 정보가 없는 경우
+		if ($.trim($("#tab_previous").find("ul.nav-list").html()) == "") {
+			$("#list_tabs li:eq(1)").hide();
+		}
+	});
+
+	function displayReport(analysisID, contentType, contentData, typeName, contentLabel) {
+		if (contentType == "img") {
+			$("#ifrReport").hide();
+			$("#imgReport").attr("src", contentData);
+			$("#imgReport").show();
+		} else {
+			$("#imgReport").hide();
+			$("#ifrReport").attr("src", contentData);
+			$("#ifrReport").show();
+		}
+
+		$("#divCaption").html(businessCaption + " <i class=\"fa fa-chevron-right\"></i> " + typeName + " <i class=\"fa fa-chevron-right\"></i> " + contentLabel);
+		$("#divAnalysis").html($("#txtAnalysis" + analysisID).text());
+
+		$("div.cause_analysis_file").hide();
+		$("#divAttach" + analysisID).show();
+	}
+
+	function displayPreviousComment(obj) {
+		// 총평지시사항 편집/뷰 용 팝업 실행
+		var h = document.body.offsetHeight * 0.8;	// 고정값 또는 브라우저 높이의 %
+		var w = document.body.offsetWidth * 0.8; // 고정값 또는 브라우저 너비의 %
+		var x = (document.body.offsetWidth / 2) - (w / 2);
+		var y = (document.body.offsetHeight / 2) - (h / 2);
+
+		var option = '';
+		option += 'status=no';
+		option += ',resizable=yes';
+		option += ',scrollbars=1';
+		option += ',height=' + h;
+		option += ',width=' + w;
+		option += ',left=' + x;
+		option += ',top=' + y;
+
+		window.open('/business/previousgeneralcomment/' + $(obj).attr("data-scenario_id"), 'general_comment', option);
+	}
+</script>
+
+
+<div class="container-flex" style="height: 90%">
+    <div id="divContent" class="scenario_contents">
+        @if (Model.businessBaseObj != null && Model.businessBaseObj.BusinessScenarios != null && Model.businessBaseObj.BusinessScenarios.Count > 0 && Model.businessBaseObj.BusinessScenarios[0].BusinessContents != null && Model.businessBaseObj.BusinessScenarios[0].BusinessContents.Count > 0)
+        {
+            <div id="divCaption" class="report_breadcrumb">@Model.businessBaseObj.Caption <i class="fa fa-chevron-right"></i> @Model.businessBaseObj.BusinessScenarios[0].GetTypesName(Model.businessBaseObj.BusinessScenarios[0].Types) <i class="fa fa-chevron-right"></i> @Model.businessBaseObj.BusinessScenarios[0].BusinessContents[0].Label</div>
+
+            @if (@Model.businessBaseObj.BusinessScenarios[0].BusinessContents[0].ContentType == "img")
+            {
+                <img id="imgReport" class="report_img" src="@Model.businessBaseObj.BusinessScenarios[0].BusinessContents[0].ContentData" />
+                <iframe id="ifrReport" class="report_ifm" src="" style="display:none;"></iframe>
+            }
+            else
+            {
+                <img id="imgReport" class="report_img" src="" style="display:none;" />
+                <iframe id="ifrReport" class="report_ifm" src="@Model.businessBaseObj.BusinessScenarios[0].BusinessContents[0].ContentData"></iframe>
+            }
+        }
+    </div>
+
+    <div class="btn-group scenario_btn">
+        <button type="button" class="btn btn-success btn-circle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-list"></i>
+        </button>
+
+        <div class="dropdown-menu pull-right scenario_wrap keep_open">
+            <!-- start : '현재/이전' 탭 버튼 -->
+            <ul class="nav nav-tabs" role="tablist" id="list_tabs">
+                <li role="presentation" class="active"><a href="#tab_current" aria-controls="tab_current" role="tab" data-toggle="tab">현재</a></li>
+                <li role="presentation" class=""><a href="#tab_previous" aria-controls="tab_previous" role="tab" data-toggle="tab">이전</a></li>
+            </ul>
+            <!-- end : '현재/이전' 탭 버튼 -->
+
+            <div class="tab-content scenario_tab_content">
+                <!-- start : '현재' 탭의 내용 -->
+                <div role="tabpanel" class="tab-pane active" id="tab_current">
+                    <div class="scenario_list">
+                        <ul class="nav nav-list d1">
+                            <li>
+                                <label class="tree-toggler nav-header">■ @Model.businessBaseObj.Caption</label>
+                                <ul class="nav nav-list tree d2" style="display: block;">
+                                    @for (int i = 1; i <= Model.businessBaseObj.BusinessScenarios.Count; i++)
+                                    {
+                                        <li>
+                                            @if (Model.businessBaseObj.BusinessScenarios[i - 1].Types == 5)
+                                            {
+                                                <label id="lblCommnet" class="tree-toggler nav-header" data-scenario_id="@Model.businessBaseObj.BusinessScenarios[i - 1].ScenarioID">[@i] @Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="tree-toggler nav-header">[@i] @Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+                                            }
+
+                                            <ul class="nav nav-list tree d3" style="display: block;">
+                                                @for (int j = 1; j <= Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents.Count; j++)
+                                                {
+                                                    if (Model.businessBaseObj.BusinessScenarios[i - 1].Types != 5)
+                                                    {
+                                                        <li data-depth="3" onclick="displayReport(@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- end : '현재' 탭의 내용 -->
+                <!-- start : '이전' 탭의 내용 -->
+                <div role="tabpanel" class="tab-pane" id="tab_previous">
+                    <div class="scenario_list">
+                        <ul class="nav nav-list d1">
+                            @if (Model.prevBusinessBaseObjs != null && Model.prevBusinessBaseObjs.Count > 0)
+                            {
+                                foreach (var businessBaseObj in Model.prevBusinessBaseObjs)
+                                {
+                                    <li>
+                                        <label class="tree-toggler nav-header">■ @businessBaseObj.Caption</label>
+                                        <ul class="nav nav-list tree d2" style="display: block;">
+                                            @for (int i = 1; i <= businessBaseObj.BusinessScenarios.Count; i++)
+                                            {
+                                                <li>
+                                                    @if (businessBaseObj.BusinessScenarios[i - 1].Types == 5)
+                                                    {
+                                                        <label class="tree-toggler nav-header" data-scenario_id="@businessBaseObj.BusinessScenarios[i - 1].ScenarioID" onclick="displayPreviousComment(this)">[@i] @businessBaseObj.BusinessScenarios[i - 1].GetTypesName(businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="tree-toggler nav-header">[@i] @businessBaseObj.BusinessScenarios[i - 1].GetTypesName(businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+                                                    }
+
+                                                    <ul class="nav nav-list tree d3" style="display: block;">
+                                                        <!-- [NOTE] 새로고침시 첫번째 트리가 펼쳐져 있는 상태로 보이게 하려면 display: block; 을 사용합니다. -->
+                                                        @for (int j = 1; j <= businessBaseObj.BusinessScenarios[i - 1].BusinessContents.Count; j++)
+                                                        {
+                                                            if (businessBaseObj.BusinessScenarios[i - 1].Types != 5)
+                                                            {
+                                                                <li data-depth="3" onclick="displayReport(@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@businessBaseObj.BusinessScenarios[i - 1].GetTypesName(businessBaseObj.BusinessScenarios[i - 1].Types)', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end : 시나리오 목차 (우측 상단 플로팅 레이어 버튼) -->
+    <!-- start : 원인분석(코멘트/총평, 첨부파일) 출력 (좌측 하단 플로팅 레이어 버튼) -->
+    <div class="btn-group dropup cause_analysis">
+
+        <button type="button" class="btn btn-danger btn-circle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-file-text-o"></i>
+        </button>
+
+        <ul class="dropdown-menu keep_open" role="menu">
+            <li>
+                <div id="divAnalysis" class="cause_analysis_content"></div>
+
+                @for (int i = 0; i < Model.businessBaseObj.BusinessScenarios.Count; i++)
+                {
+                    @for (int j = 0; j < Model.businessBaseObj.BusinessScenarios[i].BusinessContents.Count; j++)
+                    {
+                        string textAreaID = "txtAnalysis" + Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.AnalysisID;
+
+                        <textarea id="@textAreaID" style="display:none">
+							@Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.Txt
+						</textarea>
+                    }
+                }
+
+                @foreach (var businessBaseObj in Model.prevBusinessBaseObjs)
+                {
+                    @for (int i = 0; i < businessBaseObj.BusinessScenarios.Count; i++)
+                    {
+                        @for (int j = 0; j < businessBaseObj.BusinessScenarios[i].BusinessContents.Count; j++)
+                        {
+                            string textAreaID = "txtAnalysis" + businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.AnalysisID;
+
+                            <textarea id="@textAreaID" style="display:none">
+								@businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.Txt
+							</textarea>
+                        }
+                    }
+                }
+            </li>
+
+            <li class="divider cause_analysis_divider"></li>
+
+            <li>
+                @for (int i = 0; i < Model.businessBaseObj.BusinessScenarios.Count; i++)
+                {
+                    @for (int j = 0; j < Model.businessBaseObj.BusinessScenarios[i].BusinessContents.Count; j++)
+                    {
+                        string divAttachID = "divAttach" + Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.AnalysisID;
+
+                        <div id="@divAttachID" class="cause_analysis_file" style="display:none">
+                            @if (Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles != null && Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles.Count > 0)
+                            {
+                                string attachList = "";
+
+                                foreach (var file in Model.businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles)
+                                {
+                                    attachList += $" <a href=\"{file.FileURL}\" target=\"_blank\"><i class=\"fa fa-archive\" aria-hidden=\"true\"></i> {file.FileName}</a>,";
+                                }
+
+                                @Html.Raw(attachList.TrimEnd(','));
+                            }
+                            else
+                            {
+                                @Html.Raw("첨부 파일이 없습니다.");
+                            }
+                        </div>
+                    }
+                }
+
+                @foreach (var businessBaseObj in Model.prevBusinessBaseObjs)
+                {
+                    @for (int i = 0; i < businessBaseObj.BusinessScenarios.Count; i++)
+                    {
+                        @for (int j = 0; j < businessBaseObj.BusinessScenarios[i].BusinessContents.Count; j++)
+                        {
+                            string divAttachID = "divAttach" + businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.AnalysisID;
+
+                            <div id="@divAttachID" class="cause_analysis_file" style="display:none">
+                                @if (businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles != null && businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles.Count > 0)
+                                {
+                                    string attachList = "";
+
+                                    foreach (var file in businessBaseObj.BusinessScenarios[i].BusinessContents[j].BusinessAnalysis.BusinessFiles)
+                                    {
+                                        attachList += $" <a href=\"{file.FileURL}\" target=\"_blank\"><i class=\"fa fa-archive\" aria-hidden=\"true\"></i> {file.FileName}</a>,";
+                                    }
+
+                                    @Html.Raw(attachList.TrimEnd(','));
+                                }
+                                else
+                                {
+                                    @Html.Raw("첨부 파일이 없습니다.");
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </li>
+        </ul>
+    </div>
+</div>
+

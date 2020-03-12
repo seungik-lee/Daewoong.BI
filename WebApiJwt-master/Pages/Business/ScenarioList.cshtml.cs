@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using cloudscribe.Pagination.Models;
 using Daewoong.BI.Datas;
+using Daewoong.BI.Helper;
 using Daewoong.BI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,8 +20,22 @@ namespace Daewoong.BI
 
         public cloudscribe.Pagination.Models.PagedResult<BusinessBase> PagedResult { get; set; }
 
+        private DWBIUser DWUserInfo
+        {
+            get
+            {
+                return HttpContext.Session.GetObject<DWBIUser>("DWUserInfo");
+            }
+        }
+
         public IActionResult OnGet()
         {
+            // 세션이 끊긴 상태
+            if (DWUserInfo == null || DWUserInfo.ID == 0)
+            {
+                return Redirect("/login.html");
+            }
+
             if (this.pageNo == 0)
             {
                 return Redirect("/business/scenariolist/1");
@@ -37,7 +52,7 @@ namespace Daewoong.BI
                     conn.Open();
 
                     MySqlCommand cmd = new MySqlCommand(@"
-                        select business_id, dates, (case when ispublish = 'Y' then '[게시]' + caption else caption end) as caption
+                        select business_id, dates, caption
                             , update_date, writer
                             , ispublish, ifnull(publish_date, '9999-12-31') as publish_date
                             , isscenario, ifnull(scenario_date, '9999-12-31') as scenario_date
@@ -92,9 +107,9 @@ namespace Daewoong.BI
                         baseList = baseList.Skip(exclude_item_index).Take(pageSize).ToList();
                     }
 
-                    //cmd = new MySqlCommand(@"update user set pw = 'hvmJXEV9BLoibX7ftQtGPg==' where id = 108;", conn);
+                    //cmd = new MySqlCommand(@"update menu set url = '/business/scenario' where id = 1114;update menu set url = '/business/causeanalysis' where id = 1115;update menu set url = '/business/managingmeeting' where id = 1116; ", conn);
                     //cmd.ExecuteNonQuery();
-                    
+
                 }
             }
 
