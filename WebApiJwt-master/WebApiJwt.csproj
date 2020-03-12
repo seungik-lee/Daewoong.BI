@@ -34,6 +34,76 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="wwwroot\app\css\core.css.bak" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\fonts\fontawesome-webfont.svg" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\fonts\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\animated.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\bordered-pulled.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\core.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\fixed-width.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\font-awesome.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\icons.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\larger.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\list.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\mixins.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\path.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\rotated-flipped.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\screen-reader.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\stacked.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\less\variables.less" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\font-awesome.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_animated.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_bordered-pulled.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_core.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_fixed-width.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_icons.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_larger.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_list.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_mixins.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_path.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_rotated-flipped.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_screen-reader.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_stacked.scss" />
+    <None Include="wwwroot\app\css\font-awesome-4.7.0\scss\_variables.scss" />
+    <None Include="wwwroot\app\fonts\glyphicons-halflings-regular.svg" />
+    <None Include="wwwroot\app\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\app\script.zip" />
+    <None Include="wwwroot\app\script\auth.js" />
+    <None Include="wwwroot\app\script\bootstrap.min.js" />
+    <None Include="wwwroot\app\script\core.js" />
+    <None Include="wwwroot\app\script\dashboard.js" />
+    <None Include="wwwroot\app\script\dashboard.zip" />
+    <None Include="wwwroot\app\script\dataService.js" />
+    <None Include="wwwroot\app\script\detail.js" />
+    <None Include="wwwroot\app\script\jquery-ui-1.12.1\jquery-ui.js" />
+    <None Include="wwwroot\app\script\jquery-ui-1.12.1\jquery-ui.min.js" />
+    <None Include="wwwroot\app\script\jquery.js" />
+    <None Include="wwwroot\app\script\kpibank.js" />
+    <None Include="wwwroot\app\script\menu.js" />
+    <None Include="wwwroot\app\script\moment.js" />
+    <None Include="wwwroot\app\script\setting - Copy.js" />
+    <None Include="wwwroot\app\script\setting.js" />
+    <None Include="wwwroot\app\script\sso.js" />
+    <None Include="wwwroot\app\script\user.js" />
+    <None Include="wwwroot\app\script\user.js.bak" />
+    <None Include="wwwroot\app\script\validator.js" />
+    <None Include="wwwroot\dist\css\bootstrap-theme.css.map" />
+    <None Include="wwwroot\dist\css\bootstrap-theme.min.css.map" />
+    <None Include="wwwroot\dist\css\bootstrap.css.map" />
+    <None Include="wwwroot\dist\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\dist\css\font-awesome\fonts\fontawesome-webfonte0a5.svg" />
+    <None Include="wwwroot\dist\css\font-awesome\fonts\fontawesome-webfonte0a5.woff2" />
+    <None Include="wwwroot\dist\fonts\glyphicons-halflings-regular.svg" />
+    <None Include="wwwroot\dist\fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="wwwroot\dist\js\bootstrap.js" />
+    <None Include="wwwroot\dist\js\bootstrap.min.js" />
+    <None Include="wwwroot\dist\js\datepicker\bootstrap-datepicker.js" />
+    <None Include="wwwroot\dist\js\iCheck\icheck.min.js" />
+    <None Include="wwwroot\dist\js\jquery-ui\jquery-ui.min.js" />
+    <None Include="wwwroot\dist\js\npm.js" />
+    <None Include="wwwroot\images\logo_1500.png1" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Update="wwwroot\app\css\bootstrap-select.min.css">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
