@@ -1,0 +1,25 @@
+﻿@page
+@model Daewoong.BI.IndexModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<link href="~/app/css/core.css" rel="stylesheet" />
+<script src="~/app/script/dataService.js"></script>
+<script src="app/script/dashboard.js"></script>
+<script src="~/app/script/moment.js"></script>
+<script type="text/javascript">
+    var pages = [];
+
+    $(document).ready(function () {
+
+    });
+</script>
+
+<div id="kpiContainer" style="margin-top:90px;"></div>
+<div id="inform">
+    <div><img src="images/inform.png" /></div>
+    <div style="padding:20px;">등록된 대시보드가 없습니다</div>
+    <div><button onclick="location.href='setting.html'" class="btn btn-default">대시보드 등록</button></div>
+</div>
