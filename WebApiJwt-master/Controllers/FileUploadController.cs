@@ -23,6 +23,7 @@ namespace Daewoong.BI.Controllers
         [HttpPost]
         [Route("UploadAttachFiles")]
         public async Task<IActionResult> UploadAttachFiles(List<IFormFile> files)
+        //public async Task<IActionResult> UploadAttachFiles([FromForm]List<IFormFile> files)
         {
             if (files == null || files.Count == 0)
             {
@@ -47,6 +48,7 @@ namespace Daewoong.BI.Controllers
             try
             {
                 string uploadFilePath = $"{hostingEnvironment.WebRootPath}\\uploads\\{DateTime.Now.Year.ToString()}\\{DateTime.Now.Month.ToString().PadLeft(2, '0')}\\{DateTime.Now.Day.ToString().PadLeft(2, '0')}";
+                //string uploadFilePath = $"/home/www/Daewoong.BI/WebApiJwt-master/wwwroot/uploads/{DateTime.Now.Year.ToString()}/{DateTime.Now.Month.ToString().PadLeft(2, '0')}/{DateTime.Now.Day.ToString().PadLeft(2, '0')}";
 
                 if (!Directory.Exists(uploadFilePath))
                 {
