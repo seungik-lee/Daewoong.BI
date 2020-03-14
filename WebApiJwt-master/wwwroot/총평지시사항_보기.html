@@ -18,7 +18,7 @@
 	<script src="dist/js/iCheck/icheck.min.js"></script>
 	<script src="dist/js/jquery-ui/jquery-ui.min.js"></script>
 
-	<script src="dist/ckeditor4/ckeditor.js"></script>
+
     <style>
 			.content {
 				margin: 0;
@@ -81,20 +81,36 @@
 							<form class="form-horizontal" id="form" enctype="">
 								<h5 style="color:#ef2565" id="modified_date"><b>마지막 수정일 : </b></h5>
 									
-								<textarea class="form-control" placeholder="Comments를 입력하세요." id="comments"></textarea>
+								<div>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+								내용입니다.<br>
+
+
+								</div>
 								
 								<div class="file_form">
-									<button type="button" class="btn btn-w-m btn-default" onclick="filePlus()"><i class="fa fa-plus"></i></button>
 									
-									<label onclick="addfile()" class="btn filelabel">
-										첨부파일 추가
-									</label>
+									 <i class="glyphicon glyphicon-download"></i><a href="#다운로드링크">파일.zip</a>
+
+									 <i class="glyphicon glyphicon-download"></i><a href="#다운로드링크">파일2.zip</a>
+									 
+									 <i class="glyphicon glyphicon-download"></i><a href="#다운로드링크">파일2.pptx</a>
+									
+									 
 								</div>
 								
 								
 								
 								<div class="buttonDiv">
-									<button type="button" class="btn btn-w-m btn-primary" onclick="doSave()">저장하기</button>
+
 									<button type="button" class="btn btn-w-m btn-primary" id="btnClose">창닫기</button>
 								</div>
 							</form>

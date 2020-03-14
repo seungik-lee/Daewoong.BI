@@ -7,7 +7,7 @@
 
 <style>
 	.dropdown-menu > li > a {
-	  margin: 4px;
+		margin: 4px;
 	}
 
 	#divInform {
@@ -187,13 +187,13 @@
 											}
 
 											<ul class="nav nav-list tree d3" style="display: block;">
-											@for (int j = 1; j <= Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents.Count; j++)
-											{
-												if (Model.businessBaseObj.BusinessScenarios[i - 1].Types != 5)
+												@for (int j = 1; j <= Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents.Count; j++)
 												{
-													<li data-depth="3" onclick="displayReport(@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+													if (Model.businessBaseObj.BusinessScenarios[i - 1].Types != 5)
+													{
+														<li data-depth="3" onclick="displayReport(@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+													}
 												}
-											}
 											</ul>
 										</li>
 									}
@@ -290,7 +290,7 @@
 					}
 				}
 			</li>
-			
+
 			<li class="divider cause_analysis_divider"></li>
 
 			<li>
