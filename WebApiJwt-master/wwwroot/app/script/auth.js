@@ -35,7 +35,7 @@ function login() {
         $("#pw").focus();
         return false;
     }
-
+    
     var url = apiService + "/account/login";
     var data = { "Email": id, "Password": pw };
 
@@ -48,27 +48,27 @@ function login() {
         success: function (result) {
             if (result.id == 0) {
                 $("#msg").text("User Email 혹은 Password가 틀렸습니다.");
-                return false;
+                return;
+            } else {
+                setToken("userName", result.name);
+                setToken("userID", result.userID);
+                setToken("company", result.companyCode);
+                setToken("companies", JSON.stringify(result.companies));
+                setToken("companyCode", result.companyCode);
+                setToken("companyName", result.companyName);
+                setToken("isAdmin", result.isAdmin);
+                setToken("role", result.userRole);
+                setToken("roleID", result.roleID);
+                setToken("key", result.key);
+                setToken("roleIDKey", result.roleIDKey);
+
+                setClose();
+
+                location.href = "index.html";
             }
-
-            setToken("userName", result.name);
-            setToken("userID", result.userID);
-            setToken("company", result.companyCode);
-            setToken("companies", JSON.stringify(result.companies));
-            setToken("companyCode", result.companyCode);
-            setToken("companyName", result.companyName);
-            setToken("isAdmin", result.isAdmin);
-            setToken("role", result.userRole);
-            setToken("roleID", result.roleID);
-            setToken("key", result.key);
-            setToken("roleIDKey", result.roleIDKey);
-
-            setClose();
-
-            location.href = "index.html";
         }, error: function (result) {
             $("#msg").text("User Email 혹은 Password가 틀렸습니다.");
-            return false;
+            return;
         }
     });
 }

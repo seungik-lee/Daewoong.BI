@@ -4,6 +4,7 @@
 	ViewData["Title"] = "Scenario";
 	Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
 <link href="~/app/dw/css/datepicker/datepicker3.css" rel="stylesheet" />
 <script src="~/app/dw/js/datepicker/bootstrap-datepicker.js"></script>
 
@@ -30,7 +31,7 @@
 		});
 
 		// 오늘 날짜 넣기
-		$("#txtCalendar").datepicker('setDate', new Date); 
+		$("#txtCalendar").datepicker('setDate', new Date);
 
         $('.i-checks').iCheck({
 			radioClass: 'iradio_square-green',
@@ -182,13 +183,15 @@
 				formData.append("files", $("#fileContent")[0].files[0]);
 
 				$.ajax({
-					url: "/api/FileUpload/UploadAttachFiles",
+					//url: "/api/FileUpload/UploadAttachFiles",
+					url: "/Business/Scenario/?handler=FileUpload",
 					data: formData,
 					async: false,
 					processData: false,
 					contentType: false,
 					type: "POST",
-					beforeSend: function () {
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("X-XSRF-Token", $('input:hidden[name="__RequestVerificationToken"]').val());
 					},
 					success: function (data) {
 						var $targetObj = $("#ul_contents").find("li[id='li_content_item" + (content_index - 1) + "']").find("td:eq(1)").find("div:eq(2)");
@@ -295,7 +298,7 @@
 
 					businessScenario.businessContents = businessContents;
 				}
-				
+
 				businessScenarios.push(businessScenario);
 			});
 
@@ -637,6 +640,8 @@
 	}
 </script>
 
+@Html.AntiForgeryToken()
+
 <div class="col-lg-12">
 	<div class="ibox">
 		<div class="ibox-content">
@@ -768,7 +773,7 @@
 															<ul class="dropdown-menu level">
 																@foreach (var item in Model.DisplayYearList)
 																{
-																	<li onclick='setDate(this, "caseM_year")'>@item</li>
+																<li onclick='setDate(this, "caseM_year")'>@item</li>
 																}
 															</ul>
 														</div>
@@ -809,7 +814,7 @@
 															<ul class="dropdown-menu level">
 																@foreach (var item in Model.DisplayYearList)
 																{
-																	<li onclick='setDate(this, "caseQ_year")'>@item</li>
+																<li onclick='setDate(this, "caseQ_year")'>@item</li>
 																}
 															</ul>
 														</div>
@@ -842,7 +847,7 @@
 															<ul class="dropdown-menu level">
 																@foreach (var item in Model.DisplayYearList)
 																{
-																	<li onclick='setDate(this, "caseD_year")'>@item</li>
+																<li onclick='setDate(this, "caseD_year")'>@item</li>
 																}
 															</ul>
 														</div>

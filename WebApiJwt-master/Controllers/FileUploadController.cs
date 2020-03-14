@@ -24,28 +24,28 @@ namespace Daewoong.BI.Controllers
         [Route("UploadAttachFiles")]
         public async Task<IActionResult> UploadAttachFiles(List<IFormFile> files)
         {
-            if (files == null || files.Count == 0)
-            {
-                Response.StatusCode = 500;
-
-                return Content("업로드할 파일이 없습니다.");
-            }
-
             List<BusinessFile> results = new List<BusinessFile>();
-
-            // 10 * 1024 * 1024 => 10485760(10MB)
-            foreach (var file in files)
-            {
-                if (file.Length >= 10485760)
-                {
-                    Response.StatusCode = 500;
-
-                    return Content("업로드할 파일은 10MB를 넘길 수 없습니다.");
-                }
-            }
 
             try
             {
+                if (files == null || files.Count == 0)
+                {
+                    Response.StatusCode = 500;
+
+                    return Content("업로드할 파일이 없습니다.");
+                }
+
+                // 10 * 1024 * 1024 => 10485760(10MB)
+                foreach (var file in files)
+                {
+                    if (file.Length >= 10485760)
+                    {
+                        Response.StatusCode = 500;
+
+                        return Content("업로드할 파일은 10MB를 넘길 수 없습니다.");
+                    }
+                }
+            
                 string uploadFilePath = $"{hostingEnvironment.WebRootPath}\\uploads\\{DateTime.Now.Year.ToString()}\\{DateTime.Now.Month.ToString().PadLeft(2, '0')}\\{DateTime.Now.Day.ToString().PadLeft(2, '0')}";
 
                 if (!Directory.Exists(uploadFilePath))

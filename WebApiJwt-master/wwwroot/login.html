@@ -10,6 +10,7 @@
     <script type="text/javascript">
 		$(document).ready(function () {
 			window.localStorage.clear();
+			$.ajaxSetup({ cache: false });
 
             $.ajax({
 				url: "/api/user/InitializeSessionUserInfo",
@@ -35,7 +36,6 @@
                 <div style="padding-top:100px;"><img src="images/main_logo.png" /></div>
                 <div style="padding-top:30px;"><img src="images/title.png" /></div>
                 <div style="width:80%;text-align:center;margin:auto;padding-top:50px;">
-                    <form name="" id="" onsubmit="return login()">
                     <div class="text-left">
                         <label>User Email</label>
                         <input type="text" class="form-control" id="id" placeholder="User Email" />
@@ -50,7 +50,6 @@
                     <div>
                         <div id="msg"></div>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>

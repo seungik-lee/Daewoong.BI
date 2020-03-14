@@ -10,24 +10,24 @@
 		padding-top: 0px;
 	}
 
-	.agile-list > li {
-		border: 0px;
-		padding: 0px;
-	}
+		.agile-list > li {
+			border: 0px;
+			padding: 0px;
+		}
 
 	.btn {
 		min-height: 40px;
 		min-width: 40px;
 	}
 
-    .depth2 li {
-		cursor:pointer;
+	.depth2 li {
+		cursor: pointer;
 	}
 
 	h4 {
-		padding-bottom:15px;
-		font-size:12pt;
-		font-weight:bold
+		padding-bottom: 15px;
+		font-size: 12pt;
+		font-weight: bold
 	}
 </style>
 
@@ -38,10 +38,10 @@
     var file_check_size = 1024 * 1024 * 10;
 	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
 	var selected_analysis_obj = null;
-	
+
 	$(document).ready(function () {
 		CKEDITOR.replace("txtContent");
-		
+
 		if (selected_analysis_obj == null) {
 			setTimeout(function () {
 				CKEDITOR.instances.txtContent.setData($("#txt_" + $(selected_analysis_obj).attr("data-analysis_id")).text());
@@ -79,13 +79,15 @@
 						formData.append("files", $(this).get(0).files[0]);
 
 						$.ajax({
-							url: "/api/FileUpload/UploadAttachFiles",
+							//url: "/api/FileUpload/UploadAttachFiles",
+							url: "/Business/Scenario/?handler=FileUpload",
 							data: formData,
 							async: false,
 							processData: false,
 							contentType: false,
 							type: "POST",
-							beforeSend: function () {
+							beforeSend: function (xhr) {
+								xhr.setRequestHeader("X-XSRF-Token", $('input:hidden[name="__RequestVerificationToken"]').val());
 							},
 							success: function (data) {
 								businessFile.fileName = data[0].fileName;
@@ -152,7 +154,7 @@
 		html += '		</label>';
 		html += '	</div>';
 		html += '</div>';
-					
+
 		$(".buttonDiv").before(html);
 	}
 
@@ -218,6 +220,7 @@
 	}
 </script>
 
+@Html.AntiForgeryToken()
 
 <div class="col-lg-8">
 	<div class="ibox">
@@ -295,14 +298,15 @@
 			<ul class="list-dash " id="list">
 				@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
 				{
-					<li><span>@businessScenario.TypesName </span>
-                        <ul class="list-dash depth2">
-                            @foreach (var businessContent in businessScenario.BusinessContents)
-                            {
+					<li>
+						<span>@businessScenario.TypesName </span>
+						<ul class="list-dash depth2">
+							@foreach (var businessContent in businessScenario.BusinessContents)
+							{
 
-                                <li onclick="displayAnalysisData(this)" data-analysis_id="@businessContent.BusinessAnalysis.AnalysisID" data-content_type="@businessContent.ContentType" data-content_data="@businessContent.ContentData">@businessContent.Label</li>
-                                
-                            }
+								<li onclick="displayAnalysisData(this)" data-analysis_id="@businessContent.BusinessAnalysis.AnalysisID" data-content_type="@businessContent.ContentType" data-content_data="@businessContent.ContentData">@businessContent.Label</li>
+
+							}
 						</ul>
 					</li>
 				}
