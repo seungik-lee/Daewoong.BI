@@ -50,7 +50,7 @@ namespace Daewoong.BI
 
                     string bs_read_sql = $@"
                         select base.business_id, base.caption, base.dates, base.update_date
-	                        , scenario.scenario_id, scenario.types, scenario.sorting as scenario_sorting
+	                        , scenario.scenario_id, scenario.types, scenario.sorting as scenario_sorting, scenario.title as scenario_title
 	                        , content.content_id, content.label as content_label, content.content_type, content.content_data, content.sorting as content_sorting
                             , analysis.analysis_id, analysis.txt
                         from business_base base 
@@ -112,7 +112,7 @@ namespace Daewoong.BI
                             BusinessScenario subScenario = new BusinessScenario();
                             subScenario.ScenarioID = int.Parse(dr["scenario_id"].ToString());
                             subScenario.Types = int.Parse(dr["types"].ToString());
-                            subScenario.TypesName = subScenario.GetTypesName(subScenario.Types);
+                            subScenario.Title = dr["scenario_title"].ToString();
                             subScenario.Sorting = int.Parse(dr["scenario_sorting"].ToString());
 
                             businessBaseObj.BusinessScenarios.Add(subScenario);
@@ -183,7 +183,7 @@ namespace Daewoong.BI
 
                     string bs_read_sql = $@"
                         select base.business_id, base.caption, base.dates, base.update_date
-	                        , scenario.scenario_id, scenario.types, scenario.sorting as scenario_sorting
+	                        , scenario.scenario_id, scenario.types, scenario.sorting as scenario_sorting, scenario.title as scenario_title
 	                        , content.content_id, content.label as content_label, content.content_type, content.content_data, content.sorting as content_sorting
 	                        , analysis.analysis_id, analysis.txt
                         from business_base base 
@@ -249,7 +249,7 @@ namespace Daewoong.BI
                             BusinessScenario subScenario = new BusinessScenario();
                             subScenario.ScenarioID = int.Parse(dr["scenario_id"].ToString());
                             subScenario.Types = int.Parse(dr["types"].ToString());
-                            subScenario.TypesName = subScenario.GetTypesName(subScenario.Types);
+                            subScenario.Title = dr["scenario_title"].ToString();
                             subScenario.Sorting = int.Parse(dr["scenario_sorting"].ToString());
 
                             businessBase.BusinessScenarios.Add(subScenario);

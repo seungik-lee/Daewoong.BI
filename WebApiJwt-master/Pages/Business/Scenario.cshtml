@@ -43,8 +43,14 @@
 
         // 추가 버튼 클릭 시
 		$("#btnAppendScenario").click(function () {
+			if ($.trim($("#txtScenario").val()) == "") {
+				alert("시나리오를 입력하세요.");
+				$("#txtScenario").focus();
+				return;
+			}
+
 			var html= "";
-			html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="0" data-sc_type="' + $("#selScenarioType").val() + '" data-sc_status="">';
+			html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="0" data-sc_status="">';
 			html += '	<table class="seqtable">';
 			html += '		<colgroup>';
 			html += '			<col width="13%"/>';
@@ -58,7 +64,7 @@
 			html += '					</button>';
 			html += '				</td>';
 			html += '			    <td onclick="setScenarioDetail(this)" style="text-align: left; padding-left: 15px;">';
-			html += '				    <div class="story_value">' + $("#selScenarioType option:selected").text() + '</div>';
+			html += '				    <div class="story_value">' + $("#txtScenario").val() + '</div>';
 			html += '			    </td>';
 			html += '			</tr>';
 			html += '		</tbody>';
@@ -66,6 +72,8 @@
 			html += '</li>';
 
 			$("#ul_scerarios").append(html);
+
+			$("#txtScenario").val("");
 
 			scenario_index++;
 		});
@@ -257,6 +265,7 @@
 				businessScenario.scenarioID = $(this).attr("data-sc_id");
 				businessScenario.types = $(this).attr("data-sc_type");
 				businessScenario.sorting = scenario_sorting;
+				businessScenario.title = $(this).find("div.story_value").text();
 
 				if ($(this).attr("data-sc_status") == "deleted") {
 					// 기존에 추가된 항목을 삭제한 경우
@@ -342,7 +351,7 @@
 				var scenario_html = "";
 
 				for (var i = 0; i < jsonBusinessBaseObj.businessScenarios.length; i++) {
-					scenario_html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="' + jsonBusinessBaseObj.businessScenarios[i].scenarioID + '" data-sc_type="' + jsonBusinessBaseObj.businessScenarios[i].types + '" data-sc_status="">';
+					scenario_html += '<li class="ui-sortable-handle form-inline" id="li_scenario_item' + scenario_index + '" data-sc_id="' + jsonBusinessBaseObj.businessScenarios[i].scenarioID + '" data-sc_status="">';
 					scenario_html += '	<table class="seqtable">';
 					scenario_html += '		<colgroup>';
 					scenario_html += '			<col width="13%"/>';
@@ -356,7 +365,7 @@
 					scenario_html += '					</button>';
 					scenario_html += '				</td>';
 					scenario_html += '			    <td onclick="setScenarioDetail(this)" style="text-align: left; padding-left: 15px;">';
-					scenario_html += '				    <div class="story_value">' + jsonBusinessBaseObj.businessScenarios[i].typesName + '</div>';
+					scenario_html += '				    <div class="story_value">' + jsonBusinessBaseObj.businessScenarios[i].title + '</div>';
 					scenario_html += '			    </td>';
 					scenario_html += '			</tr>';
 					scenario_html += '		</tbody>';
@@ -623,8 +632,8 @@
 			return;
 		}
 
-		if (!/\.(gif|jpg|jpeg|png)$/i.test(file[0].name)) {
-			alert('gif, jpg, png 파일만 선택해 주세요.\n\n현재 파일 : ' + file[0].name);
+		if (!/\.(gif|jpg|jpeg|png|pdf)$/i.test(file[0].name)) {
+			alert('gif, jpg, png, pdf 파일만 선택해 주세요.\n\n현재 파일 : ' + file[0].name);
 			return;
 		}
 
@@ -672,12 +681,7 @@
 							<div class="form-group">
 								<label class="col-sm-2 control-label">추가 :</label>
 								<div class="col-sm-8">
-									<select class="form-control" id="selScenarioType">
-										<option value="1">매출현황</option>
-										<option value="2">손익현황</option>
-										<option value="3">재고현황</option>
-										<option value="4">생산현황</option>
-									</select>
+									<input type="text" class="form-control" placeholder="시나리오를 입력하세요." id="txtScenario" value="" autocomplete="off" maxlength="50">
 								</div>
 								<div class="col-sm-2">
 									<button type="button" class="btn btn-default btn-md" id="btnAppendScenario"><i class="fa fa-plus"></i></button>
@@ -712,7 +716,7 @@
 											<div class="iradio_square-green" style="position: relative;">
 												<input type="radio" value="이미지" name="ladio" id="rdoImage" style="position: absolute; opacity: 0;">
 											</div>
-											<i></i> 이미지
+											<i></i> 이미지/PDF
 										</label>
 									</div>
 								</div>

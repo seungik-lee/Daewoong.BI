@@ -18,6 +18,9 @@
 		font-size: 16px;
 	}
 </style>
+
+<script type="text/javascript" src="~/app/script/pdfjs/pdf.js"></script>
+
 <script type="text/javascript">
     var file_check_size = 1024 * 1024 * 10;
 	var businessCaption = "@Model.businessBaseObj.Caption";
@@ -93,11 +96,61 @@
 
 	function displayReport(analysisID, contentType, contentData, typeName, contentLabel) {
 		if (contentType == "img") {
-			$("#ifrReport").hide();
-			$("#imgReport").attr("src", contentData);
-			$("#imgReport").show();
+			if (contentData.indexOf("pdf") >= 0) {
+				$("#ifrReport").hide();
+				$("#imgReport").hide();
+				$("#imgdiv").show();
+
+				$("#divItem").children().remove();
+
+				var pdfHtml = "	<div class=\"row\" style=\"line-height: 20px;\">";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "		<div class=\"col-lg-10\">";
+				pdfHtml += "			<div class=\"ibox\">";
+				pdfHtml += "				<div class=\"ibox-content\">";
+				pdfHtml += "					<div class=\"row\">";
+				pdfHtml += "						<div class=\"col-lg-1\"></div>";
+				pdfHtml += "						<div class=\"col-lg-10\">";
+				pdfHtml += "							<ul class=\"pager\">";
+				pdfHtml += "								<li id=\"liPdfPrev\" class=\"previous disabled\">";
+				pdfHtml += "									<a onclick=\"onPrevPage();\">← 이전</a>";
+				pdfHtml += "								</li>";
+				pdfHtml += "								<li id=\"liPdfNext\" class=\"next disabled\">";
+				pdfHtml += "									<a onclick=\"onNextPage();\">다음 →</a>";
+				pdfHtml += "								</li>";
+				pdfHtml += "							</ul>";
+				pdfHtml += "						</div>";
+				pdfHtml += "						<div class=\"col-lg-1\"></div>";
+				pdfHtml += "					</div>";
+				pdfHtml += "					<div class=\"row\">";
+				pdfHtml += "						<div class=\"col-lg-1\"></div>";
+				pdfHtml += "						<div class=\"col-lg-10\" style=\"text-align:center;\">";
+				pdfHtml += "							<canvas id=\"canvasPdf\" style=\"border:1px solid black;direction: ltr;max-width:100%;\"></canvas>";
+				pdfHtml += "						</div>";
+				pdfHtml += "						<div class=\"col-lg-1\"></div>";
+				pdfHtml += "					</div>";
+				pdfHtml += "				</div>";
+				pdfHtml += "			</div>";
+				pdfHtml += "		</div>";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "	</div>";
+
+				$("#divItem").append(pdfHtml);
+
+				setTimeout(function () {
+					showPdfFile(contentData);
+				}, 500);
+			} else {
+				$("#ifrReport").hide();
+				$("#imgdiv").hide();
+
+				$("#imgReport").attr("src", contentData);
+				$("#imgReport").show();
+			}
 		} else {
 			$("#imgReport").hide();
+			$("#imgdiv").hide();
+
 			$("#ifrReport").attr("src", contentData);
 			$("#ifrReport").show();
 		}
@@ -129,6 +182,117 @@
 
 		window.open('/business/previousgeneralcomment/' + $(obj).attr("data-scenario_id"), 'general_comment', option);
 	}
+
+	var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+	var pdfDoc = null;
+	var pageNum = 1;
+	var pageTotalNum = 1;
+	var pageRendering = false;
+	var pageNumPending = null;
+	var scale = 1.8;
+	
+	function renderPage(num) {
+		pageRendering = true;
+		var canvas = document.getElementById("canvasPdf");
+		var ctx = canvas.getContext("2d");
+
+		// Using promise to fetch the page
+		pdfDoc.getPage(num).then(function(page) {
+			var viewport = page.getViewport({scale: scale});
+			canvas.height = viewport.height;
+			canvas.width = viewport.width;
+
+			// Render PDF page into canvas context
+			var renderContext = {
+				canvasContext: ctx,
+				viewport: viewport
+			};
+			var renderTask = page.render(renderContext);
+
+			// Wait for rendering to finish
+			renderTask.promise.then(function() {
+				pageRendering = false;
+				if (pageNumPending !== null) {
+				// New page rendering is pending
+				renderPage(pageNumPending);
+				pageNumPending = null;
+				}
+			});
+		});
+	}
+
+	/**
+	* If another page rendering in progress, waits until the rendering is
+	* finised. Otherwise, executes rendering immediately.
+	*/
+	function queueRenderPage(num) {
+		if (pageRendering) {
+			pageNumPending = num;
+		} else {
+			renderPage(num);
+		}
+	}
+
+	/**
+	* Displays previous page.
+	*/
+	function onPrevPage() {
+		if (pageNum <= 1) {
+			return;
+		}
+
+		pageNum--;
+		queueRenderPage(pageNum);
+
+		$("#liPdfNext").removeClass("disabled");
+
+		if (pageNum == 1) {
+			$("#liPdfPrev").addClass("disabled");
+		}
+	}
+
+	/**
+	* Displays next page.
+	*/
+	function onNextPage() {
+		if (pageNum >= pdfDoc.numPages) {
+			return;
+		}
+
+		pageNum++;
+		queueRenderPage(pageNum);
+
+		$("#liPdfPrev").removeClass("disabled");
+
+		if (pageNum == pageTotalNum) {
+			$("#liPdfNext").addClass("disabled");
+		}
+	}
+		
+	/**
+	* Asynchronously downloads PDF.
+	*/
+	function showPdfFile(url) {
+		pdfDoc = null;
+		pageNum = 1;
+		pageTotalNum = 1;
+		pageRendering = false;
+		pageNumPending = null;
+		pdfjsLib.GlobalWorkerOptions.workerSrc = "/app/script/pdfjs/pdf.worker.js";
+
+		pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+			pdfDoc = pdfDoc_;
+			pageTotalNum = pdfDoc.numPages;
+
+			if (pageTotalNum > 1) {
+				$("#liPdfNext").removeClass("disabled");
+			}
+
+			// Initial/first page rendering
+			renderPage(pageNum);
+		});
+	}
 </script>
 
 
@@ -140,11 +304,17 @@
 
 			<img id="imgReport" class="report_img" src="" style="display:none;" />
 			<iframe id="ifrReport" class="report_ifm" src="" style="display:none;"></iframe>
+			<div class="ibox" id="imgdiv" style="display:none;">
+				<div id="divItem" class="ibox-content"></div>
+			</div>
 		}
 		else
 		{
 			<img id="imgReport" class="report_img" src="" style="display:none;" />
 			<iframe id="ifrReport" class="report_ifm" src="" style="display:none;"></iframe>
+			<div class="ibox" id="imgdiv" style="display:none;">
+				<div id="divItem" class="ibox-content"></div>
+			</div>
 
 			<div id="divInform">
 				<div><img src="~/images/inform.png" /></div>
@@ -183,7 +353,7 @@
 											}
 											else
 											{
-												<label class="tree-toggler nav-header">[@i] @Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+												<label class="tree-toggler nav-header">[@i] @Model.businessBaseObj.BusinessScenarios[i - 1].Title</label>
 											}
 
 											<ul class="nav nav-list tree d3" style="display: block;">
@@ -191,7 +361,7 @@
 												{
 													if (Model.businessBaseObj.BusinessScenarios[i - 1].Types != 5)
 													{
-														<li data-depth="3" onclick="displayReport(@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@Model.businessBaseObj.BusinessScenarios[i - 1].GetTypesName(Model.businessBaseObj.BusinessScenarios[i - 1].Types)', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+														<li data-depth="3" onclick="displayReport(@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@Model.businessBaseObj.BusinessScenarios[i - 1].Title', '@Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @Model.businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
 													}
 												}
 											</ul>
@@ -223,7 +393,7 @@
 													}
 													else
 													{
-														<label class="tree-toggler nav-header">[@i] @businessBaseObj.BusinessScenarios[i - 1].GetTypesName(businessBaseObj.BusinessScenarios[i - 1].Types)</label>
+														<label class="tree-toggler nav-header">[@i] @businessBaseObj.BusinessScenarios[i - 1].Title</label>
 													}
 
 													<ul class="nav nav-list tree d3" style="display: block;">
@@ -232,7 +402,7 @@
 														{
 															if (businessBaseObj.BusinessScenarios[i - 1].Types != 5)
 															{
-																<li data-depth="3" onclick="displayReport(@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@businessBaseObj.BusinessScenarios[i - 1].GetTypesName(businessBaseObj.BusinessScenarios[i - 1].Types)', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
+																<li data-depth="3" onclick="displayReport(@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].BusinessAnalysis.AnalysisID, '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentType', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].ContentData', '@businessBaseObj.BusinessScenarios[i - 1].Title', '@businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label');"><a href="#">@i.@j @businessBaseObj.BusinessScenarios[i - 1].BusinessContents[j - 1].Label</a></li>
 															}
 														}
 													</ul>

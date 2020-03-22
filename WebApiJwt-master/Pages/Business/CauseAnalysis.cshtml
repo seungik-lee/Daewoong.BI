@@ -38,7 +38,7 @@
     var file_check_size = 1024 * 1024 * 10;
 	var businessBaseObj = '@Html.Raw(Json.Serialize(Model.businessBaseObj))';
 	var selected_analysis_obj = null;
-
+	
 	$(document).ready(function () {
 		CKEDITOR.replace("txtContent");
 
@@ -192,13 +192,42 @@
 		// 2020-03-09 추가
         $("#page_path span").html( $(obj).parent().parent().find("span").text() + " <i class='fa fa-chevron-right' /></i> " + $(obj).text());
 
-
 		$("#divItem").children().remove();
 
 		if ($(obj).attr("data-content_type") == "link") {
 			$("#divItem").append("<iframe src=\"" + $(obj).attr("data-content_data") + "\" style=\"width:100%;height:450px;border:none;\"></iframe>");
 		} else {
-			$("#divItem").append("<img src=\"" + $(obj).attr("data-content_data") + "\" style=\"max-width:100%;\"></img>");
+			if ($(obj).attr("data-content_data").indexOf("pdf") >= 0) {
+				var pdfHtml = "	<div class=\"row\" style=\"line-height: 20px;\">";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "		<div class=\"col-lg-10\">";
+				pdfHtml += "			<ul class=\"pager\">";
+				pdfHtml += "				<li id=\"liPdfPrev\" class=\"previous disabled\">";
+				pdfHtml += "					<a onclick=\"onPrevPage();\">← 이전</a>";
+				pdfHtml += "				</li>";
+				pdfHtml += "				<li id=\"liPdfNext\" class=\"next disabled\">";
+				pdfHtml += "					<a onclick=\"onNextPage();\">다음 →</a>";
+				pdfHtml += "				</li>";
+				pdfHtml += "			</ul>";
+				pdfHtml += "		</div>";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "	</div>";
+				pdfHtml += "	<div class=\"row\">";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "		<div class=\"col-lg-10\" style=\"text-align:center;\">";
+				pdfHtml += "			<canvas id=\"canvasPdf\" style=\"border:1px solid black;direction: ltr;max-width:100%;\"></canvas>";
+				pdfHtml += "		</div>";
+				pdfHtml += "		<div class=\"col-lg-1\"></div>";
+				pdfHtml += "	</div>";
+
+				$("#divItem").append(pdfHtml);
+
+				setTimeout(function () {
+					showPdfFile($(obj).attr("data-content_data"));
+				}, 500);
+			} else {
+				$("#divItem").append("<img src=\"" + $(obj).attr("data-content_data") + "\" style=\"max-width:100%;\"></img>");
+			}
 		}
 
 		// 변경된 Comment를 업데이트한다.
@@ -217,6 +246,117 @@
 
 	function openAttachFile(obj) {
 		window.open($(obj).attr("data-file_url"), "reportLink");
+	}
+
+	var pdfjsLib = window['pdfjs-dist/build/pdf'];
+	
+	var pdfDoc = null;
+	var pageNum = 1;
+	var pageTotalNum = 1;
+	var pageRendering = false;
+	var pageNumPending = null;
+	var scale = 1.8;
+	
+	function renderPage(num) {
+		pageRendering = true;
+		var canvas = document.getElementById("canvasPdf");
+		var ctx = canvas.getContext("2d");
+
+		// Using promise to fetch the page
+		pdfDoc.getPage(num).then(function(page) {
+			var viewport = page.getViewport({scale: scale});
+			canvas.height = viewport.height;
+			canvas.width = viewport.width;
+
+			// Render PDF page into canvas context
+			var renderContext = {
+				canvasContext: ctx,
+				viewport: viewport
+			};
+			var renderTask = page.render(renderContext);
+
+			// Wait for rendering to finish
+			renderTask.promise.then(function() {
+				pageRendering = false;
+				if (pageNumPending !== null) {
+				// New page rendering is pending
+				renderPage(pageNumPending);
+				pageNumPending = null;
+				}
+			});
+		});
+	}
+
+	/**
+	* If another page rendering in progress, waits until the rendering is
+	* finised. Otherwise, executes rendering immediately.
+	*/
+	function queueRenderPage(num) {
+		if (pageRendering) {
+			pageNumPending = num;
+		} else {
+			renderPage(num);
+		}
+	}
+
+	/**
+	* Displays previous page.
+	*/
+	function onPrevPage() {
+		if (pageNum <= 1) {
+			return;
+		}
+
+		pageNum--;
+		queueRenderPage(pageNum);
+
+		$("#liPdfNext").removeClass("disabled");
+
+		if (pageNum == 1) {
+			$("#liPdfPrev").addClass("disabled");
+		}
+	}
+
+	/**
+	* Displays next page.
+	*/
+	function onNextPage() {
+		if (pageNum >= pdfDoc.numPages) {
+			return;
+		}
+
+		pageNum++;
+		queueRenderPage(pageNum);
+
+		$("#liPdfPrev").removeClass("disabled");
+
+		if (pageNum == pageTotalNum) {
+			$("#liPdfNext").addClass("disabled");
+		}
+	}
+		
+	/**
+	* Asynchronously downloads PDF.
+	*/
+	function showPdfFile(url) {
+		pdfDoc = null;
+		pageNum = 1;
+		pageTotalNum = 1;
+		pageRendering = false;
+		pageNumPending = null;
+		pdfjsLib.GlobalWorkerOptions.workerSrc = "/app/script/pdfjs/pdf.worker.js";
+
+		pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+			pdfDoc = pdfDoc_;
+			pageTotalNum = pdfDoc.numPages;
+
+			if (pageTotalNum > 1) {
+				$("#liPdfNext").removeClass("disabled");
+			}
+
+			// Initial/first page rendering
+			renderPage(pageNum);
+		});
 	}
 </script>
 
@@ -273,7 +413,7 @@
 						</div>
 					}
 				}
-
+				
 				<div class="buttonDiv">
 					<button type="button" class="btn btn-w-m btn-primary" id="btnSaveAnalysis">전체 저장하기</button>
 					<button type="button" class="btn btn-w-m btn-primary" id="btnGoList">목록</button>
@@ -284,7 +424,6 @@
 	<div class="ibox" id="imgdiv">
 		<div id="divItem" class="ibox-content"></div>
 	</div>
-
 </div>
 <div class="col-lg-4">
 	<div class="ibox">
@@ -299,7 +438,7 @@
 				@foreach (var businessScenario in Model.businessBaseObj.BusinessScenarios)
 				{
 					<li>
-						<span>@businessScenario.TypesName </span>
+						<span>@businessScenario.Title </span>
 						<ul class="list-dash depth2">
 							@foreach (var businessContent in businessScenario.BusinessContents)
 							{
@@ -314,3 +453,5 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript" src="~/app/script/pdfjs/pdf.js"></script>

@@ -102,8 +102,8 @@ namespace Daewoong.BI.Controllers
                         // 시나리오 정보 저장
                         foreach (BusinessScenario scenario in businessBaseObject.BusinessScenarios)
                         {
-                            string bs_sql = $@" insert into business_scenario (business_id, sorting, types, writer, update_date) 
-                                                values ({businessBaseObject.BusinessID}, {scenario.Sorting}, {scenario.Types}, '{writer_id}', now())";
+                            string bs_sql = $@" insert into business_scenario (business_id, sorting, types, title, writer, update_date) 
+                                                values ({businessBaseObject.BusinessID}, {scenario.Sorting}, {scenario.Types}, '{WebUtility.HtmlEncode(scenario.Title)}', '{writer_id}', now())";
 
                             // 기존에 등록된 시나리오
                             if (scenario.ScenarioID > 0)
@@ -150,7 +150,7 @@ namespace Daewoong.BI.Controllers
                                 foreach (BusinessContent content in scenario.BusinessContents)
                                 {
                                     string bc_sql = $@" insert into business_content (scenario_id, label, sorting, content_type, content_data, writer, update_date) 
-                                                        values ({scenario.ScenarioID}, '{content.Label}', {content.Sorting}, '{content.ContentType}', '{WebUtility.HtmlDecode(content.ContentData)}', '{writer_id}', now())";
+                                                        values ({scenario.ScenarioID}, '{WebUtility.HtmlEncode(content.Label)}', {content.Sorting}, '{content.ContentType}', '{WebUtility.HtmlDecode(content.ContentData)}', '{writer_id}', now())";
 
                                     // 기존에 등록된 컨텐츠
                                     if (content.ContentID > 0)

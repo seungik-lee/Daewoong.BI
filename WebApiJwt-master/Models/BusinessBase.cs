@@ -42,6 +42,8 @@ namespace Daewoong.BI.Models
 
 		public int Types { get; set; }
 
+		public string Title { get; set; }
+
 		public string TypesName { get; set; }
 
 		public string Writer { get; set; }
