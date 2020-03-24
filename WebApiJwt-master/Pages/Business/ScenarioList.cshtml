@@ -9,6 +9,16 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		if (localStorage.getItem("checkID") != null) {
+			var checkID = localStorage.getItem("checkID");
+
+			for (var i = 0; i < checkID.split(',').length; i++) {
+				$(":checkbox[data-business_id='" + checkID.split(',')[i] + "']").parent("div").addClass("checked");
+			}
+
+			localStorage.removeItem("checkID");
+		}
+
         $(".i-checks").click(function() {
 			if($(this).children().attr("class").indexOf("checked") == -1) {
 				$(this).children().addClass("checked");
@@ -40,6 +50,8 @@
 				type: "GET",
 				success: function (data) {
 					alert(data);
+
+					localStorage.setItem("checkID", business_ids);
 
 					location.reload();
 
@@ -135,6 +147,8 @@
 				success: function (data) {
 					alert(data);
 
+					localStorage.setItem("checkID", business_ids);
+
 					location.reload();
 					//for (var i = 0; i < business_ids.split(",").length; i++) {
 					//	$(":checkbox[data-business_id='" + business_ids.split(",")[i] + "']").closest("tr").find("td:eq(4)").html("O");
@@ -227,6 +241,8 @@
 				type: "GET",
 				success: function (data) {
 					alert(data);
+
+					localStorage.setItem("checkID", business_ids);
 
 					location.reload();
 				},
